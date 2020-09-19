@@ -1,0 +1,19 @@
+RewriteEngine on
+# root directory:
+RewriteBase /projects/RegattenApp/
+
+
+
+### RESTRICTED FOLDER
+RewriteRule ^(.*)server(.*)$ / [R=301,L,NC]
+RewriteRule ^(.*)content(.*)$ / [R=301,L,NC]
+
+
+
+### CONTENT LOADER
+
+# Keep this subfolders untouched
+RewriteRule ^(api)($|/) - [L]
+
+# Show site
+RewriteRule ^([^\.]*)$ index.php?request=$1 [QSA]
