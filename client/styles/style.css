@@ -4866,12 +4866,37 @@ code {
 .theme-dark .loader-main,
 .theme-dark .instant-article,
 .theme-dark .divider-icon i,
-.theme-dark .table tr.even td,
-.theme-dark .timeline-body,
-.theme-dark table,
-.theme-dark td {
+.theme-dark .timeline-body {
   background-color: #1b1d21 !important;
 }
+
+/* auto table-dark by theme */
+.theme-dark .table th,
+.theme-dark .table td,
+.theme-dark .table thead th,
+.theme-dark .table tbody + tbody {
+  border-color: #95999c;
+}
+
+.theme-dark .table {
+  color: #fff;
+  background-color: #343a40;
+}
+
+.theme-dark .table th,
+.theme-dark .table td,
+.theme-dark .table thead th {
+  border-color: #454d55;
+}
+
+.theme-dark .table-bordered {
+  border: 0;
+}
+
+.theme-dark .table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+/* END OF table-dark */
 
 .theme-dark .ios-switch label::before,
 .theme-dark .android-switch label::before {

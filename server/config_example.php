@@ -19,36 +19,12 @@
 	define('BOATCLASS', 'pirat');
 	
 	// BOAT CLASSES
-	$_CLASSES = array(
-		'pirat' => [
-			'name' => [
-				'de' => 'Pirat',
-				'en' => 'Pirate'
-			],
-			'desc' => [
-				'de' => 'eine vom DSV gef&ouml;rderte Jugendmeisterschaftsklasse',
-				'en' => 'a DSV sponsored youth championship class'
-			],
-			'special' => [
-				'de' => 'Jugend',
-				'en' => 'Youth'
-			],
-			'youth-age' => 19,
-			'youth-german-name' => 'IDJM'
-		],
-		'teeny' => [
-			'name' => [
-				'de' => 'Teeny',
-				'en' => 'Teeny'
-			],
-			'desc' => [
-				'de' => 'die offizielle 2-Mann Bootsklasse des DSV f&uuml;r den J&uuml;ngstenbereich',
-				'en' => 'the official 2-man boat class of the DSV for the youngest area'
-			],
-			'special' => false,
-			'youth-age' => 15,
-			'youth-german-name' => 'IDJüM'
-		]
+	$_CLASS = array(
+		'name' => 'Pirat',
+		'desc' => 'eine vom DSV gef&ouml;rderte Jugendmeisterschaftsklasse',
+		'special' => 'Jugend',
+		'youth-age' => 19,
+		'youth-german-name' => 'IDJM'
 	);
 	
 ?>

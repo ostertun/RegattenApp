@@ -2,6 +2,7 @@
 	
 	require_once(__DIR__ . '/server/config.php');
 	require_once(__DIR__ . '/server/log.php');
+	require_once(__DIR__ . '/server/templates.php');
 	
 	$request = false;
 	if (isset($_GET['request'])) {
@@ -26,12 +27,14 @@
 	}
 	
 	$sp = [
-		'title' => 'Regatten.net ' . $_CLASSES[BOATCLASS]['name']['de'],     // This is the page title
+		'title' => 'Regatten.net ' . $_CLASS['name'],     // This is the page title
 		'backbutton' => false,               // Show a back button (true, false, string). If a string is given, the back button is a link to this page.
 		'activenav' => false,                // Select which entry of bottom nav should be active (1-5). false for none
 		'output' => '',                      // This is where the site content goes
 		'menus' => ''                        // Additional menus go here
 	];
+	
+	$tpl = new Templates(__DIR__ . '/server/templates/');
 	
 	require_once(__DIR__ . '/content/' . $site . '.php');
 	

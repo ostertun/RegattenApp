@@ -1,7 +1,14 @@
+<?php
+	
+	header('Content-Type: text/javascript');
+	
+	require_once(__DIR__ . '/../../server/config.php');
+	
+?>
 //Loading the Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('_service-worker.js', {scope: ''});
+    // TODO navigator.serviceWorker.register('_service-worker.js', {scope: ''});
   });
 }
 
@@ -9,7 +16,7 @@ if ('serviceWorker' in navigator) {
 $(document).ready(function(){      
     'use strict'	
     
-    var pwaVersion = '3.0'; //must be identical to _manifest.json version. If not it will create update window loop
+    var pwaVersion = '<?php echo PWA_VERSION; ?>'; //must be identical to _manifest.json version. If not it will create update window loop
     var pwaCookie = true; // if set to false, the PWA prompt will appear even if the user selects "maybe later"
     var pwaNoCache = true; // always keep the cache clear to serve the freshest possible content
     
@@ -116,7 +123,7 @@ $(document).ready(function(){
         var interval = setInterval(function() {
             counter--;
             console.log(counter);
-            $('.page-update').html('Updating in ... '+ counter + ' seconds');
+            $('.page-update').html('Aktuallisierung in ... '+ counter + ' Sekunden');
             if (counter == 0) {
                 clearInterval(interval);
                 window.location.reload(true)
@@ -141,7 +148,7 @@ $(document).ready(function(){
                 var dt = new Date();
                 var maniTimeVersion = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
                 var localVersionNumber = $('link[rel="manifest"]').data('pwa-version');
-                var onlineVersionJSON = "_manifest.json?ver=" + maniTimeVersion;
+                var onlineVersionJSON = "<?php echo SERVER_ADDR; ?>/manifest.json.php?ver=" + maniTimeVersion;
                 var onlineVersionNumber = "Connection Offline. Waiting to Reconect";
                 $.getJSON(onlineVersionJSON, function(onlineData) {onlineVersionNumber = onlineData.version;}); 
                 setTimeout(function(){
@@ -187,8 +194,8 @@ $(document).ready(function(){
     var offlineAlerts = $('.offline-message');
 
     if(!offlineAlerts.length){
-        $('body').append('<p class="offline-message bg-red2-dark color-white center-text uppercase ultrabold">No internet connection detected</p> ');
-        $('body').append('<p class="online-message bg-green1-dark color-white center-text uppercase ultrabold">You are back online</p>');
+        $('body').append('<p class="offline-message bg-red2-dark color-white center-text uppercase ultrabold">' + strings['inetMsgOffline'] + '</p>');
+        $('body').append('<p class="online-message bg-green1-dark color-white center-text uppercase ultrabold">' + strings['inetMsgOnline'] + '</p>');
     }
     
     //Offline Function Show

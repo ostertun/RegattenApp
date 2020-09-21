@@ -8,11 +8,11 @@
 {
   "version": "1.0",
   "lang" : "de",
-  "name" : "Regatten.net <?php echo $_CLASSES[BOATCLASS]['name']['de'] ?>",
+  "name" : "Regatten.net <?php echo $_CLASS['name'] ?>",
   "scope" : "/",
   "display" : "standalone",
   "start_url" : "/index",
-  "short_name" : "<?php echo $_CLASSES[BOATCLASS]['name']['de'] ?>",
+  "short_name" : "<?php echo $_CLASS['name'] ?>",
   "description" : "Regatta-Termine, Ergebnisse und Ranglisten",
   "orientation" : "portrait",
   "background_color": "#ffffff",
