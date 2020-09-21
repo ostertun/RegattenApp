@@ -31,7 +31,8 @@
 		'backbutton' => false,               // Show a back button (true, false, string). If a string is given, the back button is a link to this page.
 		'activenav' => false,                // Select which entry of bottom nav should be active (1-5). false for none
 		'output' => '',                      // This is where the site content goes
-		'menus' => ''                        // Additional menus go here
+		'menus' => '',                       // Additional menus go here
+		'scripts' => ''                      // Site specific scripts
 	];
 	
 	$tpl = new Templates(__DIR__ . '/server/templates/');

@@ -43,6 +43,8 @@
 			<!--end of div id page-->
 		</div>
 		
+		<?php echo $sp['scripts']; ?>
+		
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/jquery.js"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/strings.js.php"></script>

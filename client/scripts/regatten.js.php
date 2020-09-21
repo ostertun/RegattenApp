@@ -97,5 +97,8 @@ var toastInfo  = function (text, time = 3000) { return makeToast('bg-blue2-dark'
 var toastError = function (text, time = 3000) { return makeToast('bg-red2-dark', 'fa-times', text, time); }
 
 var initRegatten = function() {
-	$('#table-favorites').find('tbody').html('<tr><td>Finn Soetebier</td><td>noch nicht verf&uuml;gbar</td></tr>');
+	loggedin = true;
+	if (typeof siteScript !== 'undefined') {
+		siteScript();
+	}
 }
