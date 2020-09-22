@@ -105,8 +105,8 @@ $(document).ready(function(){
 		if(!$('.menu-hider').length){$('#page').append('<div class="menu-hider"><div>');}
 		
 		/*Menu Extender Function*/
-		$.fn.showMenu = function() {$(this).addClass('menu-active'); $('#footer-bar').addClass('footer-menu-hidden');setTimeout(function(){$('.menu-hider').addClass('menu-active');},250);};
-		$.fn.hideMenu = function() {$(this).removeClass('menu-active'); $('#footer-bar').removeClass('footer-menu-hidden');$('.menu-hider').removeClass('menu-active');};
+		$.fn.showMenu = function() {$(this).addClass('menu-active'); $('#footer-bar').addClass('footer-menu-hidden');setTimeout(function(){$('.menu-hider').addClass('menu-active');},250);$('body').addClass('modal-open')};
+		$.fn.hideMenu = function() {$(this).removeClass('menu-active'); $('#footer-bar').removeClass('footer-menu-hidden');$('.menu-hider').removeClass('menu-active menu-active-clear');$('body').removeClass('modal-open')};
 		
 		//Add your programatically triggered menus here
 		
