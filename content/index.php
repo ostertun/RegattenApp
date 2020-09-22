@@ -35,11 +35,14 @@
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-last']);
 	
 	// Calendar
-	$content = "<h2>Regatta-Kalender</h2>";
-	$content .= "<p>Du willst alle Regatta-Termine in deinem Kalender, aber nicht alles abtippen?<br>Kein Problem! Abonniere einfach unseren ics-Kalender.</p>";
-	$content .= "<p><b>Nur die Regatten, zu denen Du gehst?</b><br>Auch kein Problem! Erstelle einfach eine <a href=\"#\">Saison-Planung</a> und abonniere Deinen persönlichen Kalender.</p>";
-	$content .= $tpl->load('button', ['Regatta-Kalender', '#', 'css-class' => 'mb-2']);
-	$content .= $tpl->load('button', ['Kalender f&uuml;r Timon', '#']);
+	$content = '<h2>Regatta-Kalender</h2>';
+	$content .= '<p>Du willst alle Regatta-Termine in deinem Kalender, aber nicht alles abtippen?<br>Kein Problem! Abonniere einfach unseren ics-Kalender.</p>';
+	$content .= '<p><b>Nur die Regatten, zu denen Du gehst?</b><br>Auch kein Problem! ';
+	$content .= '<span class="show-loggedin">Erstelle einfach eine <a href="' . LINK_PRE . 'planning">Saison-Planung</a> und abonniere Deinen persönlichen Kalender.</span>';
+	$content .= '<span class="show-notloggedin"><a href="#" data-menu="menu-signup">Registriere Dich einfach kostenlos</a>, erstelle eine Saison-Planung und wir erstellen Dir einen pers&ouml;nlichen Kalender.</span>';
+	$content .= '</p>';
+	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Regatta-Kalender', 'https://regatten.net/client/calendar/' . BOATCLASS . '/everything.ics', 'css-class' => 'mb-2']);
+	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Kalender f&uuml;r <span class="replace-username"></span>', 'https://regatten.net/client/calendar/' . BOATCLASS . '/user_%USERID%.ics', 'css-class' => 'show-loggedin replace-userid-href']);
 	
 	$sp['output'] .= $tpl->load('card', [$content]);
 	

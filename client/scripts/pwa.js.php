@@ -18,7 +18,7 @@ $(document).ready(function(){
     
     var pwaVersion = '<?php echo PWA_VERSION; ?>'; //must be identical to _manifest.json version. If not it will create update window loop
     var pwaCookie = true; // if set to false, the PWA prompt will appear even if the user selects "maybe later"
-    var pwaNoCache = true; // always keep the cache clear to serve the freshest possible content
+    var pwaNoCache = false; // always keep the cache clear to serve the freshest possible content
     
     
     $('[data-pwa-version]').data('pwa-version', pwaVersion);
@@ -132,7 +132,7 @@ $(document).ready(function(){
         caches.delete('workbox-runtime').then(function() { 
           console.log('Content Updated - Cache Removed!'); 
         });
-        localStorage.clear();
+        //localStorage.clear();
         sessionStorage.clear()
         caches.keys().then(cacheNames => {
           cacheNames.forEach(cacheName => {

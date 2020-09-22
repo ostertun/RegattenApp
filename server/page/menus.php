@@ -105,17 +105,56 @@
 					<label class="custom-control-label" for="switch-dark"></label>
 				</div>
 			</a>
-			<a href="<?php echo LINK_PRE; ?>login">
+			<a href="#" data-menu="menu-login" class="show-notloggedin">
 				<i class="fa font-14 fa-sign-in-alt rounded-s bg-highlight color-white"></i>
 				<span>Login</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="<?php echo LINK_PRE; ?>signup" class="border-0">
+			<a href="#" data-menu="menu-signup" class="show-notloggedin border-0">
 				<i class="fa font-14 fa-user-plus rounded-s bg-highlight color-white"></i>
 				<span>Registrieren</span>
 				<span class="badge bg-red2-dark color-white">FREE</span>
 			</a>
+			<a href="<?php echo LINK_PRE; ?>account" class="show-loggedin">
+				<i class="fa font-14 fa-user rounded-s bg-highlight color-white"></i>
+				<span>Account</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="#" onclick="logout();" class="show-loggedin border-0">
+				<i class="fa font-14 fa-sign-out-alt rounded-s bg-highlight color-white"></i>
+				<span>Logout</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
 		</div>
+	</div>
+</div>
+
+<div id="menu-login" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="270">
+	<div class="content bottom-0">
+		<h1 class="text-center mt-5 font-900">Login</h1>
+		<div class="input-style input-style-1 has-icon input-required">
+			<i class="input-icon fa fa-user color-theme"></i>
+			<span class="color-highlight">Benutzername</span>
+			<input id="input-login-username" class="form-control" type="name" placeholder="Benutzername" />
+		</div>
+		<div class="input-style input-style-1 has-icon input-required">
+			<i class="input-icon fa fa-lock color-theme"></i>
+			<span class="color-highlight">Passwort</span>
+			<input id="input-login-password" class="form-control" type="password" placeholder="Passwort" />
+		</div>
+		<a class="btn btn-m mt-2 mb-2 btn-full bg-green2-dark text-uppercase font-900" href="#" onclick="login();">Login</a>
+	</div>
+</div>
+
+<div id="menu-signup" class="menu menu-box-modal menu-box-detached rounded-m" data-menu-height="300">
+	<div class="content bottom-0">
+		<h1 class="text-center mt-5 font-900">Registrieren</h1>
+		<p class="text-center">
+			Momentan kannst Du Dich leider nicht in der App registrieren.<br>
+			Das ist aber kein Problem, registriere Dich einfach kostenlos auf unserer Website!
+		</p>        
+		<a href="https://regatten.net/de/signup" class="btn btn-center-xl btn-m shadow-xl rounded-s bg-highlight font-900 text-center">Registrieren</a>
+		<p class="text-center font-10 bottom-0">Du kannst Dich danach in dieser App anmelden.</p>
 	</div>
 </div>
 

@@ -31,7 +31,7 @@ $(document).ready(function(){
 	'use strict'
 	
 	var isAJAX = true; //Enables or disable AJAX page transitions and loading.
-	var isDevelopment = true; // Enables development mode. Clean cache & Stops BG & Highlights from changing defaults.
+	var isDevelopment = false; // Enables development mode. Clean cache & Stops BG & Highlights from changing defaults.
 	
 	function init_template(){
 		
