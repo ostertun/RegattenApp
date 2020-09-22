@@ -133,12 +133,14 @@ var login = function() {
 			localStorage.setItem('auth_hash', data.auth);
 			localStorage.setItem('auth_user', data.user);
 			localStorage.setItem('auth_username', data.username);
+			resetDb();
 			location.reload();
 		}
 	});
 }
 
 var logoutClearStorage = function() {
+	resetDb();
 	localStorage.removeItem('auth_id');
 	localStorage.removeItem('auth_hash');
 	localStorage.removeItem('auth_user');
