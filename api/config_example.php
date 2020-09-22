@@ -27,13 +27,6 @@
 	define('DB_TABLE_NEWS', 'news');
 	define('DB_TABLE_UPDATETIMES', '_updatetimes');
 	
-	// PERMISSIONS
-	define('PERM_ALL', 0);
-	define('PERM_REGISTERED', 1);
-	define('PERM_READ', 2);
-	define('PERM_WRITE', 4);
-	define('PERM_ADMIN', 8);
-	
 	// OUTGOING MAILS - Credentials for outgoing mails
 	define('MAIL_SMTP_HOST', 'ssl://ostertun.net');               // SMTP Server address
 	define('MAIL_SMTP_PORT', 465);                       // port to use

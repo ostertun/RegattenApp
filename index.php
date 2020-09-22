@@ -3,6 +3,7 @@
 	require_once(__DIR__ . '/server/config.php');
 	require_once(__DIR__ . '/server/log.php');
 	require_once(__DIR__ . '/server/templates.php');
+	require_once(__DIR__ . '/server/scripts.php');
 	
 	$request = false;
 	if (isset($_GET['request'])) {
@@ -36,6 +37,7 @@
 	];
 	
 	$tpl = new Templates(__DIR__ . '/server/templates/');
+	$scripts = new Scripts(__DIR__ . '/server/scripts/');
 	
 	require_once(__DIR__ . '/content/' . $site . '.php');
 	

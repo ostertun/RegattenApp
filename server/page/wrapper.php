@@ -49,6 +49,8 @@
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/bootstrap.min.js"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/strings.js.php"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/regatten.js.php"></script>
+		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/datetime.js"></script>
+		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/database.js"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/custom.js.php"></script>
 		<script type="text/javascript" src="<?php echo SERVER_ADDR; ?>/client/scripts/pwa.js.php"></script>
 	</body>

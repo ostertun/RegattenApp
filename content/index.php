@@ -7,30 +7,52 @@
 	$sp['output'] .= $tpl->load('card', [$content]);
 	
 	// Favorites
-	$content = "<h2>Deine Favoriten</h2>";
-	$thead = "<tr><th>Segler</th><th>Rangliste 2020</th></tr>";
+	$content = '<h2>Deine Favoriten</h2>';
+	$thead = '<tr><th>Segler</th><th id="th-ranking">Rangliste</th></tr>';
 	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-favorites', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<p id="p-favorites" class="mt-3">';
+	$content .= 'Du folgst <b>keinen</b> Seglern.<br>';
+	$content .= 'Um jemandem zu folgen, gehe zur <a href="' . LINK_PRE . 'sailors">Segler-Liste</a> und w&auml;hle bis zu f&uuml;nf Segler aus.';
+	$content .= '</p>';
 	
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-favorites']);
 	
 	// Planning next
-	$content = "<h2>Deine n&auml;chsten Regatten</h2>";
-	$thead = "<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th><th>Segler</th></tr>";
+	$content = '<h2>Deine n&auml;chsten Regatten</h2>';
+	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th><th>Segler</th></tr>';
 	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-yournext', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<p id="p-yournext" class="mt-3">';
+	$content .= 'Du f&auml;hrst in den n&auml;chsten vier Wochen auf keine Regatta!';
+	$content .= '</p>';
 	
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-yournext']);
 	
+	// Not logged in
+	$content = '<h2>Nicht angemeldet</h2>';
+	$content .= '<p class="mt-3">';
+	$content .= 'Um alle Funktionen dieser Seite nutzen zu k&ouml;nnen, <a href="#" data-menu="menu-login">logge Dich bitte ein</a>.<br>';
+	$content .= 'Solltest Du noch kein Benutzerkonto haben, kannst Du Dich kostenlos <a href="#" data-menu="menu-signup">registrieren</a>.';
+	$content .= '</p>';
+	
+	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-notloggedin']);
+	
 	// Next
-	$content = "<h2>N&auml;chste Regatten</h2>";
-	$thead = "<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th></tr>";
+	$content = '<h2>N&auml;chste Regatten</h2>';
+	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th></tr>';
 	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-next', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<p id="p-next" class="mt-3">';
+	$content .= 'Keine Regatten in den n&auml;chsten zwei Wochen!';
+	$content .= '</p>';
 	
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-next']);
 	
 	// Last
-	$content = "<h2>Letzte Regatten</h2>";
-	$thead = "<tr><th>Datum</th><th>Regatta</th><th>Ergebnisse</th><th>RLF</th></tr>";
+	$content = '<h2>Letzte Regatten</h2>';
+	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Ergebnisse</th><th>RLF</th></tr>';
 	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-last', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<p id="p-last" class="mt-3">';
+	$content .= 'Keine Regatten in den letzten zwei Wochen!';
+	$content .= '</p>';
 	
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-last']);
 	
@@ -46,20 +68,6 @@
 	
 	$sp['output'] .= $tpl->load('card', [$content]);
 	
-	$sp['scripts'] = '
-<script>
-	var siteScript = function() {
-		if (loggedin) {
-			$(\'#table-favorites\').find(\'tbody\').html(\'<tr><td>Finn Soetebier</td><td>noch nicht verf&uuml;gbar</td></tr>\');
-			$(\'#table-yournext\').find(\'tbody\').html(\'<tr><td style="white-space:nowrap;">10. Oct \\\'20<br>14. Oct \\\'20</td><td><a href="#">BSC</a><br>VERSCHOBEN: IDJM, Blankenese</td><td><a href="#">Informationen</a><br><a href="#">Meldung</a> <font style="color:red;">(noch 5 Tage)</a></td><td>1,26</td><td>Finn Soetebier<br>Timon Ostertun</td></tr>\');
-		} else {
-			$(\'#card-favorites\').hide();
-			$(\'#card-yournext\').hide();
-		}
-		$(\'#table-next\').find(\'tbody\').html(\'<tr><td style="white-space:nowrap;">10. Oct \\\'20<br>14. Oct \\\'20</td><td><a href="#">BSC</a><br>VERSCHOBEN: IDJM, Blankenese</td><td><a href="#">Informationen</a><br><a href="#">Meldung</a> <font style="color:red;">(noch 5 Tage)</a></td><td>1,26</td></tr>\');
-		$(\'#table-last\').find(\'tbody\').html(\'<tr><td style="white-space:nowrap;">10. Oct \\\'20<br>14. Oct \\\'20</td><td><a href="#">BSC</a><br>VERSCHOBEN: IDJM, Blankenese</td><td><i style="color:green;" class="fas fa-check"></i> <a href="#">Ergebnisse</a></td><td>1,26</td></tr>\');
-	}
-</script>
-	';
+	$sp['scripts'] = '<!-- DEBUG -->' . $scripts->load('index');
 	
 ?>

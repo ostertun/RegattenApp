@@ -22,13 +22,13 @@
 			}
 			
 			$template = $this->templates[$name];
-			while (($pos = strpos($template, '$')) !== false) {
-				$pos ++;
+			while (($pos = strpos($template, '$$')) !== false) {
+				$pos += 2;
 				$pos2 = strpos($template, ';', $pos);
 				if ($pos2 === false) return "<p>Syntax error in template '$name'!</p>";
 				$ph = substr($template, $pos, $pos2 - $pos);
 				if (!isset($params[$ph])) $params[$ph] = '';
-				$template = str_replace('$' . $ph . ';', $params[$ph], $template);
+				$template = str_replace('$$' . $ph . ';', $params[$ph], $template);
 			}
 			return $template;
 		}

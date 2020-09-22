@@ -129,6 +129,35 @@
 	</div>
 </div>
 
+<div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="310">
+	<div class="menu-title"><h1>Entwickler-Optionen</h1><p class="color-highlight">&nbsp;</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
+	<div class="divider divider-margins mb-n2"></div>
+	<div class="content">
+		<div class="list-group list-custom-small">
+			<a href="https://info.ostertun.net/regatten/beta">
+				<i class="fa font-14 fa-info rounded-s bg-highlight color-white"></i>
+				<span>Infos zur BETA</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="javascript:resetDb();">
+				<i class="fa font-14 fa-database rounded-s bg-highlight color-white"></i>
+				<span>Reset Database</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="javascript:resetCache();">
+				<i class="fa font-14 fa-trash-alt rounded-s bg-highlight color-white"></i>
+				<span>Reset Cache</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="https://report.regatten.net/" class="border-0">
+				<i class="fa font-14 fa-bug rounded-s bg-highlight color-white"></i>
+				<span>Problem melden</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+		</div>
+	</div>
+</div>
+
 <div id="menu-login" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="270">
 	<div class="content bottom-0">
 		<h1 class="text-center mt-5 font-900">Login</h1>

@@ -7,6 +7,7 @@
 		else
 			echo '<a href="' . LINK_PRE . $sp['backbutton'] . '" class="header-icon header-icon-1"><i class="fas fa-arrow-left"></i></a>';
 	} ?>
+	<a href="#" data-menu="menu-developer" class="header-icon header-icon-3"><i class="fas fa-code"></i></a>
 	<a href="#" data-menu="menu-settings" class="header-icon header-icon-4"><i class="fas fa-cog"></i></a>
 </div>
 <div id="footer-bar" class="footer-bar-1">

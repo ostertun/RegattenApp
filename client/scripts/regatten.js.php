@@ -6,7 +6,8 @@
 	
 ?>
 
-const apiUrl = '<?php echo SERVER_ADDR; ?>/api/';
+const QUERY_URL = '<?php echo SERVER_ADDR; ?>/api/';
+const BOATCLASS = '<?php echo BOATCLASS; ?>';
 
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 
@@ -181,33 +182,53 @@ var logout = function() {
 	});
 }
 
-var initRegatten = function() {
-	loggedin = (localStorage.getItem('auth_id') !== null);
-	
-	if (loggedin) {
-		var auth = {
-			id: localStorage.getItem('auth_id'),
-			hash: localStorage.getItem('auth_hash')
+function resetDb() {
+	$('#menu-developer').hideMenu();
+	if (canUseLocalDB) {
+		showLoader();
+		var request = window.indexedDB.deleteDatabase('regatten_app_db_' + BOATCLASS);
+		request.onerror = function (event) {
+			console.log("Cannot open DB: " + event.target.errorCode);
+			toastError('There was an error deleting your database.<br>Please report this to <a href="mailto:dev@regatten.net">dev@regatten.net</a>');
+			hideLoader();
+		};
+		request.onsuccess = function (event) {
+			console.log('DB deleted');
+			toastInfo('The database was deleted. Please reload or close this tab.<br>At the next visit, a new database will be created.');
+			hideLoader();
 		}
-		var user = {
-			id: localStorage.getItem('auth_user'),
-			name: localStorage.getItem('auth_username')
-		}
-		if ((auth.hash === null) || (user.id === null) || (user.name === null)) {
-			logoutClearStorage();
-			return;
-		}
+	} else {
+		toastWarn('Your device does not support storing data locally. All data is fetched directly from our server.<br>As a result, you can not reset your database.');
 	}
+}
+
+function resetCache() {
+	$('#menu-developer').hideMenu();
+	navigator.serviceWorker.getRegistrations().then(function (registrations) {
+		for (let registration of registrations) {
+			console.log('Unregister sW:', registration);
+			registration.unregister();
+		}
+	});
+	caches.keys().then((keyList) => {
+		return Promise.all(keyList.map((key) => {
+			console.log('Cache deleted:', key);
+			return caches.delete(key);
+		}));
+	});
+	toastInfo('The serviceWorker and the cache were deleted. A new serviceWorker will be generated on the next refresh.');
+}
+
+var initRegatten = function() {
+	showLoader();
 	
-	if (loggedin) {
+	initDatabase();
+	
+	if (isLoggedIn) {
 		$('.show-notloggedin').css('display', 'none');
-		$('.replace-userid-href').attr('href', $('.replace-userid-href').attr('href').replace('%USERID%', user.id));
-		$('.replace-username').html(user.name);
+		$('.replace-userid-href').attr('href', $('.replace-userid-href').attr('href').replace('%USERID%', USER_ID));
+		$('.replace-username').html(USER_NAME);
 	} else {
 		$('.show-loggedin').css('display', 'none');
-	}
-	
-	if (typeof siteScript !== 'undefined') {
-		siteScript();
 	}
 }
