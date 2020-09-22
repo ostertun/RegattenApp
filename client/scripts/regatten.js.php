@@ -8,7 +8,7 @@
 
 const QUERY_URL = '<?php echo SERVER_ADDR; ?>/api/';
 const BOATCLASS = '<?php echo BOATCLASS; ?>';
-const LINK_PRE = '<?php echo LINK_PRE; ?>';
+const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
 
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 
@@ -225,11 +225,13 @@ var initRegatten = function() {
 	
 	initDatabase();
 	
-	if (isLoggedIn) {
-		$('.show-notloggedin').css('display', 'none');
+	if (isLoggedIn()) {
+		$('.show-loggedin').show();
+		$('.show-notloggedin').hide();
 		$('.replace-userid-href').attr('href', $('.replace-userid-href').attr('href').replace('%USERID%', USER_ID));
 		$('.replace-username').html(USER_NAME);
 	} else {
-		$('.show-loggedin').css('display', 'none');
+		$('.show-loggedin').hide();
+		$('.show-notloggedin').show();
 	}
 }

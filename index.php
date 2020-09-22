@@ -21,7 +21,7 @@
 		$site = 'index';
 	}
 	
-	define('LINK_PRE', SERVER_ADDR . '/');;
+	define('LINK_PRE', SERVER_ADDR . '/');
 	
 	if (!file_exists(__DIR__ . '/content/' . $site . '.php')) {
 		$site = '404';
