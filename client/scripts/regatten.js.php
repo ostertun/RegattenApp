@@ -8,6 +8,7 @@
 
 const QUERY_URL = '<?php echo SERVER_ADDR; ?>/api/';
 const BOATCLASS = '<?php echo BOATCLASS; ?>';
+const LINK_PRE = '<?php echo LINK_PRE; ?>';
 
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 
@@ -106,7 +107,7 @@ var login = function() {
 	$('#input-login-username').val('');
 	$('#input-login-password').val('');
 	$.ajax({
-		url: apiUrl + 'login',
+		url: QUERY_URL + 'login',
 		method: 'POST',
 		data: {
 			username: username,
@@ -157,7 +158,7 @@ var logout = function() {
 		return;
 	}
 	$.ajax({
-		url: apiUrl + 'logout',
+		url: QUERY_URL + 'logout',
 		method: 'POST',
 		data: {
 			auth: auth
