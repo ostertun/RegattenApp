@@ -1,5 +1,8 @@
 <?php
 	
+	$sp['title'] = 'Startseite - Regatten.net Pirat';
+	$sp['activenav'] = 1;
+	
 	// Title
 	$content = "<h1>$_CLASS[name]</h1>";
 	$content .= "<p>$_CLASS[desc]</p>";
@@ -68,6 +71,6 @@
 	
 	$sp['output'] .= $tpl->load('card', [$content]);
 	
-	$sp['scripts'] = '<!-- DEBUG -->' . $scripts->load('index');
+	$sp['scripts'] = $scripts->load('index');
 	
 ?>

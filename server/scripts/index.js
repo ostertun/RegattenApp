@@ -320,4 +320,6 @@ var siteScript = async function() {
 		$('#table-last').hide();
 		$('#p-last').show();
 	}
+	
+	hideLoader();
 }

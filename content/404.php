@@ -1,5 +1,8 @@
 <?php
 	
+	$sp['title'] = 'Fehler 404 - Regatten.net Pirat';
+	$sp['backbutton'] = true;
+	
 	$content = $tpl->load('error', ['404', 'Seite nicht gefunden']);
 	$content .= '<p>';
 	$content .= 'Die gesuchte Seite wurde nicht gefunden.<br>';

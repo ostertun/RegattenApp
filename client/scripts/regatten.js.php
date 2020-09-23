@@ -100,6 +100,21 @@ var toastWarn  = function (text, time = 3000) { return makeToast('bg-yellow1-dar
 var toastInfo  = function (text, time = 3000) { return makeToast('bg-blue2-dark', 'fa-info', text, time); }
 var toastError = function (text, time = 3000) { return makeToast('bg-red2-dark', 'fa-times', text, time); }
 
+function findGetParameter(parameterName) {
+	var result = null;
+	var tmp = [];
+	location.search
+		.substr(1)
+		.split("&")
+		.forEach(function (item) {
+			tmp = item.split("=");
+			if (tmp[0] === parameterName) {
+				result = decodeURIComponent(tmp[1]);
+			}
+		});
+	return result;
+}
+
 var login = function() {
 	showLoader();
 	var username = $('#input-login-username').val();
@@ -230,8 +245,10 @@ var initRegatten = function() {
 	if (isLoggedIn()) {
 		$('.show-loggedin').show();
 		$('.show-notloggedin').hide();
-		$('.replace-userid-href').attr('href', $('.replace-userid-href').attr('href').replace('%USERID%', USER_ID));
-		$('.replace-username').html(USER_NAME);
+		if ($('.replace-userid-href').length > 0)
+			$('.replace-userid-href').attr('href', $('.replace-userid-href').attr('href').replace('%USERID%', USER_ID));
+		if ($('.replace-username').length > 0)
+			$('.replace-username').html(USER_NAME);
 	} else {
 		$('.show-loggedin').hide();
 		$('.show-notloggedin').show();

@@ -298,8 +298,9 @@ async function runPageScript() {
 	
 	if (typeof siteScript === 'function') {
 		siteScript();
+	} else {
+		hideLoader();
 	}
-	hideLoader();
 }
 
 function sync() {
