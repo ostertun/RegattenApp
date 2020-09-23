@@ -5,6 +5,8 @@
 	require_once(__DIR__ . '/server/templates.php');
 	require_once(__DIR__ . '/server/scripts.php');
 	
+	define('LINK_PRE', SERVER_ADDR . '/');
+	
 	$request = false;
 	if (isset($_GET['request'])) {
 		$request = explode('/', $_GET['request']);
@@ -18,10 +20,9 @@
 		$site = '';
 	}
 	if ($site == '') {
-		$site = 'index';
+		header('Location: ' . LINK_PRE . 'index');
+		exit;
 	}
-	
-	define('LINK_PRE', SERVER_ADDR . '/');
 	
 	if (!file_exists(__DIR__ . '/content/' . $site . '.php')) {
 		$site = '404';

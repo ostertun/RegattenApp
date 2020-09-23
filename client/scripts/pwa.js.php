@@ -8,7 +8,7 @@
 //Loading the Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    // TODO navigator.serviceWorker.register('_service-worker.js', {scope: ''});
+    navigator.serviceWorker.register('<?php echo SERVER_ADDR; ?>/service-worker.js.php');
   });
 }
 
