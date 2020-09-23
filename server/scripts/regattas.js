@@ -38,6 +38,7 @@ async function drawTable () {
 		var list = '';
 		rows.forEach(function (entry) {
 			if (entry == null) {
+				list += '<div><div align="center" class="color-highlight"><b>Heute ist der ' + formatDate('d.m.Y', today) + '</b></div></div>';
 				//tbody += '<tr><td colspan="' + heuteLen + '" class="bg-highlight color-white">';
 				//tbody += 'Heute ist der ' + formatDate('d.m.Y', today);
 				//tbody += '</td></tr>';
