@@ -6,7 +6,7 @@
 	
 ?>
 {
-  "version": "1.0",
+  "version": "<?php echo PWA_VERSION; ?>",
   "lang" : "de",
   "name" : "Regatten.net <?php echo $_CLASS['name'] ?>",
   "scope" : "<?php echo SERVER_ADDR; ?>/",

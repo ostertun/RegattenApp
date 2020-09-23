@@ -1,3 +1,4 @@
+/*** REGATTAS LIST ***/
 .regattas-list > div {
 	padding-top: 1rem;
 	padding-bottom: 1rem;
@@ -40,4 +41,20 @@
 .regattas-list > div > div:nth-child(3) > div:nth-child(2) {
 	width: 25%;
 	text-align: right;
+}
+
+/*** BLINKING ICONS ***/
+@keyframes fa-blink {
+	0% { opacity: 1; }
+	25% { opacity: 0.25; }
+	50% { opacity: 0.5; }
+	75% { opacity: 0.75; }
+	100% { opacity: 0; }
+}
+.fa-blink {
+	-webkit-animation: fa-blink .75s linear infinite;
+	-moz-animation: fa-blink .75s linear infinite;
+	-ms-animation: fa-blink .75s linear infinite;
+	-o-animation: fa-blink .75s linear infinite;
+	animation: fa-blink .75s linear infinite;
 }

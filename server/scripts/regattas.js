@@ -32,29 +32,21 @@ var rows = [];
 var today;
 
 async function drawTable () {
-	//setLoading(true, 'loading');
-	
 	window.setTimeout(function () {
 		var list = '';
 		rows.forEach(function (entry) {
 			if (entry == null) {
 				list += '<div><div align="center" class="color-highlight"><b>Heute ist der ' + formatDate('d.m.Y', today) + '</b></div></div>';
-				//tbody += '<tr><td colspan="' + heuteLen + '" class="bg-highlight color-white">';
-				//tbody += 'Heute ist der ' + formatDate('d.m.Y', today);
-				//tbody += '</td></tr>';
 			} else if (search($('#input-search').val(), entry.keywords)) {
 				list += entry.content;
 			}
 		});
 		$('#div-regattas').html(list);
-		
-		//setLoading(false, 'loading');
 	}, 0);
 }
 
 async function regattaClicked(id) {
 	var regatta = await dbGetData('regattas', id);
-	console.log(regatta);
 	
 	$('#menu-regatta').find('.menu-title').find('p').text(regatta.name);
 	
@@ -277,10 +269,32 @@ var siteScript = async function() {
 			if ((entry['meldung'] != '') && (dateTo >= today) && (entry['meldungOffen'] == '1')) {
 				var color = '';
 				if (entry['meldungSchluss'] != null) {
-					var ms = parseDate(entry['meldungSchluss']);
-					var diff = Math.round((ms - today) / 86400000);
-					if ((ms >= today) && (diff < 7))
-						color = ' color-red2-dark';
+					var planning = null;
+					if (isLoggedIn()) {
+						var plannings = await dbGetDataIndex('plannings', 'regatta', entry['id']);
+						for (id in plannings) {
+							if (plannings[id]['user'] == USER_ID) {
+								planning = plannings[id];
+								break;
+							}
+						}
+					}
+					if ((planning == null) || (planning['gemeldet'] == '0')) {
+						var ms = 0;
+						if (entry['meldungEarly'] != null) {
+							ms = parseDate(entry['meldungEarly']);
+						}
+						if (ms < today) {
+							ms = parseDate(entry['meldungSchluss']);
+						}
+						var diff = Math.round((ms - today) / 86400000);
+						if ((ms >= today) && (diff < 7)) {
+							color = ' color-red2-dark';
+							if (planning != null) {
+								color += ' fa-blink';
+							}
+						}
+					}
 				}
 				icons.push('<i class="fas fa-file-signature' + color + '"></i>');
 			}

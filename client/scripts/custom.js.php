@@ -1331,7 +1331,6 @@ $(document).ready(function(){
 			colorsArray.forEach(function (gradientBodyValue) {$('.generated-styles').append('.body-'+gradientBodyValue[0]+'{background-image: linear-gradient(to bottom, '+gradientBodyValue[1]+' 0, '+gradientBodyValue[3]+' 100%)}')});	
 		}
 		
-		// TODO: Hier den site-specific code ausführen
 		initRegatten();
 		
 		hideLoader();

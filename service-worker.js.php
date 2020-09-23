@@ -24,13 +24,30 @@ workbox.core.setCacheNameDetails({
 workbox.precaching.precacheAndRoute([
 <?php
 	// CONTENT
+	function getDirHash($path) {
+		$hash = '';
+		if ($dir = opendir($path)) {
+			while (($file = readdir($dir)) !== false) {
+				if ($file == '.') continue;
+				if ($file == '..') continue;
+				if (is_dir($path . '/' . $file)) {
+					$hash .= getDirHash($path . '/' . $file);
+				} else {
+					$hash .= md5_file($path . '/' . $file);
+				}
+			}
+			closedir($dir);
+		}
+		return $hash;
+	}
+	$hash = md5(getDirHash(__DIR__));
+	
 	$path = __DIR__ . '/content/';
 	$dir = opendir($path);
 	while ($file = readdir($dir)) {
 		if (($file == '.') or ($file == '..') or (pathinfo($file, PATHINFO_EXTENSION) != 'php')) continue;
-		$revision = filemtime($path . $file);
 		$file = SERVER_ADDR . '/' . pathinfo($file, PATHINFO_FILENAME);
-		echo "\t{url: '$file', revision: '$revision'},\n";
+		echo "\t{url: '$file', revision: '$hash'},\n";
 	}
 	closedir($dir);
 	
@@ -63,7 +80,7 @@ workbox.precaching.precacheAndRoute([
 	}
 	
 	foreach ($filesToCache as $file) {
-		$revision = filemtime(__DIR__ . $file);
+		$revision = md5_file(__DIR__ . $file);
 		$file = SERVER_ADDR . $file;
 		echo "\t{url: '$file', revision: '$revision'},\n";
 	}
