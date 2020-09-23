@@ -318,6 +318,7 @@ function sync() {
 		syncInProgress = 10;
 		var syncOkay = true;
 		console.log("Sync Start");
+		$('#i-sync').addClass('fa-spin');
 		
 		var interval = window.setInterval(function () {
 			if (syncInProgress <= 0) {
@@ -327,6 +328,9 @@ function sync() {
 					osUpdateTimes.put({ table: 'last_sync', time: now });
 				}
 				console.log("Sync Stop");
+				setTimeout(function(){
+					$('#i-sync').removeClass('fa-spin');
+				}, 500);
 				
 				runPageScript();
 			}
