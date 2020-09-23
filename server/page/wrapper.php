@@ -9,6 +9,7 @@
 		<title><?php echo $sp['title']; ?></title>
 		<link rel="stylesheet" type="text/css" href="<?php echo SERVER_ADDR; ?>/client/styles/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="<?php echo SERVER_ADDR; ?>/client/styles/style.css">
+		<link rel="stylesheet" type="text/css" href="<?php echo SERVER_ADDR; ?>/client/styles/regatten.css">
 		<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900,900i|Source+Sans+Pro:300,300i,400,400i,600,600i,700,700i,900,900i&display=swap" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="<?php echo SERVER_ADDR; ?>/client/fonts/css/fontawesome-all.min.css">
 		<link rel="manifest" href="<?php echo SERVER_ADDR; ?>/manifest.json.php" data-pwa-version="<?php echo PWA_VERSION; ?>">

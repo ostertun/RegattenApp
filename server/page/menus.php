@@ -161,12 +161,12 @@
 <div id="menu-login" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="270">
 	<div class="content bottom-0">
 		<h1 class="text-center mt-5 font-900">Login</h1>
-		<div class="input-style input-style-1 has-icon input-required">
+		<div class="input-style input-style-2 has-icon input-required">
 			<i class="input-icon fa fa-user color-theme"></i>
 			<span class="color-highlight">Benutzername</span>
 			<input id="input-login-username" class="form-control" type="name" placeholder="Benutzername" />
 		</div>
-		<div class="input-style input-style-1 has-icon input-required">
+		<div class="input-style input-style-2 has-icon input-required">
 			<i class="input-icon fa fa-lock color-theme"></i>
 			<span class="color-highlight">Passwort</span>
 			<input id="input-login-password" class="form-control" type="password" placeholder="Passwort" />

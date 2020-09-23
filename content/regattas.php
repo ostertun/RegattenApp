@@ -17,16 +17,19 @@
 	// Regattas
 	$content = '<p id="p-count" class="mb-0"></p>';
 	$content .= $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text', 'css-class' => 'mt-2']);
-	$thead = '<tr><th id="th-number">#</th><th>Datum</th><th>Regatta</th>';
-	if (($showSpecial = $_CLASS['special']) !== false) {
-		$thead .= '<th>' . $_CLASS['special'] . '</th>';
-	}
-	$thead .= '<th>Informationen</th><th>Ergebnisse</th><th>RLF</th></tr>';
-	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-regattas', 'css-class' => 'mb-0']);
+	$content .= '<div id="div-regattas" class="regattas-list mb-0"></div>';
 	
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas']);
 	
-	$sp['scripts'] = '<script>const showSpecial = ' . ($showSpecial ? 'true' : 'false') . ';</script>';
+	// Menu
+	$items = $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Bericht', '', 'html-id' => 'menu-item-bericht', 'icon' => 'fa-book']);
+	$items .= $tpl->load('menu/item-icon', ['Informationen', '', 'html-id' => 'menu-item-info', 'icon' => 'fa-info']);
+	$items .= $tpl->load('menu/item-icon-badge', ['Meldung', '', 'html-id' => 'menu-item-meldung', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-meldung']);
+	$items .= $tpl->load('menu/item-icon', ['offizielle Ergebnisse', '', 'html-id' => 'menu-item-oresults', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 320]);
+	
 	$sp['scripts'] .= $scripts->load('regattas');
 	
 ?>

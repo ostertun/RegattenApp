@@ -1,0 +1,43 @@
+.regattas-list > div {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #dee2e6;
+	cursor: pointer;
+}
+
+.regattas-list > div:last-child {
+	border: 0;
+	padding-bottom: 0;
+}
+
+.regattas-list div {
+	white-space: nowrap;
+}
+
+.regattas-list > div > div > div {
+	display: inline-block;
+}
+
+.regattas-list > div > div:nth-child(2) > div:nth-child(1) {
+	width: 25%;
+}
+.regattas-list > div > div:nth-child(2) > div:nth-child(2) {
+	width: 25%;
+}
+.regattas-list > div > div:nth-child(2) > div:nth-child(3) {
+	width: 25%;
+	text-align: center;
+}
+.regattas-list > div > div:nth-child(2) > div:nth-child(4) {
+	width: 25%;
+	text-align: right;
+	font-size: 14px;
+}
+
+.regattas-list > div > div:nth-child(3) > div:nth-child(1) {
+	width: 75%;
+}
+.regattas-list > div > div:nth-child(3) > div:nth-child(2) {
+	width: 25%;
+	text-align: right;
+}

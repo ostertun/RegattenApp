@@ -125,7 +125,7 @@ function dbGetRegattasRange(minDate, maxDate) {
 			var regatta = regattas[id];
 			var dateFrom = parseDate(regatta['date']);
 			var dateTo = parseDate(regatta['date']);
-			dateTo.setDate(dateTo.getDate() + parseInt(regatta['length']) - 1);
+			dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
 			if ((minDate <= dateTo) && (maxDate >= dateFrom)) {
 				regatta['dateFrom'] = dateFrom;
 				regatta['dateTo'] = dateTo;
