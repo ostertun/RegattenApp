@@ -1,6 +1,6 @@
 <?php
 	
-	$sp['title'] = 'Startseite - Regatten.net Pirat';
+	$sp['title'] = 'Startseite - Regatten.net ' . $_CLASS['name'];
 	$sp['activenav'] = 1;
 	
 	// Title

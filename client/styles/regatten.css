@@ -43,6 +43,35 @@
 	text-align: right;
 }
 
+/*** NORMAL LIST ***/
+.normal-list > div {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #dee2e6;
+	cursor: pointer;
+}
+
+.normal-list > div:last-child {
+	border: 0;
+	padding-bottom: 0;
+}
+
+.normal-list div {
+	white-space: nowrap;
+}
+
+.normal-list > div > div > div {
+	display: inline-block;
+}
+
+.normal-list > div > div:nth-child(2) > div:nth-child(1) {
+	width: 50%;
+}
+.normal-list > div > div:nth-child(2) > div:nth-child(2) {
+	width: 50%;
+	text-align: right;
+}
+
 /*** BLINKING ICONS ***/
 @keyframes fa-blink {
 	0% { opacity: 1; }
