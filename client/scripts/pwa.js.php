@@ -2,6 +2,7 @@
 	
 	header('Content-Type: text/javascript');
 	
+	require_once(__DIR__ . '/../../server/version.php');
 	require_once(__DIR__ . '/../../server/config.php');
 	
 ?>
