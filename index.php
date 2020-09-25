@@ -24,7 +24,7 @@
 		exit;
 	}
 	
-	if (!file_exists(__DIR__ . '/content/' . $site . '.php')) {
+	if (!file_exists(__DIR__ . '/server/content/' . $site . '.php')) {
 		$site = '404';
 	}
 	
@@ -40,7 +40,7 @@
 	$tpl = new Templates(__DIR__ . '/server/templates/');
 	$scripts = new Scripts(__DIR__ . '/server/scripts/');
 	
-	require_once(__DIR__ . '/content/' . $site . '.php');
+	require_once(__DIR__ . '/server/content/' . $site . '.php');
 	
 	require_once(__DIR__ . '/server/buildpage.php');
 	

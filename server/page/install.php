@@ -1,6 +1,6 @@
 <!-- Install Prompt for Android -->
 <div id="menu-install-pwa-android" class="menu menu-box-bottom menu-box-detached rounded-l"
-	data-menu-height="350" 
+	data-menu-height="400" 
 	data-menu-effect="menu-parallax">
 	<div class="boxed-text-l mt-4">
 		<img class="rounded-l mb-3" src="<?php echo SERVER_ADDR; ?>/client/app/icons/icon-128x128.png" alt="img" width="90">
@@ -17,7 +17,7 @@
 <!-- Install instructions for iOS -->
 <div id="menu-install-pwa-ios" 
 	class="menu menu-box-bottom menu-box-detached rounded-l"
-	data-menu-height="320" 
+	data-menu-height="360" 
 	data-menu-effect="menu-parallax">
 	<div class="boxed-text-xl mt-4">
 		<img class="rounded-l mb-3" src="<?php echo SERVER_ADDR; ?>/client/app/icons/icon-128x128.png" alt="img" width="90">
@@ -26,7 +26,6 @@
 			Installiere Regatten.net auf Deinem Startbildschirm und greife wie bei einer normalen App darauf zu. &Ouml;ffne Dein Safari-Men&uuml; und tippe auf &quot;Zum Startbildschirm hinzuf&uuml;gen&quot;.
 		</p>
 		<div class="clear"></div>
-		<a href="#" class="pwa-dismiss close-menu color-highlight uppercase ultrabold opacity-80 top-25">Vielleicht sp&auml;ter</a>
-		<i class="fa-ios-arrow fa fa-caret-down font-40"></i>
+		<a href="#" class="pwa-dismiss close-menu color-highlight text-uppercase font-900 opacity-60 font-10">Vielleicht sp&auml;ter</a>
 	</div>
 </div>

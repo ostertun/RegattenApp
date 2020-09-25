@@ -22,8 +22,7 @@
 	
 	// Planning next
 	$content = '<h2>Deine n&auml;chsten Regatten</h2>';
-	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th><th>Segler</th></tr>';
-	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-yournext', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<div id="div-yournext" class="regattas-list mb-0"></div>';
 	$content .= '<p id="p-yournext" class="mt-3">';
 	$content .= 'Du f&auml;hrst in den n&auml;chsten vier Wochen auf keine Regatta!';
 	$content .= '</p>';
@@ -41,8 +40,7 @@
 	
 	// Next
 	$content = '<h2>N&auml;chste Regatten</h2>';
-	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Informationen</th><th>RLF</th></tr>';
-	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-next', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<div id="div-next" class="regattas-list mb-0"></div>';
 	$content .= '<p id="p-next" class="mt-3">';
 	$content .= 'Keine Regatten in den n&auml;chsten zwei Wochen!';
 	$content .= '</p>';
@@ -51,8 +49,7 @@
 	
 	// Last
 	$content = '<h2>Letzte Regatten</h2>';
-	$thead = '<tr><th>Datum</th><th>Regatta</th><th>Ergebnisse</th><th>RLF</th></tr>';
-	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-last', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<div id="div-last" class="regattas-list mb-0"></div>';
 	$content .= '<p id="p-last" class="mt-3">';
 	$content .= 'Keine Regatten in den letzten zwei Wochen!';
 	$content .= '</p>';
@@ -71,6 +68,18 @@
 	
 	$sp['output'] .= $tpl->load('card', [$content]);
 	
-	$sp['scripts'] = $scripts->load('index');
+	// Regattas Menu
+	$items = '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
+	$items .= $tpl->load('menu/item-icon', ['Saison-Planungen', '', 'html-id' => 'menu-item-plannings', 'icon' => 'fa-calendar-alt']);
+	$items .= $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Bericht', '', 'html-id' => 'menu-item-bericht', 'icon' => 'fa-book']);
+	$items .= $tpl->load('menu/item-icon', ['Informationen', '', 'html-id' => 'menu-item-info', 'icon' => 'fa-info']);
+	$items .= $tpl->load('menu/item-icon-badge', ['Meldung', '', 'html-id' => 'menu-item-meldung', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-meldung']);
+	$items .= $tpl->load('menu/item-icon', ['offizielle Ergebnisse', '', 'html-id' => 'menu-item-oresults', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 320]);
+	
+	$sp['scripts'] .= $scripts->load('onRegattaClicked');
+	$sp['scripts'] .= $scripts->load('index');
 	
 ?>

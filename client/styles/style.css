@@ -1220,6 +1220,7 @@ img.mx-auto {
   bottom: 0px;
   z-index: 99999;
   transition: all 150ms ease;
+  background-color: #0f1117;
 }
 
 #preloader .spinner-border {

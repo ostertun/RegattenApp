@@ -31,7 +31,7 @@ var firstCall = true;
 var rows = [];
 var today;
 
-async function drawTable () {
+async function drawList () {
 	window.setTimeout(function () {
 		var list = '';
 		rows.forEach(function (entry) {
@@ -45,141 +45,13 @@ async function drawTable () {
 	}, 0);
 }
 
-async function regattaClicked(id) {
-	var regatta = await dbGetData('regattas', id);
-	
-	$('#menu-regatta').find('.menu-title').find('p').text(regatta.name);
-	
-	// Results
-	var results = await dbGetDataIndex('results', 'regatta', regatta['id']);
-	if (results.length > 0) {
-		$('#menu-item-results').show();
-		$('#menu-item-results').attr('href', LINK_PRE + 'result/' + regatta['id']);
-	} else {
-		$('#menu-item-results').hide();
-	}
-	
-	// Bericht
-	if (regatta['bericht'] != '') {
-		$('#menu-item-bericht').show();
-		$('#menu-item-bericht').attr('href', regatta['bericht']);
-		$('#menu-item-bericht').attr('target', '_blank');
-	} else {
-		$('#menu-item-bericht').hide();
-	}
-	
-	// Info
-	if (regatta['info'] != '') {
-		$('#menu-item-info').show();
-		$('#menu-item-info').attr('href', regatta['info']);
-		$('#menu-item-info').attr('target', '_blank');
-	} else {
-		$('#menu-item-info').hide();
-	}
-	
-	// Meldung
-	var dateTo = parseDate(regatta['date']);
-	dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
-	if ((regatta['meldung'] != '') && (dateTo >= today)) {
-		$('#menu-item-meldung').show();
-		$('#menu-item-meldung').attr('href', regatta['meldung']);
-		$('#menu-item-meldung').attr('target', '_blank');
-		var planning = null;
-		if (isLoggedIn()) {
-			var plannings = await dbGetDataIndex('plannings', 'regatta', regatta['id']);
-			for (id in plannings) {
-				if (plannings[id]['user'] == USER_ID) {
-					planning = plannings[id];
-					break;
-				}
-			}
-		}
-		if ((planning != null) && (planning['gemeldet'] == '1')) {
-			$('#badge-regatta-meldung').text('schon gemeldet');
-			$('#badge-regatta-meldung').addClass('bg-green2-dark').removeClass('bg-highlight bg-red2-dark bg-yellow2-dark');
-		} else if (regatta['meldungOffen'] == '0') {
-			$('#badge-regatta-meldung').text('geschlossen');
-			$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
-		} else if (regatta['meldungSchluss'] != null) {
-			var early = false;
-			var ms;
-			if (regatta['meldungEarly'] != null) {
-				ms = parseDate(regatta['meldungEarly']);
-				if (ms >= today) {
-					early = true;
-				}
-			}
-			if (!early)
-				ms = parseDate(regatta['meldungSchluss']);
-			if (ms >= today) {
-				var diff = Math.round((ms - today) / 86400000);
-				var red = (diff < 7);
-				var txt;
-				if (diff <= 14) {
-					txt = diff + ' Tag' + (diff != 1 ? 'e' : '');
-				} else if (diff < 35) {
-					diff = Math.floor(diff / 7);
-					txt = diff + ' Woche' + (diff != 1 ? 'n' : '');
-				} else {
-					diff = Math.floor(diff / 30.5);
-					txt = diff + ' Monat' + (diff != 1 ? 'e' : '');
-				}
-				if (early)
-					txt += ' vergünstigt';
-				$('#badge-regatta-meldung').text(txt);
-				if (red) {
-					if (early) {
-						$('#badge-regatta-meldung').addClass('bg-yellow2-dark').removeClass('bg-highlight bg-green2-dark bg-red2-dark');
-					} else {
-						$('#badge-regatta-meldung').addClass('bg-red2-dark').removeClass('bg-highlight bg-green2-dark bg-yellow2-dark');
-					}
-				} else {
-					$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
-				}
-			} else {
-				$('#badge-regatta-meldung').text('Meldeschluss abgelaufen');
-				$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
-			}
-		} else {
-			$('#badge-regatta-meldung').text('');
-		}
-	} else {
-		$('#menu-item-meldung').hide();
-	}
-	
-	// off. results
-	if (regatta['oresults'] != '') {
-		$('#menu-item-oresults').show();
-		$('#menu-item-oresults').attr('href', regatta['oresults']);
-		$('#menu-item-oresults').attr('target', '_blank');
-	} else {
-		$('#menu-item-oresults').hide();
-	}
-	
-	// club website
-	var clubwebsite = '';
-	if (regatta['club'] != null) {
-		clubwebsite = (await dbGetData('clubs', regatta['club'])).website;
-	}
-	if (clubwebsite != '') {
-		$('#menu-item-clubwebsite').show();
-		$('#menu-item-clubwebsite').attr('href', clubwebsite);
-		$('#menu-item-clubwebsite').attr('target', '_blank');
-	} else {
-		$('#menu-item-clubwebsite').hide();
-	}
-	
-	$('#menu-regatta').showMenu();
-	$('#menu-regatta').scrollTop(0);
-}
-
 var siteScript = async function() {
 	if (firstCall) {
 		firstCall = false;
 		initYear();
 		$('#select-year').change(selectChange);
 		$('#button-show').click(siteScript);
-		$('#input-search').on('input', drawTable);
+		$('#input-search').on('input', drawList);
 	}
 	
 	today = getToday();
@@ -244,7 +116,7 @@ var siteScript = async function() {
 				heute = true;
 			}
 			
-			row.content += '<div onclick="regattaClicked(' + entry['id'] + ');">';
+			row.content += '<div onclick="onRegattaClicked(' + entry['id'] + ');">';
 			
 			// ZEILE 1
 			// Name
@@ -268,17 +140,17 @@ var siteScript = async function() {
 				icons.push('<i class="fas fa-info"></i>');
 			if ((entry['meldung'] != '') && (dateTo >= today) && (entry['meldungOffen'] == '1')) {
 				var color = '';
-				if (entry['meldungSchluss'] != null) {
-					var planning = null;
-					if (isLoggedIn()) {
-						var plannings = await dbGetDataIndex('plannings', 'regatta', entry['id']);
-						for (id in plannings) {
-							if (plannings[id]['user'] == USER_ID) {
-								planning = plannings[id];
-								break;
-							}
+				var planning = null;
+				if (isLoggedIn()) {
+					var plannings = await dbGetDataIndex('plannings', 'regatta', entry['id']);
+					for (id in plannings) {
+						if (plannings[id]['user'] == USER_ID) {
+							planning = plannings[id];
+							break;
 						}
 					}
+				}
+				if (entry['meldungSchluss'] != null) {
 					if ((planning == null) || (planning['gemeldet'] == '0')) {
 						var ms = 0;
 						if (entry['meldungEarly'] != null) {
@@ -290,11 +162,11 @@ var siteScript = async function() {
 						var diff = Math.round((ms - today) / 86400000);
 						if ((ms >= today) && (diff < 7)) {
 							color = ' color-red2-dark';
-							if (planning != null) {
-								color += ' fa-blink';
-							}
 						}
 					}
+				}
+				if ((planning != null) && (planning['gemeldet'] == '0')) {
+					color += ' fa-blink';
 				}
 				icons.push('<i class="fas fa-file-signature' + color + '"></i>');
 			}
@@ -335,7 +207,7 @@ var siteScript = async function() {
 			rows.push(null);
 		}
 		
-		drawTable();
+		drawList();
 		
 	} else {
 		$('#p-count').html('Keine Regatten gefunden!');

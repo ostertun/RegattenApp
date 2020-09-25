@@ -1,9 +1,12 @@
+var today;
+
 var siteScript = async function() {
+	today = getToday();
+	
 	if (isLoggedIn()) {
 		$('#card-notloggedin').hide();
 		
 		var user = await dbGetData('users', localStorage.getItem('auth_user'));
-		var today = getToday();
 		
 		// Favorites
 		var watched = [];
@@ -59,100 +62,88 @@ var siteScript = async function() {
 			return 0;
 		});
 		if (plannings.length > 0) {
-			tbody = '';
+			list = '';
 			for (i in plannings) {
 				var planning = plannings[i];
 				var regatta = planning.regatta;
+				
+				if (regatta['length'] < 1) continue;
+				
 				var club = null;
 				if (regatta['club'] != null)
 					club = await dbGetData('clubs', regatta['club']);
 				var dateFrom = regatta['dateFrom'];
 				var dateTo = regatta['dateTo'];
-				// TODO: get steuermann and crew
-				var steuermann = '<i>noch unklar</i>';
-				if (planning.steuermann !== null) {
-					steuermann = (await dbGetData('sailors', planning.steuermann)).name;
-				}
-				var crew = [];
-				if (planning.crew !== '') {
-					crewIds = planning.crew.split(',');
-					for (j in crewIds) {
-						crew.push((await dbGetData('sailors', crewIds[j])).name);
-					}
-				}
 				
 				// output
-				tbody += '<tr>';
 				
-				tbody += '<td><span style="white-space:nowrap;">' + formatDate("j. M 'y", dateFrom) + '<br>' + formatDate("j. M 'y", dateTo) + '</span></td>';
+				list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
 				
-				var content = '';
-				if (club != null) {
-					content = club['kurz'];
-					if (club['website'] != '') {
-						content = '<a href="' + club['website'] + '" target="_blank">' + content + '</a>';
-					}
-				}
-				tbody += '<td>' + content + '<br>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</td>';
+				// ZEILE 1
+				// Name
+				list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
 				
-				var buf = '';
-				if (regatta['info'] != '') {
-					buf += '<a target="_blank" href="' + regatta['info'] + '">Informationen</a>';
-				}
-				if ((regatta['meldung'] != '') && (dateTo >= today)) {
-					buf += '<br><a target="_blank" href="' + regatta['meldung'] + '">Meldung</a>';
-					
-					if ((planning != null) && (planning['gemeldet'] == "1")) {
-						buf += ' <i>(du hast gemeldet)</i>';
-					} else if (regatta['meldungOffen'] == "0") {
-						buf += ' <i>(geschlossen)</i>';
-					} else if (regatta['meldungSchluss'] != null) {
-						early = false;
-						if (regatta['meldungEarly'] != null) {
-							ms = parseDate(regatta['meldungEarly']);
-							if (ms >= today) {
-								early = true;
+				// ZEILE 2
+				list += '<div>';
+				
+				// Number
+				list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
+				
+				// Club
+				list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
+				
+				// Special
+				list += '<div>' + regatta['special'] + '</div>';
+				
+				// Icons
+				var icons = [];
+				if (regatta['info'] != '')
+					icons.push('<i class="fas fa-info"></i>');
+				if ((regatta['meldung'] != '') && (dateTo >= today) && (regatta['meldungOffen'] == '1')) {
+					var color = '';
+					if (regatta['meldungSchluss'] != null) {
+						if (planning['gemeldet'] == '0') {
+							var ms = 0;
+							if (regatta['meldungEarly'] != null) {
+								ms = parseDate(regatta['meldungEarly']);
+							}
+							if (ms < today) {
+								ms = parseDate(regatta['meldungSchluss']);
+							}
+							var diff = Math.round((ms - today) / 86400000);
+							if ((ms >= today) && (diff < 7)) {
+								color = ' color-red2-dark';
 							}
 						}
-						if (!early)
-							ms = parseDate(regatta['meldungSchluss']);
-						if (ms >= today) {
-							diff = Math.round((ms - today) / 86400000);
-							red = (diff < 7);
-							if (diff <= 14) {
-								txt = 'noch ' + diff + ' Tag' + (diff != 1 ? 'e' : '');
-							} else if (diff < 35) {
-								diff = Math.floor(diff / 7);
-								txt = 'noch ' + diff + ' Woche' + (diff != 1 ? 'n' : '');
-							} else {
-								diff = Math.floor(diff / 30.5);
-								txt = 'noch ' + diff + ' Monat' + (diff != 1 ? 'e' : '');
-							}
-							buf += ' <i>' + (red ? '<b><font style="color:red;">(' : '(') + txt + (early ? ' verg&uuml;nstigt' : '') + (red ? ')</font></b>' : ')') + '</i>';
-						} else {
-							buf += ' <i>(Meldeschluss abgelaufen)</i>';
-						}
 					}
+					if (planning['gemeldet'] == '0') {
+						color += ' fa-blink';
+					}
+					icons.push('<i class="fas fa-file-signature' + color + '"></i>');
 				}
-				if (regatta['bericht'] != '') {
-					buf += '<br><a target="_blank" href="' + regatta['bericht'] + '">Bericht</a>';
+				if (regatta['canceled'] == '1') {
+					icons.push('<i class="fas fa-times color-red2-dark"></i>');
 				}
-				if (regatta['oresults'] != '') {
-					buf += '<br><a target="_blank" href="' + regatta['oresults'] + '">off. Ergebnisse</a>';
-				}
-				tbody += '<td>' + buf + '</td>';
+				list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
 				
-				tbody += '<td><span style="white-space:nowrap;">' + parseFloat(regatta['rlf']).toFixed(2) + '</span></td>';
+				list += '</div>';
 				
-				tbody += '<td>' + steuermann + '<br>' + crew.join('<br>') + '</td>';
+				// ZEILE 3
+				list += '<div>';
 				
-				tbody += '</tr>';
+				// Date
+				list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
+				
+				// RLF
+				list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
+				
+				list += '</div></div>';
 			}
-			$('#table-yournext').find('tbody').html(tbody);
+			$('#div-yournext').html(list);
 			$('#p-yournext').hide();
-			$('#table_yournext').show();
+			$('#div-yournext').show();
 		} else {
-			$('#table-yournext').hide();
+			$('#div-yournext').hide();
 			$('#p-yournext').show();
 		}
 		$('#card-yournext').show();
@@ -169,9 +160,12 @@ var siteScript = async function() {
 	maxDate.setDate(maxDate.getDate() + 14);
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
 	if (regattas.length > 0) {
-		tbody = '';
+		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
+			
+			if (regatta['length'] < 1) continue;
+			
 			var club = null;
 			if (regatta['club'] != null)
 				club = await dbGetData('clubs', regatta['club']);
@@ -180,27 +174,33 @@ var siteScript = async function() {
 			var dateTo = regatta['dateTo'];
 			
 			// output
-			tbody += '<tr>';
+			list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
 			
-			tbody += '<td><span style="white-space:nowrap;">' + formatDate("j. M 'y", dateFrom) + '<br>' + formatDate("j. M 'y", dateTo) + '</span></td>';
+			// ZEILE 1
+			// Name
+			list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
 			
-			var content = '';
-			if (club != null) {
-				content = club['kurz'];
-				if (club['website'] != '') {
-					content = '<a href="' + club['website'] + '" target="_blank">' + content + '</a>';
-				}
-			}
-			tbody += '<td>' + content + '<br>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</td>';
+			// ZEILE 2
+			list += '<div>';
 			
-			var buf = '';
-			if (regatta['info'] != '') {
-				buf += '<a target="_blank" href="' + regatta['info'] + '">Informationen</a>';
-			}
-			if ((regatta['meldung'] != '') && (dateTo >= today)) {
-				buf += '<br><a target="_blank" href="' + regatta['meldung'] + '">Meldung</a>';
+			// Number
+			list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
+			
+			// Club
+			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
+			
+			// Special
+			list += '<div>' + regatta['special'] + '</div>';
+			
+			// Icons
+			var icons = [];
+			if (regatta['info'] != '')
+				icons.push('<i class="fas fa-info"></i>');
+			if ((regatta['meldung'] != '') && (dateTo >= today) && (regatta['meldungOffen'] == '1')) {
+				var color = '';
 				var planning = null;
 				if (isLoggedIn()) {
+					var plannings = await dbGetDataIndex('plannings', 'regatta', regatta['id']);
 					for (id in plannings) {
 						if (plannings[id]['user'] == USER_ID) {
 							planning = plannings[id];
@@ -208,56 +208,49 @@ var siteScript = async function() {
 						}
 					}
 				}
-				
-				if ((planning != null) && (planning['gemeldet'] == "1")) {
-					buf += ' <i>(du hast gemeldet)</i>';
-				} else if (regatta['meldungOffen'] == "0") {
-					buf += ' <i>(geschlossen)</i>';
-				} else if (regatta['meldungSchluss'] != null) {
-					early = false;
-					if (regatta['meldungEarly'] != null) {
-						ms = parseDate(regatta['meldungEarly']);
-						if (ms >= today) {
-							early = true;
+				if (regatta['meldungSchluss'] != null) {
+					if ((planning == null) || (planning['gemeldet'] == '0')) {
+						var ms = 0;
+						if (regatta['meldungEarly'] != null) {
+							ms = parseDate(regatta['meldungEarly']);
 						}
-					}
-					if (!early)
-						ms = parseDate(regatta['meldungSchluss']);
-					if (ms >= today) {
-						diff = Math.round((ms - today) / 86400000);
-						red = (diff < 7);
-						if (diff <= 14) {
-							txt = 'noch ' + diff + ' Tag' + (diff != 1 ? 'e' : '');
-						} else if (diff < 35) {
-							diff = Math.floor(diff / 7);
-							txt = 'noch ' + diff + ' Woche' + (diff != 1 ? 'n' : '');
-						} else {
-							diff = Math.floor(diff / 30.5);
-							txt = 'noch ' + diff + ' Monat' + (diff != 1 ? 'e' : '');
+						if (ms < today) {
+							ms = parseDate(regatta['meldungSchluss']);
 						}
-						buf += ' <i>' + (red ? '<b><font style="color:red;">(' : '(') + txt + (early ? ' verg&uuml;nstigt' : '') + (red ? ')</font></b>' : ')') + '</i>';
-					} else {
-						buf += ' <i>(Meldeschluss abgelaufen)</i>';
+						var diff = Math.round((ms - today) / 86400000);
+						if ((ms >= today) && (diff < 7)) {
+							color = ' color-red2-dark';
+						}
 					}
 				}
+				if ((planning != null) && (planning['gemeldet'] == '0')) {
+					color += ' fa-blink';
+				}
+				icons.push('<i class="fas fa-file-signature' + color + '"></i>');
 			}
-			if (regatta['bericht'] != '') {
-				buf += '<br><a target="_blank" href="' + regatta['bericht'] + '">Bericht</a>';
+			if (regatta['canceled'] == '1') {
+				icons.push('<i class="fas fa-times color-red2-dark"></i>');
 			}
-			if (regatta['oresults'] != '') {
-				buf += '<br><a target="_blank" href="' + regatta['oresults'] + '">off. Ergebnisse</a>';
-			}
-			tbody += '<td>' + buf + '</td>';
+			list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
 			
-			tbody += '<td><span style="white-space:nowrap;">' + parseFloat(regatta['rlf']).toFixed(2) + '</span></td>';
+			list += '</div>';
 			
-			tbody += '</tr>';
+			// ZEILE 3
+			list += '<div>';
+			
+			// Date
+			list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
+			
+			// RLF
+			list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
+			
+			list += '</div></div>';
 		}
-		$('#table-next').find('tbody').html(tbody);
+		$('#div-next').html(list);
 		$('#p-next').hide();
-		$('#table-next').show();
+		$('#div-next').show();
 	} else {
-		$('#table-next').hide();
+		$('#div-next').hide();
 		$('#p-next').show();
 	}
 	
@@ -274,9 +267,12 @@ var siteScript = async function() {
 		regattaResults[entry['id']] = (results.length > 0);
 	}
 	if (regattas.length > 0) {
-		tbody = '';
+		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
+			
+			if (regatta['length'] < 1) continue;
+			
 			var club = null;
 			if (regatta['club'] != null)
 				club = await dbGetData('clubs', regatta['club']);
@@ -284,40 +280,56 @@ var siteScript = async function() {
 			var dateTo = regatta['dateTo'];
 			
 			// output
-			tbody += '<tr>';
 			
-			tbody += '<td><span style="white-space:nowrap;">' + formatDate("j. M 'y", dateFrom) + '<br>' + formatDate("j. M 'y", dateTo) + '</span></td>';
+			list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
 			
-			var content = '';
-			if (club != null) {
-				content = club['kurz'];
-				if (club['website'] != '') {
-					content = '<a href="' + club['website'] + '" target="_blank">' + content + '</a>';
-				}
+			// ZEILE 1
+			// Name
+			list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
+			
+			// ZEILE 2
+			list += '<div>';
+			
+			// Number
+			list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
+			
+			// Club
+			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
+			
+			// Special
+			list += '<div>' + regatta['special'] + '</div>';
+			
+			// Icons
+			var icons = [];
+			if (regatta['info'] != '')
+				icons.push('<i class="fas fa-info"></i>');
+			if (regatta['bericht'] != '')
+				icons.push('<i class="fas fa-book"></i>');
+			if (regatta['canceled'] == '1') {
+				icons.push('<i class="fas fa-times color-red2-dark"></i>');
+			} else if (regattaResults[regatta['id']]) {
+				icons.push('<i class="fas fa-poll"></i>');
 			}
-			tbody += '<td>' + content + '<br>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</td>';
+			list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
 			
-			var buf = '';
-			if (regatta['canceled'] == "1") {
-				buf = '<i style="color:red;" class="fas fa-times"></i> Ausgefallen</td>';
-			} else {
-				if (regattaResults[regatta['id']]) {
-					buf = '<i style="color:green;" class="fas fa-check"></i> <a href="' + LINK_PRE + 'result?regatta=' + regatta['id'] + '">Ergebnisse</a></td>';
-				} else {
-					buf = 'Nicht verf&uuml;gbar';
-				}
-			}
-			tbody += '<td>' + buf + '</td>';
+			list += '</div>';
 			
-			tbody += '<td><span style="white-space:nowrap;">' + parseFloat(regatta['rlf']).toFixed(2) + '</span></td>';
+			// ZEILE 3
+			list += '<div>';
 			
-			tbody += '</tr>';
+			// Date
+			list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
+			
+			// RLF
+			list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
+			
+			list += '</div></div>';
 		}
-		$('#table-last').find('tbody').html(tbody);
+		$('#div-last').html(list);
 		$('#p-last').hide();
-		$('#table-last').show();
+		$('#div-last').show();
 	} else {
-		$('#table-last').hide();
+		$('#div-last').hide();
 		$('#p-last').show();
 	}
 	

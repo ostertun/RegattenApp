@@ -6,7 +6,6 @@ RewriteBase /projects/RegattenApp/
 
 ### RESTRICTED FOLDER
 RewriteRule ^(.*)server(.*)$ / [R=301,L,NC]
-RewriteRule ^(.*)content(.*)$ / [R=301,L,NC]
 
 
 

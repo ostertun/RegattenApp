@@ -42,7 +42,7 @@ workbox.precaching.precacheAndRoute([
 	}
 	$hash = md5(getDirHash(__DIR__));
 	
-	$path = __DIR__ . '/content/';
+	$path = __DIR__ . '/server/content/';
 	$dir = opendir($path);
 	while ($file = readdir($dir)) {
 		if (($file == '.') or ($file == '..') or (pathinfo($file, PATHINFO_EXTENSION) != 'php')) continue;
