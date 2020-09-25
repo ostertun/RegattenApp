@@ -1,5 +1,7 @@
 <?php
 	
+	define('PWA_VERSION', '1.2');
+	
 	require_once(__DIR__ . '/server/config.php');
 	require_once(__DIR__ . '/server/log.php');
 	require_once(__DIR__ . '/server/templates.php');

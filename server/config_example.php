@@ -9,8 +9,6 @@
 	define('SERVER_ADDR', 'https://' . $_SERVER['SERVER_NAME'] . SERVER_PATH);  // path to root directory
 	define('LOGGING_APIKEY', 'xxx');  // Apikey for Logging API -> get from ostertun.net/logging
 	
-	define('PWA_VERSION', '1.0');
-	
 	// PUSH SERVER
 	define('PUSH_AUTH', 'xxxxxxx'); // auth string for push.ostertun.net
 	define('PUSH_SERVERKEY', 'xxxxxxx'); // server key from push.ostertun.net
