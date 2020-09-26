@@ -106,7 +106,7 @@ async function onRankingClicked(id) {
 	$('#menu-rank').scrollTop(0);
 }
 
-function selectChange(callSiteScript = true) {
+async function selectChange(callSiteScript = true) {
 	var type = $('#select-type').val();
 	var year = parseInt($('#select-year').val());
 	if (type == "user") {
@@ -137,11 +137,35 @@ function selectChange(callSiteScript = true) {
 				jugend = jugstrict = true;
 				break;
 			case 'idjm':
-				// TODO
-				from = (year - 1) + '-12-01';
-				to = year + '-11-30';
-				jugend = true;
-				jugstrict = false;
+				var beginn = null;
+				var regattas = await dbGetData('regattas');
+				regattas.sort(function(a,b){ return b.date.localeCompare(a.date); });
+				for (var r in regattas) {
+					var regatta = regattas[r];
+					var date = parseDate(regatta.date);
+					if ((date < parseDate('01.01.' + year)) || (date > parseDate('31.12.' + year))) {
+						continue;
+					}
+					if (regatta.name.indexOf(YOUTH_GERMAN_NAME) >= 0) {
+						beginn = ((regatta.meldungSchluss != null) ? parseDate(regatta.meldungSchluss) : date);
+						break;
+					}
+				}
+				if (beginn != null) {
+					from = new Date(beginn);
+					from.setFullYear(from.getFullYear() - 1);
+					from.setDate(from.getDate() - 13);
+					from = formatDate('Y-m-d', from);
+					to = new Date(beginn);
+					to.setDate(to.getDate() - 14);
+					to = formatDate('Y-m-d', to);
+					jugend = true;
+					jugstrict = false;
+				} else {
+					$('#div-rank').html('Keine ' + YOUTH_GERMAN_NAME + ' gefunden!');
+					$('#input-search').parent().hide();
+					return;
+				}
 				break;
 		}
 		
