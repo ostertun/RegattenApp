@@ -31,10 +31,9 @@
 	$sp['output'] .= $tpl->load('pagination', ['html-id' => 'pagination']);
 	
 	// Menu
-	// TODO: add entries for follow, jump2rank,  jump2club and more?
 	$items = $tpl->load('menu/item-icon', ['', '#', 'html-id' => 'menu-item-year', 'icon' => 'fa-edit']);
-	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
-	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-sailor', 'title' => 'Segler-Details', 'height' => 320]);
+	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe', 'css-class' => 'border-0']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-sailor', 'title' => 'Segler-Details', 'height' => 200]);
 	
 	$sp['scripts'] .= $scripts->load('pagination', ['pageChange', 'page', 'pageCount', 'pagination']);
 	$sp['scripts'] .= $scripts->load('sailors');

@@ -20,9 +20,8 @@
 	$sp['output'] .= $tpl->load('pagination', ['html-id' => 'pagination']);
 	
 	// Menu
-	// TODO: more entries ?
-	$items = $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
-	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-club', 'title' => 'Vereins-Details', 'height' => 320]);
+	$items = $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe', 'css-class' => 'border-0']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-club', 'title' => 'Vereins-Details', 'height' => 160]);
 	
 	$sp['scripts'] .= $scripts->load('pagination', ['pageChange', 'page', 'pageCount', 'pagination']);
 	$sp['scripts'] .= $scripts->load('clubs');

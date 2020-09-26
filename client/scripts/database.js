@@ -440,6 +440,7 @@ async function runPageScript() {
 			updateSyncStatusTimer = window.setInterval(updateSyncStatus, 10000);
 		} else {
 //			syncStatus.innerHTML = 'Keine Offline-Nutzung möglich.';
+			$('#i-sync').parent().hide();
 			updateSyncStatusTimer = null;
 		}
 //		syncStatus.style.display = 'block';
