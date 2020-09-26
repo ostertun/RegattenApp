@@ -31,7 +31,7 @@
 	$sp['output'] .= $tpl->load('pagination', ['html-id' => 'pagination']);
 	
 	// Menu
-	// TODO: add entries for jump2rank jump2club
+	// TODO: add entries for follow, jump2rank,  jump2club and more?
 	$items = $tpl->load('menu/item-icon', ['', '#', 'html-id' => 'menu-item-year', 'icon' => 'fa-edit']);
 	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
 	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-sailor', 'title' => 'Segler-Details', 'height' => 320]);

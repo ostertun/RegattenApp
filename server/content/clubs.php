@@ -20,7 +20,7 @@
 	$sp['output'] .= $tpl->load('pagination', ['html-id' => 'pagination']);
 	
 	// Menu
-	// TODO: add entries for jump2rank jump2club
+	// TODO: more entries ?
 	$items = $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
 	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-club', 'title' => 'Vereins-Details', 'height' => 320]);
 	
