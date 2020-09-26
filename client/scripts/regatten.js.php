@@ -9,6 +9,8 @@
 const QUERY_URL = '<?php echo SERVER_ADDR; ?>/api/';
 const BOATCLASS = '<?php echo BOATCLASS; ?>';
 const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
+const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';
+const YOUTH_GERMAN_NAME = '<?php echo $_CLASS['youth-german-name']; ?>';
 
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 

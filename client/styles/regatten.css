@@ -43,6 +43,107 @@
 	text-align: right;
 }
 
+/*** RANKING LIST ***/
+.ranking-list > div {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #dee2e6;
+	cursor: pointer;
+}
+
+.ranking-list > div:last-child {
+	border: 0;
+	padding-bottom: 0;
+}
+
+.ranking-list div {
+	white-space: nowrap;
+}
+
+.ranking-list > div > div > div {
+	display: inline-block;
+}
+
+.ranking-list > div > div:nth-child(1) > div:nth-child(1) {
+	width: 25%;
+}
+.ranking-list > div > div:nth-child(1) > div:nth-child(2) {
+	width: 50%;
+	text-align: right;
+}
+.ranking-list > div > div:nth-child(1) > div:nth-child(3) {
+	width: 25%;
+	text-align: right;
+}
+
+.ranking-list > div > div:nth-child(2) > div:nth-child(1) {
+	width: 75%;
+}
+.ranking-list > div > div:nth-child(2) > div:nth-child(2) {
+	width: 25%;
+	text-align: right;
+}
+
+/*** RANKING DETAIL LIST ***/
+.ranking-detail-list > div {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #dee2e6;
+	cursor: pointer;
+}
+
+.ranking-detail-list > div:last-child {
+	border: 0;
+	padding-bottom: 0;
+}
+
+.ranking-detail-list div {
+	white-space: nowrap;
+}
+
+.ranking-detail-list > div > div > div {
+	display: inline-block;
+}
+
+.ranking-detail-list > div > div:nth-child(2) > div:nth-child(1) {
+	width: 50%;
+}
+.ranking-detail-list > div > div:nth-child(2) > div:nth-child(2) {
+	width: 25%;
+	text-align: right;
+}
+.ranking-detail-list > div > div:nth-child(2) > div:nth-child(3) {
+	width: 25%;
+	text-align: right;
+}
+
+.ranking-detail-list > div > div:nth-child(3) {
+	border-bottom: 1px dashed #dee2e6;
+}
+.ranking-detail-list > div > div:nth-child(3) > div:nth-child(1) {
+	width: 50%;
+}
+.ranking-detail-list > div > div:nth-child(3) > div:nth-child(2) {
+	width: 50%;
+	text-align: right;
+}
+
+.ranking-detail-list > div > div:nth-child(4) > div:nth-child(1) {
+	width: 50%;
+}
+.ranking-detail-list > div > div:nth-child(4) > div:nth-child(2) {
+	width: 50%;
+	text-align: right;
+}
+
+.ranking-detail-list > div > div:nth-child(n+5) > div:nth-child(1) {
+	width: 75%;
+}
+.ranking-detail-list > div > div:nth-child(n+5) > div:nth-child(2) {
+	width: 25%;
+	text-align: right;
+}
+
 /*** NORMAL LIST ***/
 .normal-list > div {
 	padding-top: 1rem;

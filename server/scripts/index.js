@@ -19,14 +19,23 @@ var siteScript = async function() {
 		if (watched.length > 0) {
 			var year = (new Date()).getFullYear();
 			$('#th-ranking').html('Rangliste ' + year);
-			// TODO: get ranking
+			var ranking = (await dbGetRanking(parseDate('01.12.' + (year - 1)), parseDate('30.11.' + year), false, false))[0];
 			tbody = '';
 			for (i in watched) {
 				sailor = watched[i];
 				tbody += '<tr><td>' + sailor.name + '</td><td>';
-				// TODO: check if ranking and output
-				//tbody += '<i>nicht in der Rangliste</i>';
-				tbody += '<i>Ranglisten werden aktuell noch nicht unterst&uuml;tzt</i>';
+				var rank = null;
+				for (r in ranking) {
+					if (ranking[r].id == sailor.id) {
+						rank = ranking[r].rank;
+						break;
+					}
+				}
+				if (rank == null) {
+					tbody += '<i>nicht in der Rangliste</i>';
+				} else {
+					tbody += '<b>' + rank + '.</b> Platz';
+				}
 				tbody += '</td></tr>';
 			}
 			$('#table-favorites').find('tbody').html(tbody);

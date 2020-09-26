@@ -256,6 +256,147 @@ function dbGetResultCalculated(regatta) {
 	});
 }
 
+function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
+	return new Promise(async function(resolve) {
+		var rankNoResults = [];
+		
+		var sailors = await dbGetData('sailors');
+		var regattas = await dbGetRegattasRange(minDate, maxDate);
+		
+		var sailorIds = {};
+		for (s in sailors) {
+			sailorIds[sailors[s].id] = s;
+		}
+		
+		for (var i in sailors) {
+			sailors[i].regattas = {};
+			sailors[i].tmp_rlp = [];
+		}
+		
+		for (var i in regattas) {
+			var regatta = regattas[i];
+			
+			// regatta has to be min. 2 days to be ranking regatta
+			if (regatta.length < 2) continue;
+			
+			var results = await dbGetDataIndex('results', 'regatta', regatta.id);
+			if (results.length <= 0) {
+				if (regatta.dateTo <= getToday()) {
+					if (regatta.canceled == '0') {
+						rankNoResults.push(regatta);
+					}
+				}
+				continue;
+			}
+			
+			// in one race there must be at least 10 boats started
+			var ok = false;
+			for (var j = 1; j <= regatta.races; j ++) {
+				var temp = 0;
+				for (var r in results) {
+					if ((results[r]['race' + j] != 'DNC') && (results[r]['race' + j] != 'DNS')) {
+						temp ++;
+					}
+				}
+				if (temp >= 10) {
+					ok = true;
+					break;
+				}
+			}
+			if (!ok) continue;
+			
+			var fb = regatta.finishedBoats;
+			
+			// calc m
+			var m;
+			if (regatta.m > 0) {
+				m = regatta.m;
+			} else if (regatta.races <= 4) {
+				m = regatta.races;
+			} else {
+				if ((regatta.length > 2) && (regatta.races >= 6)) {
+					m = 5;
+				} else {
+					m = 4;
+				}
+			}
+			
+			// add regatta to each sailor
+			for (var r in results) {
+				var result = results[r];
+				
+				if (result.rlp == 0) continue;
+				
+				// check if crew is youth
+				// TODO: not used
+				
+				sailors[sailorIds[result.steuermann]].regattas[regatta.id] = {
+					regatta: regatta.id,
+					boat: result.boat,
+					crew: result.crew,
+					place: result.place,
+					fb: fb,
+					rlp: result.rlp,
+					used: 0,
+					m: m
+				};
+				for (var j = 0; j < m; j ++) {
+					sailors[sailorIds[result.steuermann]].tmp_rlp.push([regatta.id, result.rlp]);
+				}
+			}
+		}
+		
+		// remove not german or not youth sailors
+		for (var i = sailors.length - 1; i >= 0; i --) {
+			if (sailors[i].german == '0') {
+				sailors.splice(i, 1);
+			} else if (jugend) {
+				if (((sailors[i].year != null) && (sailors[i].year < (formatDate('Y', maxDate) - YOUTH_AGE))) ||
+					((sailors[i].year == null) && (jugstrict))) {
+						sailors.splice(i, 1);
+				}
+			}
+		}
+		
+		for (var i = sailors.length - 1; i >= 0; i --) {
+			// sort rlps desc
+			sailors[i].tmp_rlp.sort(function (a,b) {
+				return b[1] - a[1];
+			});
+			
+			// calc mean rlp
+			var sum = 0;
+			var cnt = 0;
+			for (var t in sailors[i].tmp_rlp) {
+				var r = sailors[i].tmp_rlp[t];
+				sum += parseFloat(r[1]);
+				sailors[i].regattas[r[0]].used ++;
+				cnt ++;
+				if (cnt >= 9) break;
+			}
+			delete sailors[i].tmp_rlp;
+			if (cnt > 0) {
+				var rlp = sum / cnt;
+				sailors[i].rlp = rlp;
+				sailors[i].m = cnt;
+			} else {
+				sailors.splice(i, 1);
+			}
+		}
+		
+		sailors.sort(function (a,b) {
+			if (a.m != b.m) return b.m - a.m;
+			return b.rlp - a.rlp;
+		});
+		
+		for (var i = 0; i < sailors.length; i ++) {
+			sailors[i].rank = (i + 1);
+		}
+		
+		resolve([sailors, rankNoResults]);
+	});
+}
+
 async function updateSyncStatus() { // TODO
 //	var syncStatus = document.getElementById('syncstatus');
 //	var lastSync = await dbGetData('update_times', 'last_sync');
