@@ -1,19 +1,31 @@
 <?php
 	
-	// TODO: Create site
+	$sp['title'] = 'Saison-Planung - Regatten.net ' . $_CLASS['name'];
+	$sp['backbutton'] = 'regattas';
+	$sp['activenav'] = 2;
 	
-	$sp['title'] = 'Seite noch nicht unterstuuml;tzt - Regatten.net ' . $_CLASS['name'];
-	$sp['backbutton'] = true;
+	// Title, Inputs
+	$content = '<h1 id="h1-title"></h1>';
+	$content .= '<p id="p-title"></p>';
 	
-	$content = $tpl->load('error', ['404', 'Seite existiert noch nicht']);
-	$content .= '<p>';
-	$content .= 'Die gesuchte Seite ist leider noch nicht verf&uuml;gbar.<br>';
-	$content .= 'Wir arbeiten daran, sie schnellstm&ouml;glich zur Verf&uuml;gung zu stellen.<br>';
-	$content .= 'Wie w&auml;re es mit der Homepage?';
+	$sp['output'] .= $tpl->load('card', [$content]);
+	
+	// Plannings
+	$content = '<p id="p-info" class="mb-0"></p>';
+	$thead = '<tr><th>Benutzer</th><th>Steuermann/-frau</th><th>Crew</th></tr>';
+	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-plannings', 'css-class' => 'mb-0 text-nowrap']);
+	
+	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-plannings']);
+	
+	// Info
+	$content = '<p>Du planst, hier hinzufahren, aber stehst nicht auf dieser Liste?<br>';
+	$content .= 'Das kannst Du &auml;ndern! ';
+	$content .= '<font class="show-loggedin">Erstelle einfach <a href="' . LINK_PRE . 'planning">hier</a> Deine eigene Saison-Planung.</font>';
+	$content .= '<font class="show-notloggedin"><a href="#" data-menu="menu-login">Melde Dich an</a> oder <a href="#" data-menu="menu-signup">registriere Dich kostenlos</a> und erstelle Deine eigene Saison-Planung.</font>';
 	$content .= '</p>';
-	$content .= $tpl->load('button', ['Zur Startseite', LINK_PRE . 'index', 'css-class' => 'mb-3']);
-	$content .= $tpl->load('button', ['Kontakt', LINK_PRE . 'contact']);
 	
-	$sp['output'] = $tpl->load('card', [$content, 'css-class' => 'text-center pt-3']);
+	$sp['output'] .= $tpl->load('card', [$content]);
+	
+	$sp['scripts'] .= $scripts->load('regatta_plan');
 	
 ?>

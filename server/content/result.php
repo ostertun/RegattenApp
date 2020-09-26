@@ -2,6 +2,7 @@
 	
 	$sp['title'] = 'Ergebnisse - Regatten.net ' . $_CLASS['name'];
 	$sp['backbutton'] = true;
+	$sp['activenav'] = 2;
 	
 	// Title, Inputs
 	$content = '<h1 id="h1-title"></h1>';
