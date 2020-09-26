@@ -35,6 +35,11 @@
 	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe', 'css-class' => 'border-0']);
 	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-sailor', 'title' => 'Segler-Details', 'height' => 200]);
 	
+	$items = '<p class="mb-2 mt-1" style="line-height: 1.5em;">Bitte trage hier den Jahrgang ein:</p>';
+	$items .= $tpl->load('input', ['html-id' => 'input-edityear', 'placeholder' => 'Jahrgang', 'type' => 'number']);
+	$items .= $tpl->load('button', ['Speichern', '#', 'html-id' => 'button-edityear']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-edityear', 'height' => 240]);
+	
 	$sp['scripts'] .= $scripts->load('pagination', ['pageChange', 'page', 'pageCount', 'pagination']);
 	$sp['scripts'] .= $scripts->load('sailors');
 	

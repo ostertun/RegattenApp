@@ -35,6 +35,11 @@
 	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe', 'css-class' => 'border-0']);
 	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-boat', 'title' => 'Boots-Details', 'height' => 200]);
 	
+	$items = '<p class="mb-2 mt-1" style="line-height: 1.5em;">Bitte trage hier den Bootsnamen ein:</p>';
+	$items .= $tpl->load('input', ['html-id' => 'input-editboatname', 'placeholder' => 'Bootsname', 'type' => 'text']);
+	$items .= $tpl->load('button', ['Speichern', '#', 'html-id' => 'button-editboatname']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-editboatname', 'height' => 240]);
+	
 	$sp['scripts'] .= $scripts->load('pagination', ['pageChange', 'page', 'pageCount', 'pagination']);
 	$sp['scripts'] .= $scripts->load('boats');
 	

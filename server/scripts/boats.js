@@ -5,18 +5,64 @@ var page = 1;
 var pageCount = 0;
 const showCount = 25;
 
+async function onEditBoatnameClick() {
+	var id = $('#button-editboatname').attr('data-boat-id');
+	var name = $('#input-editboatname').val();
+	if (name != '') {
+		showLoader();
+		$.ajax({
+			url: QUERY_URL + 'add_boatname',
+			method: 'POST',
+			data: {
+				boat: id,
+				name: name
+			},
+			error: function (xhr, status, error) {
+				if (xhr.status == 0) {
+					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Bootsnamen zu bearbeiten');
+				} else {
+					console.log('EditBoatname: unbekannter Fehler', status, error);
+					console.log(xhr);
+					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
+				}
+				hideLoader();
+			},
+			success: function (data, status, xhr) {
+				if ('status' in data) {
+					if (data.status == 'added') {
+						toastOk('Bootsnamen erfolgreich hinzugefügt');
+						sync();
+					} else {
+						toastInfo('Wir prüfen Deine Anfrage und korrigieren den Bootsnamen schnellstmöglich', 5000);
+					}
+				} else {
+					toastOk('Erfolgreich');
+				}
+				hideLoader();
+			}
+		});
+	}
+	$('#menu-editboatname').hideMenu();
+}
+
 async function onListClicked(id) {
 	var boat = await dbGetData('boats', id);
 	
 	$('#menu-boat').find('.menu-title').find('p').text(boat.sailnumber);
 	
 	// Edit Boatname
-	// TODO: create menu for edit boatname
+	$('#button-editboatname').attr('data-boat-id', boat.id);
+	$('#menu-editboatname').find('.menu-title').find('p').text(boat.sailnumber);
 	if (boat['name'] == '') {
 		$('#menu-item-boatname').find('span').text('Bootsnamen hinzufügen');
+		$('#menu-editboatname').find('.menu-title').find('h1').text('Bootsnamen hinzufügen');
+		$('#input-editboatname').val('');
 	} else {
 		$('#menu-item-boatname').find('span').text('Bootsnamen bearbeiten');
+		$('#menu-editboatname').find('.menu-title').find('h1').text('Bootsnamen bearbeiten');
+		$('#input-editboatname').val(boat.name);
 	}
+	$('#input-editboatname').trigger('focusin').trigger('focusout');
 	
 	// club website
 	var clubwebsite = '';
@@ -86,6 +132,8 @@ var siteScript = async function() {
 		firstCall = false;
 		initPagination();
 		$('#input-search').on('input', reSearch);
+		$('#menu-item-boatname').click(function(){ $('#menu-boat').hideMenu(); $('#menu-editboatname').showMenu(); });
+		$('#button-editboatname').click(onEditBoatnameClick);
 	}
 	
 	var results = await dbGetData('boats');

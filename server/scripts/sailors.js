@@ -5,18 +5,64 @@ var page = 1;
 var pageCount = 0;
 const showCount = 25;
 
+async function onEditYearClick() {
+	var id = $('#button-edityear').attr('data-sailor-id');
+	var year = $('#input-edityear').val();
+	if (year != '') {
+		showLoader();
+		$.ajax({
+			url: QUERY_URL + 'add_year',
+			method: 'POST',
+			data: {
+				sailor: id,
+				year: year
+			},
+			error: function (xhr, status, error) {
+				if (xhr.status == 0) {
+					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Jahrgang zu bearbeiten');
+				} else {
+					console.log('EditYear: unbekannter Fehler', status, error);
+					console.log(xhr);
+					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
+				}
+				hideLoader();
+			},
+			success: function (data, status, xhr) {
+				if ('status' in data) {
+					if (data.status == 'added') {
+						toastOk('Jahrgang erfolgreich hinzugefügt');
+						sync();
+					} else {
+						toastInfo('Wir prüfen Deine Anfrage und korrigieren den Jahrgang schnellstmöglich', 5000);
+					}
+				} else {
+					toastOk('Erfolgreich');
+				}
+				hideLoader();
+			}
+		});
+	}
+	$('#menu-edityear').hideMenu();
+}
+
 async function onListClicked(id) {
 	var sailor = await dbGetData('sailors', id);
 	
 	$('#menu-sailor').find('.menu-title').find('p').text(sailor.name);
 	
 	// Edit Year
-	// TODO: create menu for edit year
+	$('#button-edityear').attr('data-sailor-id', sailor.id);
+	$('#menu-edityear').find('.menu-title').find('p').text(sailor.name);
 	if (sailor['year'] == null) {
 		$('#menu-item-year').find('span').text('Jahrgang hinzufügen');
+		$('#menu-edityear').find('.menu-title').find('h1').text('Jahrgang hinzufügen');
+		$('#input-edityear').val('');
 	} else {
 		$('#menu-item-year').find('span').text('Jahrgang bearbeiten');
+		$('#menu-edityear').find('.menu-title').find('h1').text('Jahrgang bearbeiten');
+		$('#input-edityear').val(sailor.year);
 	}
+	$('#input-edityear').trigger('focusin').trigger('focusout');
 	
 	// club website
 	var clubwebsite = '';
@@ -86,6 +132,8 @@ var siteScript = async function() {
 		firstCall = false;
 		initPagination();
 		$('#input-search').on('input', reSearch);
+		$('#menu-item-year').click(function(){ $('#menu-sailor').hideMenu(); $('#menu-edityear').showMenu(); });
+		$('#button-edityear').click(onEditYearClick);
 	}
 	
 	var results = await dbGetData('sailors');

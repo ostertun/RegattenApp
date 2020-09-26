@@ -4254,7 +4254,7 @@ code {
 }
 
 /*Contact Form*/
-.menu input[type="text"] {
+/*.menu input[type="text"] {
   height: 35px;
   line-height: 35px;
 }
@@ -4271,7 +4271,7 @@ code {
 .menu .form-field label {
   font-size: 12px;
   margin-bottom: -10px;
-}
+}*/
 
 .form-field span {
   position: absolute;
