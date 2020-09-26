@@ -69,7 +69,7 @@ var updateBadge = function (name, val) {
 var makeToast = function (color, icon, text, time) {
 	var id = 'snackbar' + randomId();
 	var delay = (time > 0 ? 'data-delay="' + time + '" data-autohide="true"' : 'data-autohide="false"');
-	var div = '<div id="' + id + '" class="snackbar-toast ' + color + '" ' + delay + '>';
+	var div = '<div id="' + id + '" class="snackbar-toast pt-3 pb-3 ' + color + '" ' + delay + ' style="line-height: 2em;">';
 	div += '<i class="fa ' + icon + ' mr-3"></i>' + text + '</div>';
 	$('#page').append(div);
 	$('#' + id).toast('show');
