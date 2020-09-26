@@ -26,7 +26,7 @@ $(document).ready(function(){
 
         
     //Creating Cookie System for PWA Hide
-    function createCookie(e, t, n) {if (n) {var o = new Date;o.setTime(o.getTime() + 48 * n * 60 * 60 * 1e3);var r = "; expires=" + o.toGMTString()} else var r = "";document.cookie = e + "=" + t + r + "; path=/"}
+    function createCookie(e, t, n) {if (n) {var o = new Date;o.setTime(o.getTime() + n * 365 * 24 * 3600 * 1e3);var r = "; expires=" + o.toGMTString()} else var r = "";document.cookie = e + "=" + t + r + "; path=/"}
     function readCookie(e) {for (var t = e + "=", n = document.cookie.split(";"), o = 0; o < n.length; o++) {for (var r = n[o];" " == r.charAt(0);) r = r.substring(1, r.length);if (0 == r.indexOf(t)) return r.substring(t.length, r.length)}return null}
     function eraseCookie(e) {createCookie(e, "", -1)}
     

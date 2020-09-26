@@ -187,6 +187,25 @@
 	</div>
 </div>
 
+<div id="menu-welcome" class="menu menu-box-bottom" style="height: 70vh">
+	<div class="content bottom-0">
+		<h1 class="text-center font-900">Willkommen</h1>
+		<p>
+			Diese App befindet sich zur Zeit noch in der Entwicklungs-Phase.<br>
+			Dadurch kann es vorkommen, dass bestimmte Funktionen noch nicht richtig funktionieren.<br>
+			Wenn Dir etwas ungew&ouml;hnlich vorkommt, melde uns dies bitte. Klicke dazu auf das Entwickler-Icon oben links und w&auml;hle &quot;Problem melden&quot;.<br>
+			Vielen Dank f&uuml;r Deine Unterst&uuml;tzung!
+		</p>
+		<p>
+			Mehr Informationen findest <a href="https://info.ostertun.net/regatten/beta">hier</a>.
+		</p>
+		<p>
+			Mit der Nutzung dieser App erkl&auml;rst Du Dich au&szlig;erdem damit einverstanden, dass wir Cookies einsetzen.
+		</p>
+		<a id="menu-welcome-a-okay" class="btn btn-m mt-2 mb-3 btn-full bg-green2-dark text-uppercase font-900" href="#">Alles klar</a>
+	</div>
+</div>
+
 <div id="menu-update">
 	<div class="content bottom-0">
 		<p class="text-center mt-5"><i class="fa fa-sync-alt fa-7x color-highlight fa-spin"></i></p>

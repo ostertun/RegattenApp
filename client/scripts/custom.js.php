@@ -188,7 +188,7 @@ $(document).ready(function(){
 		});
 
 		//Generating Cookies
-		function createCookie(e, t, n) {if (n) {var o = new Date;o.setTime(o.getTime() + 48 * n * 60 * 3600 * 1e3);var r = "; expires=" + o.toGMTString()} else var r = "";document.cookie = e + "=" + t + r + "; path=/"}
+		function createCookie(e, t, n) {if (n) {var o = new Date;o.setTime(o.getTime() + n * 365 * 24 * 3600 * 1e3);var r = "; expires=" + o.toGMTString()} else var r = "";document.cookie = e + "=" + t + r + "; path=/"}
 		function readCookie(e) {for (var t = e + "=", n = document.cookie.split(";"), o = 0; o < n.length; o++) {for (var r = n[o];" " == r.charAt(0);) r = r.substring(1, r.length);if (0 == r.indexOf(t)) return r.substring(t.length, r.length)}return null}
 		function eraseCookie(e) {createCookie(e, "", -1)}
 
@@ -215,8 +215,8 @@ $(document).ready(function(){
 			}
 			},150);
 		})
-		if (readCookie('sticky_dark_mode')) {darkSwitch.prop('checked', true); $('body').removeClass('detect-theme').removeClass('theme-light').addClass('theme-dark');}
-		if (readCookie('sticky_light_mode')) {darkSwitch.prop('checked', false); $('body').removeClass('detect-theme').removeClass('theme-dark').addClass('theme-light');}
+		if (readCookie('sticky_dark_mode')) {createCookie('sticky_dark_mode', true, 1); darkSwitch.prop('checked', true); $('body').removeClass('detect-theme').removeClass('theme-light').addClass('theme-dark');}
+		if (readCookie('sticky_light_mode')) {createCookie('sticky_light_mode', true, 1); darkSwitch.prop('checked', false); $('body').removeClass('detect-theme').removeClass('theme-dark').addClass('theme-light');}
 
 
 		//Auto Dark Mode
@@ -1330,6 +1330,20 @@ $(document).ready(function(){
 			socialColorArray.forEach(function (socialColorValue) {$('.generated-styles').append('.bg-'+socialColorValue[0]+'{background-color:'+socialColorValue[1]+'!important; color:#FFFFFF;} .color-'+socialColorValue[0]+'{color:'+socialColorValue[1]+'!important;}')});
 			colorsArray.forEach(function (gradientBodyValue) {$('.generated-styles').append('.body-'+gradientBodyValue[0]+'{background-image: linear-gradient(to bottom, '+gradientBodyValue[1]+' 0, '+gradientBodyValue[3]+' 100%)}')});	
 		}
+		
+		function welcomeOk() {
+			createCookie('sticky_welcome_banner', true, 1);
+			$('#menu-welcome').hideMenu();
+			$('.menu-hider').removeClass('no-click');
+		}
+		function showWelcome() {
+			if (!readCookie('sticky_welcome_banner')) {
+				$('.menu-hider').addClass('no-click');
+				$('#menu-welcome').showMenu();
+			}
+		}
+		$('#menu-welcome-a-okay').click(welcomeOk);
+		showWelcome();
 		
 		initRegatten();
 		
