@@ -197,7 +197,7 @@
 			Vielen Dank f&uuml;r Deine Unterst&uuml;tzung!
 		</p>
 		<p>
-			Mehr Informationen findest <a href="https://info.ostertun.net/regatten/beta">hier</a>.
+			Mehr Informationen findest Du <a href="https://info.ostertun.net/regatten/beta">hier</a>.
 		</p>
 		<p>
 			Mit der Nutzung dieser App erkl&auml;rst Du Dich au&szlig;erdem damit einverstanden, dass wir Cookies einsetzen.

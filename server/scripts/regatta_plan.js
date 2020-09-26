@@ -39,7 +39,7 @@ var siteScript = async function() {
 			tbody += '<td>' + (await dbGetData('users', planning.user)).username + '</td>';
 			
 			if (planning.steuermann != null) {
-				tbody += '<td>' + (await dbGetData('users', planning.user)).username + '</td>';
+				tbody += '<td>' + (await dbGetData('sailors', planning.steuermann)).name + '</td>';
 			} else {
 				tbody += '<td>(noch unklar)</td>';
 			}
