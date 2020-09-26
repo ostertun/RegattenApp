@@ -389,7 +389,7 @@
 			if ($response === false) done(DONE_DATABASE);
 			$keys = array_keys($response);
 			if (isset($_REQUEST['changed-after'])) {
-				$response = db_get_data($mysqli, DB_TABLE_USERS, 'id,username,email,' . $followFields, '`changed` > "' . mysqli_real_escape_string($mysqli, date('Y-m-d H:i:s', $_REQUEST['changed-after'])) . '"' . ($whereString ? (' AND ' . $whereString) : ''));
+				$response = db_get_data($mysqli, DB_TABLE_USERS, 'id,username,email' . $followFields, '`changed` > "' . mysqli_real_escape_string($mysqli, date('Y-m-d H:i:s', $_REQUEST['changed-after'])) . '"' . ($whereString ? (' AND ' . $whereString) : ''));
 				if ($response === false) done(DONE_DATABASE);
 			}
 			$response = array_map(function ($entry) {

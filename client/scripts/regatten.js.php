@@ -200,26 +200,6 @@ var logout = function() {
 	});
 }
 
-function resetDb() {
-	$('#menu-developer').hideMenu();
-	if (canUseLocalDB) {
-		showLoader();
-		var request = window.indexedDB.deleteDatabase('regatten_app_db_' + BOATCLASS);
-		request.onerror = function (event) {
-			console.log("Cannot open DB: " + event.target.errorCode);
-			toastError('There was an error deleting your database.<br>Please report this to <a href="mailto:dev@regatten.net">dev@regatten.net</a>');
-			hideLoader();
-		};
-		request.onsuccess = function (event) {
-			console.log('DB deleted');
-			toastInfo('The database was deleted. Please reload or close this tab.<br>At the next visit, a new database will be created.');
-			hideLoader();
-		}
-	} else {
-		toastWarn('Your device does not support storing data locally. All data is fetched directly from our server.<br>As a result, you can not reset your database.');
-	}
-}
-
 function resetCache() {
 	$('#menu-developer').hideMenu();
 	navigator.serviceWorker.getRegistrations().then(function (registrations) {

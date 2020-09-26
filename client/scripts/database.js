@@ -1,4 +1,4 @@
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -283,6 +283,14 @@ async function updateSyncStatus() { // TODO
 
 async function runPageScript() {
 	if (canUseLocalDB) {
+		var osUpdateTimes = db.transaction('update_times').objectStore('update_times');
+		osUpdateTimes.get('loggedin').onsuccess = function (event) {
+			var status = event.target.result.status;
+			if (status != isLoggedIn()) {
+				resetDb();
+				location.reload();
+			}
+		};
 		updateSyncStatus();
 	}
 	if (typeof updateSyncStatusTimer == 'undefined') { // TODO
@@ -341,7 +349,7 @@ function sync() {
 				
 				// CLUBS
 				if (localTimes['clubs'] < serverTimes['clubs']) {
-					getJSON(QUERY_URL + 'get_clubs?changer-after=' + localTimes['clubs'], function (code, data) {
+					getJSON(QUERY_URL + 'get_clubs?changed-after=' + localTimes['clubs'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('clubs', 'readwrite').objectStore('clubs');
 							console.log(data);
@@ -373,7 +381,7 @@ function sync() {
 				
 				// BOATS
 				if (localTimes['boats'] < serverTimes['boats']) {
-					getJSON(QUERY_URL + 'get_boats?changer-after=' + localTimes['boats'], function (code, data) {
+					getJSON(QUERY_URL + 'get_boats?changed-after=' + localTimes['boats'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('boats', 'readwrite').objectStore('boats');
 							console.log(data);
@@ -405,7 +413,7 @@ function sync() {
 				
 				// SAILORS
 				if (localTimes['sailors'] < serverTimes['sailors']) {
-					getJSON(QUERY_URL + 'get_sailors?changer-after=' + localTimes['sailors'], function (code, data) {
+					getJSON(QUERY_URL + 'get_sailors?changed-after=' + localTimes['sailors'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('sailors', 'readwrite').objectStore('sailors');
 							console.log(data);
@@ -437,7 +445,7 @@ function sync() {
 				
 				// REGATTAS
 				if (localTimes['regattas'] < serverTimes['regattas']) {
-					getJSON(QUERY_URL + 'get_regattas?changer-after=' + localTimes['regattas'], function (code, data) {
+					getJSON(QUERY_URL + 'get_regattas?changed-after=' + localTimes['regattas'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('regattas', 'readwrite').objectStore('regattas');
 							console.log(data);
@@ -485,7 +493,7 @@ function sync() {
 				
 				// RESULTS
 				if (localTimes['results'] < serverTimes['results']) {
-					getJSON(QUERY_URL + 'get_results?changer-after=' + localTimes['results'], function (code, data) {
+					getJSON(QUERY_URL + 'get_results?changed-after=' + localTimes['results'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('results', 'readwrite').objectStore('results');
 							console.log(data);
@@ -517,7 +525,7 @@ function sync() {
 				
 				// PLANNINGS
 				if (localTimes['plannings'] < serverTimes['plannings']) {
-					getJSON(QUERY_URL + 'get_plannings?changer-after=' + localTimes['plannings'], function (code, data) {
+					getJSON(QUERY_URL + 'get_plannings?changed-after=' + localTimes['plannings'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('plannings', 'readwrite').objectStore('plannings');
 							console.log(data);
@@ -550,7 +558,7 @@ function sync() {
 				if (isLoggedIn()) {
 					// TRIM_BOATS
 					if (localTimes['trim_boats'] < serverTimes['trim_boats']) {
-						getJSON(QUERY_URL + 'get_trim_boats?changer-after=' + localTimes['trim_boats'], function (code, data) {
+						getJSON(QUERY_URL + 'get_trim_boats?changed-after=' + localTimes['trim_boats'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_boats', 'readwrite').objectStore('trim_boats');
 								console.log(data);
@@ -582,7 +590,7 @@ function sync() {
 					
 					// TRIM_USERS
 					if (localTimes['trim_users'] < serverTimes['trim_users']) {
-						getJSON(QUERY_URL + 'get_trim_users?changer-after=' + localTimes['trim_users'], function (code, data) {
+						getJSON(QUERY_URL + 'get_trim_users?changed-after=' + localTimes['trim_users'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_users', 'readwrite').objectStore('trim_users');
 								console.log(data);
@@ -614,7 +622,7 @@ function sync() {
 					
 					// TRIM_TRIMS
 					if (localTimes['trim_trims'] < serverTimes['trim_trims']) {
-						getJSON(QUERY_URL + 'get_trim_trims?changer-after=' + localTimes['trim_trims'], function (code, data) {
+						getJSON(QUERY_URL + 'get_trim_trims?changed-after=' + localTimes['trim_trims'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_trims', 'readwrite').objectStore('trim_trims');
 								console.log(data);
@@ -650,7 +658,7 @@ function sync() {
 				
 				// USERS
 				if (localTimes['users'] < serverTimes['users']) {
-					getJSON(QUERY_URL + 'get_users?changer-after=' + localTimes['users'], function (code, data) {
+					getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('users', 'readwrite').objectStore('users');
 							console.log(data);
@@ -732,6 +740,8 @@ function initDatabase() {
 				var lastSync = event.target.result.time;
 				if (lastSync > 0) {
 					runPageScript();
+				} else {
+					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
 				}
 			};
 			
@@ -795,10 +805,42 @@ function initDatabase() {
 				osUpdateTimes.put({ table: 'regattas', time: 0 });
 			}
 			
+			if ((oldVersion < 4) && (newVersion >= 4)) {
+				console.log('to version 4');
+				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
+				osUpdateTimes.add({ table: 'loggedin', status: isLoggedIn() });
+			}
+			
 			var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 			osUpdateTimes.put({ table: 'last_sync', time: 0 });
 		}
 	} else {
 		runPageScript();
+	}
+}
+
+function resetDb(silent = true) {
+	$('#menu-developer').hideMenu();
+	if (canUseLocalDB) {
+		showLoader();
+		var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+		osUpdateTimes.put({ table: 'last_sync', time: 0 });
+		osUpdateTimes.put({ table: 'clubs', time: 0 });
+		osUpdateTimes.put({ table: 'boats', time: 0 });
+		osUpdateTimes.put({ table: 'sailors', time: 0 });
+		osUpdateTimes.put({ table: 'regattas', time: 0 });
+		osUpdateTimes.put({ table: 'results', time: 0 });
+		osUpdateTimes.put({ table: 'plannings', time: 0 });
+		osUpdateTimes.put({ table: 'trim_boats', time: 0 });
+		osUpdateTimes.put({ table: 'trim_users', time: 0 });
+		osUpdateTimes.put({ table: 'trim_trims', time: 0 });
+		osUpdateTimes.put({ table: 'users', time: 0 });
+		console.log('DB update times reset');
+		if (!silent)
+			toastInfo('The database was reset. Please reload or close this tab.<br>At the next visit, a full sync will be performed.');
+		hideLoader();
+	} else {
+		if (!silent)
+			toastWarn('Your device does not support storing data locally. All data is fetched directly from our server.<br>As a result, you can not reset your database.');
 	}
 }

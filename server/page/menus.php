@@ -130,7 +130,7 @@
 </div>
 
 <div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="310">
-	<div class="menu-title"><h1>Entwickler-Optionen</h1><p class="color-highlight">&nbsp;</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
+	<div class="menu-title"><h1>Entwickler-Optionen</h1><p class="color-highlight">Version <?php echo PWA_VERSION; ?></p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
 		<div class="list-group list-custom-small">
@@ -139,7 +139,7 @@
 				<span>Infos zur BETA</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="javascript:resetDb();">
+			<a href="javascript:resetDb(false);">
 				<i class="fa font-14 fa-database rounded-s bg-highlight color-white"></i>
 				<span>Reset Database</span>
 				<i class="fa fa-angle-right"></i>
