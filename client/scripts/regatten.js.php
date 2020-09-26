@@ -6,7 +6,7 @@
 	
 ?>
 
-const QUERY_URL = '<?php echo SERVER_ADDR; ?>/api/';
+const QUERY_URL = '<?php echo QUERY_URL; ?>';
 const BOATCLASS = '<?php echo BOATCLASS; ?>';
 const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
 const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';

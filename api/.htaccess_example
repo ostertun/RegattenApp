@@ -1,8 +1,0 @@
-RewriteEngine on
-# root directory:
-RewriteBase /projects/RegattenApp/api/
-
-
-
-# Show site
-RewriteRule ^(.*)$ index.php?request=$1 [QSA]
