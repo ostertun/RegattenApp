@@ -1,4 +1,4 @@
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -397,6 +397,26 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 	});
 }
 
+function dbSettingsGet(key) {
+	return new Promise(function(resolve) {
+		if (canUseLocalDB) {
+			var request = db.transaction('settings').objectStore('settings').get(key);
+			request.onsuccess = function (event) {
+				resolve(typeof request.result != 'undefined' ? request.result.value : null);
+			}
+		} else {
+			resolve(null);
+		}
+	});
+}
+
+function dbSettingsSet(key, value) {
+	if (canUseLocalDB) {
+		var os = db.transaction('settings', 'readwrite').objectStore('settings');
+		os.put({ key: key, value: value});
+	}
+}
+
 async function updateSyncStatus() { // TODO
 //	var syncStatus = document.getElementById('syncstatus');
 //	var lastSync = await dbGetData('update_times', 'last_sync');
@@ -433,6 +453,12 @@ async function runPageScript() {
 			}
 		};
 		updateSyncStatus();
+		
+		if (isLoggedIn()) {
+			var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
+			plannings = plannings.map(function (e) { return e.regatta; });
+			dbSettingsSet('myregattas_' + BOATCLASS, plannings);
+		}
 	}
 	if (typeof updateSyncStatusTimer == 'undefined') { // TODO
 //		var syncStatus = document.getElementById('syncstatus');
@@ -878,6 +904,8 @@ function initDatabase() {
 			
 			canUseLocalDB = true;
 			
+			if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
+			
 			db.transaction('update_times').objectStore('update_times').get('last_sync').onsuccess = function (event) {
 				var lastSync = event.target.result.time;
 				if (lastSync > 0) {
@@ -951,6 +979,11 @@ function initDatabase() {
 				console.log('to version 4');
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'loggedin', status: isLoggedIn() });
+			}
+			
+			if ((oldVersion < 5) && (newVersion >= 5)) {
+				console.log('to version 5');
+				var osPushes = db.createObjectStore('settings', { keyPath: 'key' });
 			}
 			
 			var osUpdateTimes = upgradeTransaction.objectStore('update_times');

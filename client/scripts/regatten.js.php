@@ -295,28 +295,28 @@ function pushesUpdateServerSubscription(subscription, enabled) {
 	});
 }
 
-function initPushSettings() {
+async function initPushSettings() {
 	var items = [
-		['regatten_app_' + BOATCLASS + '_notify_channel_news', true],
-		['regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my', true],
-		['regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all', false],
-		['regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my', true],
-		['regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all', true],
-		['regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss', true]
+		['notify_channel_' + BOATCLASS + '_news', true],
+		['notify_channel_' + BOATCLASS + '_regatta_changed_my', true],
+		['notify_channel_' + BOATCLASS + '_regatta_changed_all', false],
+		['notify_channel_' + BOATCLASS + '_result_ready_my', true],
+		['notify_channel_' + BOATCLASS + '_result_ready_all', true],
+		['notify_channel_' + BOATCLASS + '_meldeschluss', true]
 	];
 	for (var i in items) {
 		var item = items[i];
-		if (localStorage.getItem(item[0]) === null) localStorage.setItem(item[0], item[1]);
+		if ((await dbSettingsGet(item[0])) == null) dbSettingsSet(item[0], item[1]);
 	}
 }
 
-function updatePushSwitches() {
-	$('#switch-pushes-news').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_news'));
-	$('#switch-pushes-regatta-changed-my').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my'));
-	$('#switch-pushes-regatta-changed-all').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all'));
-	$('#switch-pushes-result-ready-my').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my'));
-	$('#switch-pushes-result-ready-all').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all'));
-	$('#switch-pushes-meldeschluss').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss'));
+async function updatePushSwitches() {
+	$('#switch-pushes-news').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_news'));
+	$('#switch-pushes-regatta-changed-my').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_regatta_changed_my'));
+	$('#switch-pushes-regatta-changed-all').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_regatta_changed_all'));
+	$('#switch-pushes-result-ready-my').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_result_ready_my'));
+	$('#switch-pushes-result-ready-all').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_result_ready_all'));
+	$('#switch-pushes-meldeschluss').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_meldeschluss'));
 	
 	if ($('#switch-pushes').prop('checked')) {
 		$('#p-pushes-info').show();
@@ -337,12 +337,12 @@ function pushesSubscribeClicked() {
 }
 
 function pushesChannelClicked() {
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_news', $('#switch-pushes-news').prop('checked'));
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my', $('#switch-pushes-regatta-changed-my').prop('checked'));
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all', $('#switch-pushes-regatta-changed-all').prop('checked'));
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my', $('#switch-pushes-result-ready-my').prop('checked'));
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all', $('#switch-pushes-result-ready-all').prop('checked'));
-	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss', $('#switch-pushes-meldeschluss').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_news', $('#switch-pushes-news').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_regatta_changed_my', $('#switch-pushes-regatta-changed-my').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_regatta_changed_all', $('#switch-pushes-regatta-changed-all').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_result_ready_my', $('#switch-pushes-result-ready-my').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_result_ready_all', $('#switch-pushes-result-ready-all').prop('checked'));
+	dbSettingsSet('notify_channel_' + BOATCLASS + '_meldeschluss', $('#switch-pushes-meldeschluss').prop('checked'));
 }
 
 function pushesOpenMenu() {
@@ -398,16 +398,20 @@ var initRegatten = function() {
 	}
 	
 	// Pushes
-	initPushSettings();
 	$('#a-switch-pushes').click(pushesSubscribeClicked);
 	$('.a-switch-pushes-channel').click(pushesChannelClicked);
 }
 
 var onServiceWorkerLoaded = function() {
-	if (swRegistration !== null) {
+	if ((swRegistration !== null) && canUseLocalDB) {
 		pushesPossible = true;
 		updatePushBadge();
 	} else {
 		$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('NOT SUPPORTED');
 	}
+}
+
+var onDatabaseLoaded = function() {
+	onServiceWorkerLoaded();
+	initPushSettings();
 }
