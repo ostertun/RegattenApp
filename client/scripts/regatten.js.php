@@ -11,6 +11,7 @@ const BOATCLASS = '<?php echo BOATCLASS; ?>';
 const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
 const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';
 const YOUTH_GERMAN_NAME = '<?php echo $_CLASS['youth-german-name']; ?>';
+const PUSH_SERVER_KEY = '<?php echo PUSH_SERVER_KEY; ?>';
 
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 
@@ -219,6 +220,166 @@ function resetCache() {
 	toastInfo('The serviceWorker and the cache were deleted. A new serviceWorker will be generated on the next refresh.');
 }
 
+var pushesPossible = false;
+
+function urlB64ToUint8Array(base64String) {
+	const padding = '='.repeat((4 - base64String.length % 4) % 4);
+	const base64 = (base64String + padding)
+		.replace(/\-/g, '+')
+		.replace(/_/g, '/');
+	
+	const rawData = window.atob(base64);
+	const outputArray = new Uint8Array(rawData.length);
+	
+	for (let i = 0; i < rawData.length; ++i) {
+		outputArray[i] = rawData.charCodeAt(i);
+	}
+	return outputArray;
+}
+
+function pushesSubscribe() {
+	console.log('Subscribing');
+	const applicationServerKey = urlB64ToUint8Array(PUSH_SERVER_KEY);
+	swRegistration.pushManager.subscribe({
+		userVisibleOnly: true,
+		applicationServerKey: applicationServerKey
+	})
+	.then(function(subscription) {
+		pushesUpdateServerSubscription(subscription, true);
+		updatePushSwitches();
+		updatePushBadge();
+	})
+	.catch(function(err) {
+		console.log('Failed to subscribe the user: ', err);
+		toastError('Da ist leider etwas schief gelaufen. Bitte stelle sicher, dass Du mit dem Internet verbunden bist und versuche es erneut.', 5000);
+		pushesUnSubscribe(true);
+	});
+}
+
+function pushesUnSubscribe(silent = false) {
+	console.log('Unsubscribing');
+	swRegistration.pushManager.getSubscription()
+	.then(function(subscription) {
+		if (subscription) {
+			pushesUpdateServerSubscription(subscription, false);
+			subscription.unsubscribe();
+			$('#menu-pushes').hideMenu();
+			updatePushBadge();
+			hideLoader();
+		}
+	})
+	.catch(function(error) {
+		console.log('Error unsubscribing', error);
+		$('#menu-pushes').hideMenu();
+		if (!silent) toastError('Da ist leider etwas schief gelaufen. Bitte versuche es erneut oder wende Dich an unseren Support.', 5000);
+		updatePushBadge();
+		hideLoader();
+	});
+}
+
+function pushesUpdateServerSubscription(subscription, enabled) {
+	console.log('updateServer', enabled, subscription);
+	$.ajax({
+		url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
+		type: 'POST',
+		data: { subscription: JSON.stringify(subscription) },
+		success: function (data, textStatus, jqXHR) {
+			if (!enabled) {
+				toastOk('Du erhältst ab sofort keine Benachrichtigungen mehr von uns.');
+			}
+			hideLoader();
+		},
+		error: function (jqXHR, textStatus, errorThrown) {
+			throw 'Cannot update server subscription';
+		}
+	});
+}
+
+function initPushSettings() {
+	var items = [
+		['regatten_app_' + BOATCLASS + '_notify_channel_news', true],
+		['regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my', true],
+		['regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all', false],
+		['regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my', true],
+		['regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all', true],
+		['regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss', true]
+	];
+	for (var i in items) {
+		var item = items[i];
+		if (localStorage.getItem(item[0]) === null) localStorage.setItem(item[0], item[1]);
+	}
+}
+
+function updatePushSwitches() {
+	$('#switch-pushes-news').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_news'));
+	$('#switch-pushes-regatta-changed-my').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my'));
+	$('#switch-pushes-regatta-changed-all').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all'));
+	$('#switch-pushes-result-ready-my').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my'));
+	$('#switch-pushes-result-ready-all').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all'));
+	$('#switch-pushes-meldeschluss').prop('checked', 'true' == localStorage.getItem('regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss'));
+	
+	if ($('#switch-pushes').prop('checked')) {
+		$('#p-pushes-info').show();
+		$('.a-switch-pushes-channel').show();
+	} else {
+		$('#p-pushes-info').hide();
+		$('.a-switch-pushes-channel').hide();
+	}
+}
+
+function pushesSubscribeClicked() {
+	showLoader();
+	if ($('#switch-pushes').prop('checked')) {
+		pushesSubscribe();
+	} else {
+		pushesUnSubscribe();
+	}
+}
+
+function pushesChannelClicked() {
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_news', $('#switch-pushes-news').prop('checked'));
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_my', $('#switch-pushes-regatta-changed-my').prop('checked'));
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_regatta_changed_all', $('#switch-pushes-regatta-changed-all').prop('checked'));
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_my', $('#switch-pushes-result-ready-my').prop('checked'));
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_result_ready_all', $('#switch-pushes-result-ready-all').prop('checked'));
+	localStorage.setItem('regatten_app_' + BOATCLASS + '_notify_channel_meldeschluss', $('#switch-pushes-meldeschluss').prop('checked'));
+}
+
+function pushesOpenMenu() {
+	$('#menu-settings').hideMenu();
+	if (!pushesPossible) {
+		toastWarn('Dein Browser unterst&uuml;tzt leider keine Benachrichtigungen.', 5000);
+		return;
+	}
+	if (Notification.permission == 'denied') {
+		toastWarn('Benachrichtigungen werden von Deinem Browser blockiert.', 5000);
+		return;
+	}
+	
+	swRegistration.pushManager.getSubscription().then(function(subscription) {
+		var isSub = (subscription !== null);
+		$('#switch-pushes').prop('checked', isSub);
+		updatePushSwitches();
+		$('#menu-pushes').showMenu();
+	});
+}
+
+function updatePushBadge() {
+	if (!pushesPossible) return;
+	if (Notification.permission == 'denied') {
+		$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('BLOCKED');
+		return;
+	}
+	swRegistration.pushManager.getSubscription().then(function(subscription) {
+		var isSub = (subscription !== null);
+		if (isSub) {
+			$('#badge-pushes').removeClass('bg-red2-dark').addClass('bg-green2-dark').text('AN');
+		} else {
+			$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('AUS');
+		}
+	});
+}
+
 var initRegatten = function() {
 	showLoader();
 	
@@ -234,5 +395,19 @@ var initRegatten = function() {
 	} else {
 		$('.show-loggedin').hide();
 		$('.show-notloggedin').show();
+	}
+	
+	// Pushes
+	initPushSettings();
+	$('#a-switch-pushes').click(pushesSubscribeClicked);
+	$('.a-switch-pushes-channel').click(pushesChannelClicked);
+}
+
+var onServiceWorkerLoaded = function() {
+	if (swRegistration !== null) {
+		pushesPossible = true;
+		updatePushBadge();
+	} else {
+		$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('NOT SUPPORTED');
 	}
 }

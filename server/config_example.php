@@ -12,6 +12,9 @@
 	define('QUERY_URL', 'http://' . $_SERVER['SERVER_NAME'] . '/api/' . BOATCLASS . '/');  // url to api backend
 	define('LOGGING_APIKEY', 'xxx');  // Apikey for Logging API -> get from ostertun.net/logging
 	
+	// PUSH
+	define('PUSH_SERVER_KEY', '');
+	
 	// BOAT CLASS
 	$_CLASS = array(
 		'name' => 'Pirat',

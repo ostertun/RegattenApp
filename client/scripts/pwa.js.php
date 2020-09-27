@@ -7,9 +7,11 @@
 	
 ?>
 //Loading the Service Worker
+var swRegistration = null;
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('<?php echo SERVER_ADDR; ?>/service-worker.js.php');
+  window.addEventListener('load', async function() {
+    swRegistration = await navigator.serviceWorker.register('<?php echo SERVER_ADDR; ?>/service-worker.js.php');
+    if (typeof onServiceWorkerLoaded === 'function') onServiceWorkerLoaded();
   });
 }
 

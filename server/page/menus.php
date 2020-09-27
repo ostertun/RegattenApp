@@ -92,7 +92,7 @@
 	</div>
 </div>
 
-<div id="menu-settings" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="270">
+<div id="menu-settings" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="310">
 	<div class="menu-title"><h1>Einstellungen</h1><p class="color-highlight">&nbsp;</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
@@ -110,7 +110,7 @@
 				<span>Login</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" data-menu="menu-signup" class="show-notloggedin border-0">
+			<a href="#" data-menu="menu-signup" class="show-notloggedin">
 				<i class="fa font-14 fa-user-plus rounded-s bg-highlight color-white"></i>
 				<span>Registrieren</span>
 				<span class="badge bg-red2-dark color-white">FREE</span>
@@ -120,10 +120,87 @@
 				<span>Account</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" onclick="logout();" class="show-loggedin border-0">
+			<a href="#" onclick="logout();" class="show-loggedin">
 				<i class="fa font-14 fa-sign-out-alt rounded-s bg-highlight color-white"></i>
 				<span>Logout</span>
 				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="#" onclick="pushesOpenMenu()" class="border-0">
+				<i class="fa font-14 fa-bell rounded-s bg-highlight color-white"></i>
+				<span>Benachrichtigungen</span>
+				<span id="badge-pushes" class="badge color-white"></span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+		</div>
+	</div>
+</div>
+
+<div id="menu-pushes" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="500">
+	<div class="menu-title"><h1>Benachrichtigungen</h1><p class="color-highlight">Bleibe immer auf dem aktuellen Stand</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
+	<div class="divider divider-margins mb-n2"></div>
+	<div class="content">
+		<div class="list-group list-custom-small">
+			<a id="a-switch-pushes" href="#" data-trigger-switch="switch-pushes" class="pb-2">
+				<i class="fa font-14 fa-bell rounded-s bg-highlight color-white"></i>
+				<span>Benachrichtigungen aktivieren</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes">
+					<label class="custom-control-label" for="switch-pushes"></label>
+				</div>
+			</a>
+			<div class="divider"></div>
+			<p style="line-height: 1.5em;" id="p-pushes-info">
+				W&auml;hle hier, &uuml;ber was Du informiert werden m&ouml;chtest.<br>
+				(meine) bezieht sich auf die Regatten, die in Deiner Saison-Planung sind,<br>
+				(alle) informiert Dich &uuml;ber alle Regatten
+			</p>
+			<a href="#" data-trigger-switch="switch-pushes-news" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-newspaper rounded-s bg-highlight color-white"></i>
+				<span>Neuigkeiten</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-news">
+					<label class="custom-control-label" for="switch-pushes-news"></label>
+				</div>
+			</a>
+			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-my" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-calendar-check rounded-s bg-highlight color-white"></i>
+				<span>Regatta verschoben (meine)</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-regatta-changed-my">
+					<label class="custom-control-label" for="switch-pushes-regatta-changed-my"></label>
+				</div>
+			</a>
+			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-all" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-calendar-check rounded-s bg-highlight color-white"></i>
+				<span>Regatta verschoben (alle)</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-regatta-changed-all">
+					<label class="custom-control-label" for="switch-pushes-regatta-changed-all"></label>
+				</div>
+			</a>
+			<a href="#" data-trigger-switch="switch-pushes-result-ready-my" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-poll rounded-s bg-highlight color-white"></i>
+				<span>Ergebnisse verf&uuml;gbar (meine)</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-result-ready-my">
+					<label class="custom-control-label" for="switch-pushes-result-ready-my"></label>
+				</div>
+			</a>
+			<a href="#" data-trigger-switch="switch-pushes-result-ready-all" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-poll rounded-s bg-highlight color-white"></i>
+				<span>Ergebnisse verf&uuml;gbar (alle)</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-result-ready-all">
+					<label class="custom-control-label" for="switch-pushes-result-ready-all"></label>
+				</div>
+			</a>
+			<a href="#" data-trigger-switch="switch-pushes-meldeschluss" class="pb-2 a-switch-pushes-channel">
+				<i class="fa font-14 fa-file-signature rounded-s bg-highlight color-white"></i>
+				<span>Melde-Erinnerungen</span>
+				<div class="custom-control scale-switch ios-switch">
+					<input type="checkbox" class="ios-input" id="switch-pushes-meldeschluss">
+					<label class="custom-control-label" for="switch-pushes-meldeschluss"></label>
+				</div>
 			</a>
 		</div>
 	</div>
