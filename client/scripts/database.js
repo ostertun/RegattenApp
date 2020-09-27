@@ -1,4 +1,4 @@
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -491,7 +491,7 @@ function sync() {
 			localTimes[entry['table']] = entry['time'];
 		});
 		
-		syncInProgress = 10;
+		syncInProgress = 11;
 		var syncOkay = true;
 		console.log("Sync Start");
 		$('#i-sync').addClass('fa-spin');
@@ -824,6 +824,38 @@ function sync() {
 					syncInProgress -= 3;
 				}
 				
+				// NEWS
+				if (localTimes['news'] < serverTimes['news']) {
+					getJSON(QUERY_URL + 'get_news?changed-after=' + localTimes['news'], function (code, data) {
+						if (code == 200) {
+							var os = db.transaction('news', 'readwrite').objectStore('news');
+							console.log(data);
+							data.data.forEach(function (entry) {
+								os.put(entry);
+							});
+							os.openCursor().onsuccess = function (event) {
+								var cursor = event.target.result;
+								if (cursor) {
+									if (!data.keys.includes(parseInt(cursor.key))) {
+										os.delete(cursor.key);
+									}
+									cursor.continue();
+								} else {
+									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+									osUpdateTimes.put({ table: 'news', time: serverTimes['news'] });
+									syncInProgress --;
+								}
+							};
+						} else {
+							console.log("Something went wrong (HTTP " + code + ")");
+							syncOkay = false;
+							syncInProgress --;
+						}
+					});
+				} else {
+					syncInProgress --;
+				}
+				
 				// USERS
 				if (localTimes['users'] < serverTimes['users']) {
 					getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
@@ -986,6 +1018,13 @@ function initDatabase() {
 				var osPushes = db.createObjectStore('settings', { keyPath: 'key' });
 			}
 			
+			if ((oldVersion < 6) && (newVersion >= 6)) {
+				console.log('to version 6');
+				var osNews = db.createObjectStore('news', { keyPath: 'id' });
+				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
+				osUpdateTimes.add({ table: 'news', time: 0 });
+			}
+			
 			var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 			osUpdateTimes.put({ table: 'last_sync', time: 0 });
 		}
@@ -1009,6 +1048,7 @@ function resetDb(silent = true) {
 		osUpdateTimes.put({ table: 'trim_boats', time: 0 });
 		osUpdateTimes.put({ table: 'trim_users', time: 0 });
 		osUpdateTimes.put({ table: 'trim_trims', time: 0 });
+		osUpdateTimes.put({ table: 'news', time: 0 });
 		osUpdateTimes.put({ table: 'users', time: 0 });
 		console.log('DB update times reset');
 		if (!silent)

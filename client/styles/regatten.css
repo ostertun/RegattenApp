@@ -173,6 +173,13 @@
 	text-align: right;
 }
 
+/*** BLOCKQUOTE ***/
+blockquote {
+	border-left: 0.5em solid rgba(0, 0, 0, 0.125);
+	font-style: italic;
+	padding-left: 1em;
+}
+
 /*** BLINKING ICONS ***/
 @keyframes fa-blink {
 	0% { opacity: 1; }

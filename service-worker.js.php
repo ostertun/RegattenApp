@@ -226,6 +226,10 @@ self.addEventListener('push', async function(event) {
 					options.image = image;
 				}
 				
+				// Force refresh on next app open
+				var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
+				os.put({ table: 'last_sync', time: 0 });
+				
 				console.log('Showing notification');
 				self.registration.showNotification(data.title, options);
 				break;
