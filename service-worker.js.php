@@ -244,7 +244,7 @@ self.addEventListener('push', async function(event) {
 					data: data,
 					body: data.body,
 					icon: getEntry(data, 'icon', '<?php echo SERVER_ADDR; ?>/client/app/icons/icon-512x512.png'),
-					badge: '<?php echo SERVER_ADDR; ?>/client/app/icons/icon-96x96.png',
+					badge: '<?php echo SERVER_ADDR; ?>/client/app/icons/badge-128x128.png',
 					vibrate: [500,100,500]
 				};
 				if ((image = getEntry(data, 'image', null)) !== null) {
