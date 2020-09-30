@@ -58,10 +58,10 @@ workbox.precaching.precacheAndRoute([
 	$dirsToCache = [
 		'/client/app',
 		'/client/fonts/css',
-		'/client/fonts/webfonts'
-		'/client/images'
-		'/client/scripts'
-		'/client/styles'
+		'/client/fonts/webfonts',
+		'/client/images',
+		'/client/scripts',
+		'/client/styles',
 	];
 
 	function addDir($path) {
