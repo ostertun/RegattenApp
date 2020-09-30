@@ -206,7 +206,7 @@
 	</div>
 </div>
 
-<div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="310">
+<div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="360">
 	<div class="menu-title"><h1>Entwickler-Optionen</h1><p class="color-highlight">Version <?php echo PWA_VERSION; ?></p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
@@ -226,9 +226,14 @@
 				<span>Reset Cache</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="https://report.regatten.net/" class="border-0">
+			<a href="https://report.regatten.net/">
 				<i class="fa font-14 fa-bug rounded-s bg-highlight color-white"></i>
 				<span>Problem melden</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="#" onclick="mobileConsole.displayConsole(); return false;" class="border-0 menu-close">
+				<i class="fa font-14 fa-terminal rounded-s bg-highlight color-white"></i>
+				<span>Console anzeigen</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
 		</div>
@@ -258,7 +263,7 @@
 		<p class="text-center">
 			Momentan kannst Du Dich leider nicht in der App registrieren.<br>
 			Das ist aber kein Problem, registriere Dich einfach kostenlos auf unserer Website!
-		</p>        
+		</p>
 		<a href="https://regatten.net/de/signup" class="btn btn-center-xl btn-m shadow-xl rounded-s bg-highlight font-900 text-center">Registrieren</a>
 		<p class="text-center font-10 bottom-0">Du kannst Dich danach in dieser App anmelden.</p>
 	</div>
@@ -289,7 +294,7 @@
 		<h1 class="text-center mt-5 font-900">Update Verfügbar</h1>
 		<p class="text-center">
 			Eine neue Version unserer App ist verf&uuml;gbar. Keine Sorge, Du musst nichts machen. Wir aktuallisieren den Inhalt in wenigen Sekunden.
-		</p>        
+		</p>
 		<a href="#" class="page-update btn btn-center-xl btn-m shadow-xl rounded-s bg-highlight font-900 text-center">Update</a>
 		<p class="text-center font-10 bottom-0">Die App wird neu laden und das Update ist abgeschlossen.</p>
 	</div>
