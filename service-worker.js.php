@@ -56,15 +56,19 @@ workbox.precaching.precacheAndRoute([
 		'/manifest.json.php',
 	];
 	$dirsToCache = [
-		'/client',
+		'/client/app',
+		'/client/fonts/css',
+		'/client/fonts/webfonts'
+		'/client/images'
+		'/client/scripts'
+		'/client/styles'
 	];
 
 	function addDir($path) {
 		global $filesToCache;
 		if ($dir = opendir(__DIR__ . $path)) {
 			while (($file = readdir($dir)) !== false) {
-				if ($file == '.') continue;
-				if ($file == '..') continue;
+				if (substr($file, 0, 1) == '.') continue;
 				if (is_dir(__DIR__ . $path . '/' . $file)) {
 					addDir($path . '/' . $file);
 				} else {
