@@ -42,7 +42,7 @@ function addRace() {
 	var m = parseFloat($('#input-m').val());
 	var fb = parseFloat($('#input-fb').val());
 	var pl = parseFloat($('#input-pl').val().replace(',', '.'));
-	
+
 	if (isNaN(rlf) || (rlf < 1) || (rlf > 1.6)) {
 		toastError('RLF ungültig');
 		return;
@@ -59,7 +59,7 @@ function addRace() {
 		toastError('pl ungültig');
 		return;
 	}
-	
+
 	var race = {
 		rlf: rlf,
 		m: m,
@@ -67,12 +67,12 @@ function addRace() {
 		pl: pl,
 		rlp: (100 * rlf * ((fb + 1 - pl) / fb))
 	};
-	
-	$('#input-rlf').val('');
-	$('#input-m').val('');
-	$('#input-fb').val('');
-	$('#input-pl').val('');
-	
+
+	$('#input-rlf').val('').trigger('focusin').trigger('focusout');
+	$('#input-m').val('').trigger('focusin').trigger('focusout');
+	$('#input-fb').val('').trigger('focusin').trigger('focusout');
+	$('#input-pl').val('').trigger('focusin').trigger('focusout');
+
 	races.push(race);
 	reCalc();
 }

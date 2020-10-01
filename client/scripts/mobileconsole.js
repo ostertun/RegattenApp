@@ -345,7 +345,7 @@ var mobileConsole = (function () {
       top: 'auto',
       right: 0,
       width: '100%',
-      zIndex: 10000,
+      zIndex: 1000000,
       padding: 0,
       paddingBottom: options.browserinfo.isMobile ? '35px' : '25px',
       margin: 0,
@@ -662,7 +662,7 @@ var mobileConsole = (function () {
           height: newHeight
         });
         setCSS(document.body, {
-          paddingBottom: existingPadding + Math.abs(parseInt(newHeight, 10) + elements.topbar.offsetHeight) + 'px'
+          //paddingBottom: existingPadding + Math.abs(parseInt(newHeight, 10) + elements.topbar.offsetHeight) + 'px'
         });
         elements.buttons.toggler.innerHTML = (elements.base.minimized) ? elements.arrowDown : elements.arrowUp;
         elements.buttons.toggler.setAttribute('title', (elements.base.minimized) ? 'Minimize console' : 'Maximize console');
@@ -747,7 +747,7 @@ var mobileConsole = (function () {
       });
       var existingPadding = isNaN(parseInt(document.body.style.paddingBottom, 10)) ? 0 : parseInt(document.body.style.paddingBottom, 10);
       setCSS(document.body, {
-        paddingBottom: existingPadding + Math.abs(console.offsetHeight + elements.topbar.offsetHeight) + 'px'
+        //paddingBottom: existingPadding + Math.abs(console.offsetHeight + elements.topbar.offsetHeight) + 'px'
       });
       elements.scrollcontainer.scrollTop = elements.scrollcontainer.scrollHeight;
 
@@ -914,6 +914,7 @@ var mobileConsole = (function () {
       while (i--) {
         thisLine = lines[i].trim();
         lineAndColumn = thisLine.match(/(?::)(\d+)(?::)(\d+)/);
+        if (lineAndColumn === null) continue;
         url = urlFromString(thisLine).replace(lineAndColumn[0], '').split('#')[0] || '';
         caller = htmlToString(thisLine.replace(urlFromString(thisLine), '').replace(separator, '').replace('at ', '').trim());
         if (caller === '' || caller === lineAndColumn[0]) { continue; }

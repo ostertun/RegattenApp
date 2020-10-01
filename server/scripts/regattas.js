@@ -1,8 +1,8 @@
 function selectChange(callSiteScript = true) {
 	var val = $('#select-year').val();
 	if (val == "user") {
-		$('#input-from').parent().show();
-		$('#input-to').parent().show();
+		$('#input-from').trigger('focusin').trigger('focusout').parent().show();
+		$('#input-to').trigger('focusin').trigger('focusout').parent().show();
 		$('#button-show').show();
 	} else {
 		$('#input-from').parent().hide();
@@ -12,8 +12,17 @@ function selectChange(callSiteScript = true) {
 		$('#input-from').val(val + '-01-01');
 		$('#input-to').val(val + '-12-31');
 
-		if (callSiteScript && (typeof siteScript === 'function'))
+		if (callSiteScript && (typeof siteScript === 'function')) {
+			history.replaceState(null, '', '?year=' + val);
 			siteScript();
+		}
+	}
+}
+
+function buttonShowPressed() {
+	if (typeof siteScript === 'function') {
+		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val())
+		siteScript();
 	}
 }
 
@@ -23,6 +32,15 @@ function initYear() {
 
 	$('#select-year').html('<option value="' + year + '">' + year + '</option>');
 	$('#select-year').val(year);
+
+	if (year == "user") {
+		var from = findGetParameter('from');
+		var to = findGetParameter('to');
+		if (from === null) from = formatDate('Y-m-d')
+		if (to === null) to = formatDate('Y-m-d')
+		$('#input-from').val(from).trigger('focusin').trigger('focusout');
+		$('#input-to').val(to).trigger('focusin').trigger('focusout');
+	}
 
 	selectChange(false);
 }
@@ -50,7 +68,7 @@ var siteScript = async function() {
 		firstCall = false;
 		initYear();
 		$('#select-year').change(selectChange);
-		$('#button-show').click(siteScript);
+		$('#button-show').click(buttonShowPressed);
 		$('#input-search').on('input', drawList);
 	}
 

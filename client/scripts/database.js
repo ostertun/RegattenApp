@@ -161,19 +161,19 @@ function dbGetResultCalculated(regatta) {
 	return new Promise(async function(resolve) {
 		var results = await dbGetDataIndex('results', 'regatta', regatta.id);
 		if (results.length > 0) {
-			
+
 			var gemeldet = results.length;
-			
+
 			for (id in results) {
 				results[id]['finished'] = false;
 				results[id]['values'] = [];
 				results[id]['values_all'] = [];
 				results[id]['texts'] = [];
 				var copy = [];
-				
+
 				for (var i = 0; i < regatta['races']; i ++) {
 					var race = results[id]['race' + (i + 1)].replace(',', '.');
-					
+
 					if (!isNaN(race)) {
 						copy[i] = results[id]['values'][i] = parseFloat(race);
 						results[id]['texts'][i] = race;
@@ -198,7 +198,7 @@ function dbGetResultCalculated(regatta) {
 							// Unbekannt
 							default: results[id]['values'][i] = 0; copy[i] = 0; break;
 						}
-						
+
 						if (results[id]['values'][i] != 0) {
 							results[id]['texts'][i] = race + ' (' + results[id]['values'][i] + ')';
 						} else {
@@ -206,7 +206,7 @@ function dbGetResultCalculated(regatta) {
 						}
 					}
 				}
-				
+
 				results[id]['values_all'] = [...results[id]['values']];
 				for (var s = 0; s < regatta['streicher']; s ++) {
 					var max = Math.max(...copy);
@@ -217,7 +217,7 @@ function dbGetResultCalculated(regatta) {
 						}
 					}
 				}
-				
+
 				var brutto = 0;
 				var netto = 0;
 				for (var i = 0; i < regatta['races']; i ++) {
@@ -233,11 +233,11 @@ function dbGetResultCalculated(regatta) {
 				results[id]['brutto'] = brutto;
 				results[id]['netto'] = netto;
 			}
-			
+
 			compareResultsRaceCount = regatta['races'];
-			
+
 			results.sort(compareResults);
-			
+
 			var place = 1;
 			for (id in results) {
 				if ((id > 0) && (compareResults(results[id], results[id - 1]) == 0)) {
@@ -247,9 +247,9 @@ function dbGetResultCalculated(regatta) {
 				}
 				place ++;
 			}
-			
+
 			resolve(results);
-			
+
 		} else {
 			resolve([]);
 		}
@@ -259,26 +259,26 @@ function dbGetResultCalculated(regatta) {
 function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 	return new Promise(async function(resolve) {
 		var rankNoResults = [];
-		
+
 		var sailors = await dbGetData('sailors');
 		var regattas = await dbGetRegattasRange(minDate, maxDate);
-		
+
 		var sailorIds = {};
 		for (s in sailors) {
 			sailorIds[sailors[s].id] = s;
 		}
-		
+
 		for (var i in sailors) {
 			sailors[i].regattas = {};
 			sailors[i].tmp_rlp = [];
 		}
-		
+
 		for (var i in regattas) {
 			var regatta = regattas[i];
-			
+
 			// regatta has to be min. 2 days to be ranking regatta
 			if (regatta.length < 2) continue;
-			
+
 			var results = await dbGetDataIndex('results', 'regatta', regatta.id);
 			if (results.length <= 0) {
 				if (regatta.dateTo <= getToday()) {
@@ -288,7 +288,7 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				}
 				continue;
 			}
-			
+
 			// in one race there must be at least 10 boats started
 			var ok = false;
 			for (var j = 1; j <= regatta.races; j ++) {
@@ -304,9 +304,9 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				}
 			}
 			if (!ok) continue;
-			
+
 			var fb = regatta.finishedBoats;
-			
+
 			// calc m
 			var m;
 			if (regatta.m > 0) {
@@ -320,16 +320,16 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 					m = 4;
 				}
 			}
-			
+
 			// add regatta to each sailor
 			for (var r in results) {
 				var result = results[r];
-				
+
 				if (result.rlp == 0) continue;
-				
+
 				// check if crew is youth
 				// TODO: not used
-				
+
 				sailors[sailorIds[result.steuermann]].regattas[regatta.id] = {
 					regatta: regatta.id,
 					boat: result.boat,
@@ -345,7 +345,7 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				}
 			}
 		}
-		
+
 		// remove not german or not youth sailors
 		for (var i = sailors.length - 1; i >= 0; i --) {
 			if (sailors[i].german == '0') {
@@ -357,13 +357,13 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				}
 			}
 		}
-		
+
 		for (var i = sailors.length - 1; i >= 0; i --) {
 			// sort rlps desc
 			sailors[i].tmp_rlp.sort(function (a,b) {
 				return b[1] - a[1];
 			});
-			
+
 			// calc mean rlp
 			var sum = 0;
 			var cnt = 0;
@@ -383,16 +383,16 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				sailors.splice(i, 1);
 			}
 		}
-		
+
 		sailors.sort(function (a,b) {
 			if (a.m != b.m) return b.m - a.m;
 			return b.rlp - a.rlp;
 		});
-		
+
 		for (var i = 0; i < sailors.length; i ++) {
 			sailors[i].rank = (i + 1);
 		}
-		
+
 		resolve([sailors, rankNoResults]);
 	});
 }
@@ -424,7 +424,7 @@ async function updateSyncStatus() { // TODO
 //	var now = new Date();
 //	var diff = Math.round((now - lastSync) / 1000);
 //	var txt = '';
-//	
+//
 //	if (diff < 30) {  // 30 sec
 //		txt = 'jetzt';
 //	} else if (diff < 3600) {  // 60 min
@@ -437,7 +437,7 @@ async function updateSyncStatus() { // TODO
 //		diff = Math.round(diff / 86400);
 //		txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Tag' : 'Tagen');
 //	}
-//	
+//
 //	var btn = '<a href="#" onclick="setLoading(true); sync(); return false;"><i class="fas fa-sync"></i> Sync</a>';
 //	syncStatus.innerHTML = 'Zuletzt aktualisiert: ' + txt + btn;
 }
@@ -453,7 +453,7 @@ async function runPageScript() {
 			}
 		};
 		updateSyncStatus();
-		
+
 		if (isLoggedIn()) {
 			var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
 			plannings = plannings.map(function (e) { return e.regatta; });
@@ -471,7 +471,7 @@ async function runPageScript() {
 		}
 //		syncStatus.style.display = 'block';
 	}
-	
+
 	if (typeof siteScript === 'function') {
 		siteScript();
 	} else {
@@ -482,20 +482,20 @@ async function runPageScript() {
 function sync() {
 	if (!canUseLocalDB) return false;
 	if (syncInProgress > 0) return false;
-	
+
 	var now = Math.floor(Date.now() / 1000);
-	
+
 	db.transaction('update_times').objectStore('update_times').getAll().onsuccess = function (event) {
 		var localTimes = {};
 		event.target.result.forEach(function (entry) {
 			localTimes[entry['table']] = entry['time'];
 		});
-		
+
 		syncInProgress = 11;
 		var syncOkay = true;
 		console.log("Sync Start");
 		$('#i-sync').addClass('fa-spin');
-		
+
 		var interval = window.setInterval(function () {
 			if (syncInProgress <= 0) {
 				window.clearInterval(interval);
@@ -507,14 +507,17 @@ function sync() {
 				setTimeout(function(){
 					$('#i-sync').removeClass('fa-spin');
 				}, 500);
-				
+
+				if (typeof onAfterSync === 'function') {
+					onAfterSync();
+				}
 				runPageScript();
 			}
 		}, 100);
-		
+
 		getJSON(QUERY_URL + 'get_update_time', function (code, serverTimes) {
 			if (code == 200) {
-				
+
 				// CLUBS
 				if (localTimes['clubs'] < serverTimes['clubs']) {
 					getJSON(QUERY_URL + 'get_clubs?changed-after=' + localTimes['clubs'], function (code, data) {
@@ -546,7 +549,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// BOATS
 				if (localTimes['boats'] < serverTimes['boats']) {
 					getJSON(QUERY_URL + 'get_boats?changed-after=' + localTimes['boats'], function (code, data) {
@@ -578,7 +581,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// SAILORS
 				if (localTimes['sailors'] < serverTimes['sailors']) {
 					getJSON(QUERY_URL + 'get_sailors?changed-after=' + localTimes['sailors'], function (code, data) {
@@ -610,7 +613,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// REGATTAS
 				if (localTimes['regattas'] < serverTimes['regattas']) {
 					getJSON(QUERY_URL + 'get_regattas?changed-after=' + localTimes['regattas'], function (code, data) {
@@ -643,7 +646,7 @@ function sync() {
 											osYears.put({ year: y });
 										}
 									}
-									
+
 									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
 									osUpdateTimes.put({ table: 'regattas', time: serverTimes['regattas'] });
 									syncInProgress --;
@@ -658,7 +661,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// RESULTS
 				if (localTimes['results'] < serverTimes['results']) {
 					getJSON(QUERY_URL + 'get_results?changed-after=' + localTimes['results'], function (code, data) {
@@ -690,7 +693,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// PLANNINGS
 				if (localTimes['plannings'] < serverTimes['plannings']) {
 					getJSON(QUERY_URL + 'get_plannings?changed-after=' + localTimes['plannings'], function (code, data) {
@@ -722,7 +725,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				if (isLoggedIn()) {
 					// TRIM_BOATS
 					if (localTimes['trim_boats'] < serverTimes['trim_boats']) {
@@ -755,7 +758,7 @@ function sync() {
 					} else {
 						syncInProgress --;
 					}
-					
+
 					// TRIM_USERS
 					if (localTimes['trim_users'] < serverTimes['trim_users']) {
 						getJSON(QUERY_URL + 'get_trim_users?changed-after=' + localTimes['trim_users'], function (code, data) {
@@ -787,7 +790,7 @@ function sync() {
 					} else {
 						syncInProgress --;
 					}
-					
+
 					// TRIM_TRIMS
 					if (localTimes['trim_trims'] < serverTimes['trim_trims']) {
 						getJSON(QUERY_URL + 'get_trim_trims?changed-after=' + localTimes['trim_trims'], function (code, data) {
@@ -819,11 +822,11 @@ function sync() {
 					} else {
 						syncInProgress --;
 					}
-					
+
 				} else {
 					syncInProgress -= 3;
 				}
-				
+
 				// NEWS
 				if (localTimes['news'] < serverTimes['news']) {
 					getJSON(QUERY_URL + 'get_news?changed-after=' + localTimes['news'], function (code, data) {
@@ -855,7 +858,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 				// USERS
 				if (localTimes['users'] < serverTimes['users']) {
 					getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
@@ -887,7 +890,7 @@ function sync() {
 				} else {
 					syncInProgress --;
 				}
-				
+
 			} else {
 				console.log("Something went wrong (HTTP " + code + ")");
 				syncOkay = false;
@@ -914,13 +917,13 @@ function initDatabase() {
 		var request = window.indexedDB.open('regatten_app_db_' + BOATCLASS, DB_VERSION);
 		request.onerror = function (event) {
 			console.log("Cannot open DB: " + event.target.errorCode);
-			
+
 			runPageScript();
 		};
 		request.onsuccess = function (event) {
 			console.log("Database loaded");
 			db = event.target.result;
-			
+
 			db.onversionchange = function (event) {
 				if (syncTimer != null) window.clearInterval(syncTimer);
 				if (updateSyncStatusTimer != null) window.clearInterval(updateSyncStatusTimer);
@@ -929,15 +932,15 @@ function initDatabase() {
 				db.close();
 				location.reload;
 			}
-			
+
 			db.onerror = function (event) {
 				console.log("DB Error: " + event.target.errorCode);
 			};
-			
+
 			canUseLocalDB = true;
-			
+
 			if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
-			
+
 			db.transaction('update_times').objectStore('update_times').get('last_sync').onsuccess = function (event) {
 				var lastSync = event.target.result.time;
 				if (lastSync > 0) {
@@ -946,11 +949,11 @@ function initDatabase() {
 					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
 				}
 			};
-			
+
 			checkSync();
-			
+
 			syncTimer = window.setInterval(checkSync, 300000); // 5 min
-			
+
 			window.ononline = function () {
 				checkSync();
 			}
@@ -960,9 +963,9 @@ function initDatabase() {
 			var upgradeTransaction = event.target.transaction;
 			var oldVersion = event.oldVersion;
 			var newVersion = event.newVersion;
-			
+
 			console.log("Datenbank Version Upgrade von " + oldVersion + " auf " + newVersion);
-			
+
 			if ((oldVersion < 1) && (newVersion >= 1)) {
 				console.log('to version 1');
 				var osClubs = db.createObjectStore('clubs', { keyPath: 'id' });
@@ -991,7 +994,7 @@ function initDatabase() {
 				osUpdateTimes.add({ table: 'trim_users', time: 0 });
 				osUpdateTimes.add({ table: 'trim_trims', time: 0 });
 			}
-			
+
 			if ((oldVersion < 2) && (newVersion >= 2)) {
 				console.log('to version 2');
 				var osUsers = db.createObjectStore('users', { keyPath: 'id' });
@@ -999,32 +1002,32 @@ function initDatabase() {
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'users', time: 0 });
 			}
-			
+
 			if ((oldVersion < 3) && (newVersion >= 3)) {
 				console.log('to version 3');
 				var osYears = db.createObjectStore('years', { keyPath: 'year' });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.put({ table: 'regattas', time: 0 });
 			}
-			
+
 			if ((oldVersion < 4) && (newVersion >= 4)) {
 				console.log('to version 4');
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'loggedin', status: isLoggedIn() });
 			}
-			
+
 			if ((oldVersion < 5) && (newVersion >= 5)) {
 				console.log('to version 5');
 				var osPushes = db.createObjectStore('settings', { keyPath: 'key' });
 			}
-			
+
 			if ((oldVersion < 6) && (newVersion >= 6)) {
 				console.log('to version 6');
 				var osNews = db.createObjectStore('news', { keyPath: 'id' });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'news', time: 0 });
 			}
-			
+
 			var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 			osUpdateTimes.put({ table: 'last_sync', time: 0 });
 		}
@@ -1033,8 +1036,7 @@ function initDatabase() {
 	}
 }
 
-function resetDb(silent = true) {
-	$('#menu-developer').hideMenu();
+function resetDb() {
 	if (canUseLocalDB) {
 		showLoader();
 		var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
@@ -1051,11 +1053,6 @@ function resetDb(silent = true) {
 		osUpdateTimes.put({ table: 'news', time: 0 });
 		osUpdateTimes.put({ table: 'users', time: 0 });
 		console.log('DB update times reset');
-		if (!silent)
-			toastInfo('The database was reset. Please reload or close this tab.<br>At the next visit, a full sync will be performed.');
 		hideLoader();
-	} else {
-		if (!silent)
-			toastWarn('Your device does not support storing data locally. All data is fetched directly from our server.<br>As a result, you can not reset your database.');
 	}
 }
