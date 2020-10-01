@@ -662,7 +662,7 @@ var mobileConsole = (function () {
           height: newHeight
         });
         setCSS(document.body, {
-          paddingBottom: existingPadding + Math.abs(parseInt(newHeight, 10) + elements.topbar.offsetHeight) + 'px'
+          //paddingBottom: existingPadding + Math.abs(parseInt(newHeight, 10) + elements.topbar.offsetHeight) + 'px'
         });
         elements.buttons.toggler.innerHTML = (elements.base.minimized) ? elements.arrowDown : elements.arrowUp;
         elements.buttons.toggler.setAttribute('title', (elements.base.minimized) ? 'Minimize console' : 'Maximize console');
@@ -747,7 +747,7 @@ var mobileConsole = (function () {
       });
       var existingPadding = isNaN(parseInt(document.body.style.paddingBottom, 10)) ? 0 : parseInt(document.body.style.paddingBottom, 10);
       setCSS(document.body, {
-        paddingBottom: existingPadding + Math.abs(console.offsetHeight + elements.topbar.offsetHeight) + 'px'
+        //paddingBottom: existingPadding + Math.abs(console.offsetHeight + elements.topbar.offsetHeight) + 'px'
       });
       elements.scrollcontainer.scrollTop = elements.scrollcontainer.scrollHeight;
 
