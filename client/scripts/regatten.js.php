@@ -342,10 +342,16 @@ async function updatePushSwitches() {
 
 	if ($('#switch-pushes').prop('checked')) {
 		$('#p-pushes-info').show();
-		$('.a-switch-pushes-channel').show();
+		$('.a-switch-pushes-channel-all').show();
+		$('.a-switch-pushes-channel-my').show();
+		if (!isLoggedIn()) {
+			$('.a-switch-pushes-channel-my').find('div').remove();
+			$('.a-switch-pushes-channel-my').find('.badge').text('nicht angemeldet');
+		}
 	} else {
 		$('#p-pushes-info').hide();
-		$('.a-switch-pushes-channel').hide();
+		$('.a-switch-pushes-channel-all').hide();
+		$('.a-switch-pushes-channel-my').hide();
 	}
 }
 
@@ -437,7 +443,8 @@ var initRegatten = function() {
 
 	// Pushes
 	$('#a-switch-pushes').click(pushesSubscribeClicked);
-	$('.a-switch-pushes-channel').click(pushesChannelClicked);
+	$('.a-switch-pushes-channel-all').click(pushesChannelClicked);
+	$('.a-switch-pushes-channel-my').click(pushesChannelClicked);
 }
 
 var onServiceWorkerLoaded = function() {
