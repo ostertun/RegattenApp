@@ -345,7 +345,7 @@ var mobileConsole = (function () {
       top: 'auto',
       right: 0,
       width: '100%',
-      zIndex: 10000,
+      zIndex: 1000000,
       padding: 0,
       paddingBottom: options.browserinfo.isMobile ? '35px' : '25px',
       margin: 0,
