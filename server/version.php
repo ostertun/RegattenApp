@@ -1,5 +1,5 @@
 <?php
 
-	define('PWA_VERSION', '1.7');
+	define('PWA_VERSION', '1.8');
 
 ?>
