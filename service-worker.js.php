@@ -1,9 +1,9 @@
 <?php
-	
+
 	header('Content-Type: text/javascript');
-	
+
 	require_once(__DIR__ . '/server/config.php');
-	
+
 ?>
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
 
@@ -41,7 +41,7 @@ workbox.precaching.precacheAndRoute([
 		return $hash;
 	}
 	$hash = md5(getDirHash(__DIR__));
-	
+
 	$path = __DIR__ . '/server/content/';
 	$dir = opendir($path);
 	while ($file = readdir($dir)) {
@@ -50,21 +50,25 @@ workbox.precaching.precacheAndRoute([
 		echo "\t{url: '$file', revision: '$hash'},\n";
 	}
 	closedir($dir);
-	
+
 	// ASSETS
 	$filesToCache = [
 		'/manifest.json.php',
 	];
 	$dirsToCache = [
-		'/client',
+		'/client/app',
+		'/client/fonts/css',
+		'/client/fonts/webfonts',
+		'/client/images',
+		'/client/scripts',
+		'/client/styles',
 	];
-	
+
 	function addDir($path) {
 		global $filesToCache;
 		if ($dir = opendir(__DIR__ . $path)) {
 			while (($file = readdir($dir)) !== false) {
-				if ($file == '.') continue;
-				if ($file == '..') continue;
+				if (substr($file, 0, 1) == '.') continue;
 				if (is_dir(__DIR__ . $path . '/' . $file)) {
 					addDir($path . '/' . $file);
 				} else {
@@ -74,11 +78,11 @@ workbox.precaching.precacheAndRoute([
 			closedir($dir);
 		}
 	}
-	
+
 	foreach ($dirsToCache as $path) {
 		addDir($path);
 	}
-	
+
 	foreach ($filesToCache as $file) {
 		$revision = md5_file(__DIR__ . $file);
 		$file = SERVER_ADDR . $file;
@@ -109,30 +113,41 @@ workbox.routing.registerRoute(
 
 // DB
 
-var db = null;
-if (indexedDB) {
-	var request = indexedDB.open('regatten_app_db_<?php echo BOATCLASS; ?>');
-	request.onerror = function (e) {
-		console.log('[sW] Cannot open DB:', e.target.errorCode);
-	};
-	request.onupgradeneeded = function (e) {
-		console.log('[sW] DB does not exist');
-		e.target.transaction.abort();
-	};
-	request.onsuccess = function (e) {
-		console.log('[sW] DB loaded');
-		db = e.target.result;
-		db.onerror = function (e) {
-			console.log('[sW] DB Error:', e)
+function openDb() {
+	return new Promise(function(resolve) {
+		if (indexedDB) {
+			var request = indexedDB.open('regatten_app_db_<?php echo BOATCLASS; ?>');
+			request.onerror = function (e) {
+				console.log('[sW] Cannot open DB:', e.targer.errorCode);
+				resolve(null);
+			};
+			request.onupgradeneeded = function (e) {
+				console.log('[sW] DB does not exist');
+				e.target.transaction.abort();
+				resolve(null);
+			};
+			request.onsuccess = function (e) {
+				console.log('[sW] DB loaded');
+				var db = e.target.result;
+				db.onerror = function (e) {
+					console.log('[sW] DB Error:', e);
+				};
+				resolve(db);
+			}
+		} else {
+			resolve(null);
 		}
-	};
+	});
 }
 
 function dbSettingsGet(key) {
-	return new Promise(function(resolve) {
-		if (db != null) {
+	return new Promise(async function(resolve) {
+		var db = await openDb();
+		if (db !== null) {
 			var request = db.transaction('settings').objectStore('settings').get(key);
 			request.onsuccess = function (event) {
+				db.close();
+				console.log('[sW] DB closed');
 				resolve(typeof request.result != 'undefined' ? request.result.value : null);
 			}
 		} else {
@@ -141,10 +156,20 @@ function dbSettingsGet(key) {
 	});
 }
 
-function dbSettingsSet(key, value) {
+async function dbSettingsSet(key, value) {
+	var db = await openDb();
 	if (db != null) {
 		var os = db.transaction('settings', 'readwrite').objectStore('settings');
-		os.put({ key: key, value: value});
+		var request = os.put({ key: key, value: value});
+		request.onerror = function (event) {
+			console.log('[sW] Error while saving data to DB:', e);
+			db.close();
+			console.log('[sW] DB closed');
+		}
+		request.onsuccess = function (event) {
+			db.close();
+			console.log('[sW] DB closed');
+		}
 	}
 }
 
@@ -167,7 +192,7 @@ function isMyRegatta(id) {
 
 self.addEventListener('push', async function(event) {
 	console.log('[sW] Push received:', event.data.text());
-	
+
 	var data;
 	try {
 		data = JSON.parse(event.data.text());
@@ -175,14 +200,14 @@ self.addEventListener('push', async function(event) {
 		console.log(e);
 		data = undefined;
 	}
-	
+
 	if (typeof data.type !== "undefined") {
 		switch (data.type) {
 			case 'notification':
 				if (typeof data.title === "undefined") break;
 				if (typeof data.body === "undefined") break;
 				if (typeof data.channel === "undefined") break;
-				
+
 				// check channel
 				var okay = false;
 				switch (data.channel) {
@@ -214,36 +239,73 @@ self.addEventListener('push', async function(event) {
 					console.log('Notification channel not subscribed');
 					return;
 				}
-				
+
 				const options = {
 					data: data,
 					body: data.body,
 					icon: getEntry(data, 'icon', '<?php echo SERVER_ADDR; ?>/client/app/icons/icon-512x512.png'),
-					badge: '<?php echo SERVER_ADDR; ?>/client/app/icons/icon-96x96.png',
+					badge: '<?php echo SERVER_ADDR; ?>/client/app/icons/badge-128x128.png',
 					vibrate: [500,100,500]
 				};
 				if ((image = getEntry(data, 'image', null)) !== null) {
 					options.image = image;
 				}
-				
+
 				// Force refresh on next app open
-				var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
-				os.put({ table: 'last_sync', time: 0 });
-				
+				var db = await openDb();
+				if (db != null) {
+					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
+					var request = os.put({ table: 'last_sync', time: 0 });
+					request.onerror = function (event) {
+						console.log('[sW] Error while saving data to DB:', e);
+						db.close();
+						console.log('[sW] DB closed');
+					}
+					request.onsuccess = function (event) {
+						db.close();
+						console.log('[sW] DB closed');
+					}
+				}
+
 				console.log('Showing notification');
 				self.registration.showNotification(data.title, options);
 				break;
+
+			case 'forcesync':
+				// Force refresh on next app open
+				var db = await openDb();
+				if (db != null) {
+					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
+					var request = os.put({ table: 'last_sync', time: 0 });
+					request.onerror = function (event) {
+						console.log('[sW] Error while saving data to DB:', e);
+						db.close();
+						console.log('[sW] DB closed');
+					}
+					request.onsuccess = function (event) {
+						console.log('[sW] Data successfully saved');
+						db.close();
+						console.log('[sW] DB closed');
+					}
+				}
+				break;
+
+			default:
+				console.log('[sW] Push type unknown:', data.type);
+				break;
 		}
+	} else {
+		console.log('[sW] No push type given!');
 	}
 });
 
 self.addEventListener('notificationclick', function(event) {
 	var data = event.notification.data;
-	
+
 	event.notification.close();
-	
+
 	var url = '<?php echo SERVER_ADDR; ?>' + getEntry(data, 'url', '');
-	
+
 	event.waitUntil(
 		clients.openWindow(url)
 	);

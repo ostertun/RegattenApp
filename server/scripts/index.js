@@ -2,12 +2,12 @@ var today;
 
 var siteScript = async function() {
 	today = getToday();
-	
+
 	if (isLoggedIn()) {
 		$('#card-notloggedin').hide();
-		
+
 		var user = await dbGetData('users', localStorage.getItem('auth_user'));
-		
+
 		// Favorites
 		var watched = [];
 		for (var i = 1; i <= 5; i ++) {
@@ -46,7 +46,7 @@ var siteScript = async function() {
 			$('#p-favorites').show();
 		}
 		$('#card-favorites').show();
-		
+
 		// Your next
 		var planningsDB = await dbGetDataIndex('plannings', 'user', user.id);
 		var minDate = getToday();
@@ -75,35 +75,35 @@ var siteScript = async function() {
 			for (i in plannings) {
 				var planning = plannings[i];
 				var regatta = planning.regatta;
-				
+
 				if (regatta['length'] < 1) continue;
-				
+
 				var club = null;
 				if (regatta['club'] != null)
 					club = await dbGetData('clubs', regatta['club']);
 				var dateFrom = regatta['dateFrom'];
 				var dateTo = regatta['dateTo'];
-				
+
 				// output
-				
+
 				list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
-				
+
 				// ZEILE 1
 				// Name
 				list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
-				
+
 				// ZEILE 2
 				list += '<div>';
-				
+
 				// Number
 				list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
-				
+
 				// Club
 				list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
-				
+
 				// Special
 				list += '<div>' + regatta['special'] + '</div>';
-				
+
 				// Icons
 				var icons = [];
 				if (regatta['info'] != '')
@@ -120,8 +120,10 @@ var siteScript = async function() {
 								ms = parseDate(regatta['meldungSchluss']);
 							}
 							var diff = Math.round((ms - today) / 86400000);
-							if ((ms >= today) && (diff < 7)) {
+							if (ms < today) {
 								color = ' color-red2-dark';
+							} else if (diff < 7) {
+								color = ' color-yellow2-dark';
 							}
 						}
 					}
@@ -134,18 +136,18 @@ var siteScript = async function() {
 					icons.push('<i class="fas fa-times color-red2-dark"></i>');
 				}
 				list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
-				
+
 				list += '</div>';
-				
+
 				// ZEILE 3
 				list += '<div>';
-				
+
 				// Date
 				list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
-				
+
 				// RLF
 				list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
-				
+
 				list += '</div></div>';
 			}
 			$('#div-yournext').html(list);
@@ -161,7 +163,7 @@ var siteScript = async function() {
 		$('#card-yournext').hide();
 		$('#card-notloggedin').show();
 	}
-	
+
 	// Next
 	var minDate = getToday();
 	minDate.setDate(minDate.getDate() - 1);
@@ -172,35 +174,35 @@ var siteScript = async function() {
 		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
-			
+
 			if (regatta['length'] < 1) continue;
-			
+
 			var club = null;
 			if (regatta['club'] != null)
 				club = await dbGetData('clubs', regatta['club']);
 			var plannings = await dbGetDataIndex('plannings', 'regatta', regatta['id']);
 			var dateFrom = regatta['dateFrom'];
 			var dateTo = regatta['dateTo'];
-			
+
 			// output
 			list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
-			
+
 			// ZEILE 1
 			// Name
 			list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
-			
+
 			// ZEILE 2
 			list += '<div>';
-			
+
 			// Number
 			list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
-			
+
 			// Club
 			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
-			
+
 			// Special
 			list += '<div>' + regatta['special'] + '</div>';
-			
+
 			// Icons
 			var icons = [];
 			if (regatta['info'] != '')
@@ -227,8 +229,10 @@ var siteScript = async function() {
 							ms = parseDate(regatta['meldungSchluss']);
 						}
 						var diff = Math.round((ms - today) / 86400000);
-						if ((ms >= today) && (diff < 7)) {
+						if (ms < today) {
 							color = ' color-red2-dark';
+						} else if (diff < 7) {
+							color = ' color-yellow2-dark';
 						}
 					}
 				}
@@ -241,18 +245,18 @@ var siteScript = async function() {
 				icons.push('<i class="fas fa-times color-red2-dark"></i>');
 			}
 			list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
-			
+
 			list += '</div>';
-			
+
 			// ZEILE 3
 			list += '<div>';
-			
+
 			// Date
 			list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
-			
+
 			// RLF
 			list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
-			
+
 			list += '</div></div>';
 		}
 		$('#div-next').html(list);
@@ -262,7 +266,7 @@ var siteScript = async function() {
 		$('#div-next').hide();
 		$('#p-next').show();
 	}
-	
+
 	// Last
 	var minDate = getToday();
 	minDate.setDate(minDate.getDate() - 14);
@@ -279,35 +283,35 @@ var siteScript = async function() {
 		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
-			
+
 			if (regatta['length'] < 1) continue;
-			
+
 			var club = null;
 			if (regatta['club'] != null)
 				club = await dbGetData('clubs', regatta['club']);
 			var dateFrom = regatta['dateFrom'];
 			var dateTo = regatta['dateTo'];
-			
+
 			// output
-			
+
 			list += '<div onclick="onRegattaClicked(' + regatta['id'] + ');">';
-			
+
 			// ZEILE 1
 			// Name
 			list += '<div><b>' + (regatta['canceled'] == 1 ? '<s>' : '') + regatta['name'] + (regatta['canceled'] == 1 ? '</s>' : '') + '</b></div>';
-			
+
 			// ZEILE 2
 			list += '<div>';
-			
+
 			// Number
 			list += '<div>' + ((regatta['number'] != null) ? ('# ' + regatta['number']) : '') + '</div>';
-			
+
 			// Club
 			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
-			
+
 			// Special
 			list += '<div>' + regatta['special'] + '</div>';
-			
+
 			// Icons
 			var icons = [];
 			if (regatta['info'] != '')
@@ -320,18 +324,18 @@ var siteScript = async function() {
 				icons.push('<i class="fas fa-poll"></i>');
 			}
 			list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
-			
+
 			list += '</div>';
-			
+
 			// ZEILE 3
 			list += '<div>';
-			
+
 			// Date
 			list += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
-			
+
 			// RLF
 			list += '<div>' + parseFloat(regatta['rlf']).toFixed(2) + '</div>';
-			
+
 			list += '</div></div>';
 		}
 		$('#div-last').html(list);
@@ -341,6 +345,6 @@ var siteScript = async function() {
 		$('#div-last').hide();
 		$('#p-last').show();
 	}
-	
+
 	hideLoader();
 }
