@@ -3,12 +3,12 @@ function sendMessage() {
 	var email = $('#input-email').val();
 	var subject = $('#input-subject').val();
 	var message = $('#input-message').val();
-	
+
 	if ((name == '') || (email == '') || (subject == '') || (message == '')) {
 		toastError('Bitte f&uuml;lle alle Felder aus!');
 		return;
 	}
-	
+
 	showLoader();
 	$.ajax({
 		url: QUERY_URL + 'contact',
@@ -31,8 +31,8 @@ function sendMessage() {
 		},
 		success: function (data, status, xhr) {
 			toastOk('Nachricht erfolgreich versandt!');
-			$('#input-subject').val('');
-			$('#input-message').val('');
+			$('#input-subject').val('').trigger('focusin').trigger('focusout');
+			$('#input-message').val('').trigger('focusin').trigger('focusout');
 			hideLoader();
 		}
 	});

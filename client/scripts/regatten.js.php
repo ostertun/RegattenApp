@@ -122,8 +122,8 @@ var login = function() {
 	showLoader();
 	var username = $('#input-login-username').val();
 	var password = $('#input-login-password').val();
-	$('#input-login-username').val('');
-	$('#input-login-password').val('');
+	$('#input-login-username').val('').trigger('focusin').trigger('focusout');
+	$('#input-login-password').val('').trigger('focusin').trigger('focusout');
 	$.ajax({
 		url: QUERY_URL + 'login',
 		method: 'POST',
@@ -135,7 +135,7 @@ var login = function() {
 		error: function (xhr, status, error) {
 			if (xhr.status == 401) {
 				toastError('Benutzername oder Passwort falsch');
-				$('#input-login-username').val(username);
+				$('#input-login-username').val(username).trigger('focusin').trigger('focusout');
 			} else if (xhr.status == 0) {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Dich anzumelden');
 				$('#menu-login').hideMenu();
