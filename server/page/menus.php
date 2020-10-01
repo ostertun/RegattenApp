@@ -154,7 +154,7 @@
 				(meine) bezieht sich auf die Regatten, die in Deiner Saison-Planung sind,<br>
 				(alle) informiert Dich &uuml;ber alle Regatten
 			</p>
-			<a href="#" data-trigger-switch="switch-pushes-news" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-news" class="pb-2 a-switch-pushes-channel-all">
 				<i class="fa font-14 fa-newspaper rounded-s bg-highlight color-white"></i>
 				<span>Neuigkeiten</span>
 				<div class="custom-control scale-switch ios-switch">
@@ -162,15 +162,16 @@
 					<label class="custom-control-label" for="switch-pushes-news"></label>
 				</div>
 			</a>
-			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-my" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-my" class="pb-2 a-switch-pushes-channel-my">
 				<i class="fa font-14 fa-calendar-check rounded-s bg-highlight color-white"></i>
 				<span>Regatta verschoben (meine)</span>
+				<span class="badge bg-red2-dark color-white"></span>
 				<div class="custom-control scale-switch ios-switch">
 					<input type="checkbox" class="ios-input" id="switch-pushes-regatta-changed-my">
 					<label class="custom-control-label" for="switch-pushes-regatta-changed-my"></label>
 				</div>
 			</a>
-			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-all" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-regatta-changed-all" class="pb-2 a-switch-pushes-channel-all">
 				<i class="fa font-14 fa-calendar-check rounded-s bg-highlight color-white"></i>
 				<span>Regatta verschoben (alle)</span>
 				<div class="custom-control scale-switch ios-switch">
@@ -178,15 +179,16 @@
 					<label class="custom-control-label" for="switch-pushes-regatta-changed-all"></label>
 				</div>
 			</a>
-			<a href="#" data-trigger-switch="switch-pushes-result-ready-my" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-result-ready-my" class="pb-2 a-switch-pushes-channel-my">
 				<i class="fa font-14 fa-poll rounded-s bg-highlight color-white"></i>
 				<span>Ergebnisse verf&uuml;gbar (meine)</span>
+				<span class="badge bg-red2-dark color-white"></span>
 				<div class="custom-control scale-switch ios-switch">
 					<input type="checkbox" class="ios-input" id="switch-pushes-result-ready-my">
 					<label class="custom-control-label" for="switch-pushes-result-ready-my"></label>
 				</div>
 			</a>
-			<a href="#" data-trigger-switch="switch-pushes-result-ready-all" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-result-ready-all" class="pb-2 a-switch-pushes-channel-all">
 				<i class="fa font-14 fa-poll rounded-s bg-highlight color-white"></i>
 				<span>Ergebnisse verf&uuml;gbar (alle)</span>
 				<div class="custom-control scale-switch ios-switch">
@@ -194,9 +196,10 @@
 					<label class="custom-control-label" for="switch-pushes-result-ready-all"></label>
 				</div>
 			</a>
-			<a href="#" data-trigger-switch="switch-pushes-meldeschluss" class="pb-2 a-switch-pushes-channel">
+			<a href="#" data-trigger-switch="switch-pushes-meldeschluss" class="pb-2 a-switch-pushes-channel-my">
 				<i class="fa font-14 fa-file-signature rounded-s bg-highlight color-white"></i>
 				<span>Melde-Erinnerungen</span>
+				<span class="badge bg-red2-dark color-white"></span>
 				<div class="custom-control scale-switch ios-switch">
 					<input type="checkbox" class="ios-input" id="switch-pushes-meldeschluss">
 					<label class="custom-control-label" for="switch-pushes-meldeschluss"></label>
