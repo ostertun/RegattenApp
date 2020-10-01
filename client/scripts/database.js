@@ -508,6 +508,9 @@ function sync() {
 					$('#i-sync').removeClass('fa-spin');
 				}, 500);
 
+				if (typeof onAfterSync === 'function') {
+					onAfterSync();
+				}
 				runPageScript();
 			}
 		}, 100);
