@@ -238,7 +238,8 @@ function deleteCache() {
 			return caches.delete(key);
 		}));
 	});
-	toastInfo('The serviceWorker and the cache were deleted. A new serviceWorker will be generated on the next refresh.');
+	toastInfo('Der serviceWorker und alle Caches wurden gelöscht. Die Seite lädt in wenigen Sekunden neu und erstellt damit neue Caches.', 10000);
+	setTimeout(function(){ location.reload(); }, 3000);
 }
 
 var pushesPossible = false;
