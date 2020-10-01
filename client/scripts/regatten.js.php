@@ -402,6 +402,22 @@ function updatePushBadge() {
 	});
 }
 
+async function updateNewsBadge() {
+	var newsRead = await dbSettingsGet('news_read_' + BOATCLASS);
+	if (newsRead === null) dbSettingsSet('news_read_' + BOATCLASS, newsRead = new Date());
+	var news = await dbGetData('news');
+	var now = new Date();
+	var sum = 0;
+	for (var n in news) {
+		var newsEntry = news[n];
+		newsEntry.date = new Date(Date.parse(newsEntry.date));
+		if (newsEntry.date > now) continue;
+		if (newsEntry.date < newsRead) continue;
+		sum ++;
+	}
+	updateBadge('more/news', sum);
+}
+
 var initRegatten = function() {
 	showLoader();
 
@@ -436,6 +452,12 @@ var onServiceWorkerLoaded = function() {
 var onDatabaseLoaded = function() {
 	onServiceWorkerLoaded();
 	initPushSettings();
+
+	updateNewsBadge();
+}
+
+var onAfterSync = function() {
+	updateNewsBadge();
 }
 
 // Add console opener to preloader
