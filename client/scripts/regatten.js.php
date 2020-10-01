@@ -1,9 +1,9 @@
 <?php
-	
+
 	header('Content-Type: text/javascript');
-	
+
 	require_once(__DIR__ . '/../../server/config.php');
-	
+
 ?>
 
 const QUERY_URL = '<?php echo QUERY_URL; ?>';
@@ -203,7 +203,28 @@ var logout = function() {
 	});
 }
 
-function resetCache() {
+function deleteDb() {
+	$('#menu-developer').hideMenu();
+	if (canUseLocalDB) {
+		showLoader();
+		var request = window.indexedDB.deleteDatabase('regatten_app_db_' + BOATCLASS);
+		request.onerror = function (event) {
+			console.log('Cannot delete DB: ', event.target.errorCode);
+			toastError('Beim Löschen der Datenbank ist ein Fehler aufgetreten.<br>Bitte melde diesen Fehler. (Dev-Menu => Problem melden)', 5000);
+			hideLoader();
+		}
+		request.onsuccess = function (event) {
+			console.log('DB deleted');
+			toastInfo('Die Datenbank wurde gelöscht. Die Seite lädt in wenigen Sekunden neu und erstellt damit eine neue Datenbank.', 10000);
+			hideLoader();
+			setTimeout(function(){ location.reload(); }, 3000);
+		}
+	} else {
+		toastWarn('Dein Gerät unterstützt kein lokales Speichern der Daten. Alle Daten werden direkt vom Server gezogen.<br>Entsprechend kannst Du die Datenbank auch nicht zurücksetzen.', 10000);
+	}
+}
+
+function deleteCache() {
 	$('#menu-developer').hideMenu();
 	navigator.serviceWorker.getRegistrations().then(function (registrations) {
 		for (let registration of registrations) {
@@ -217,7 +238,8 @@ function resetCache() {
 			return caches.delete(key);
 		}));
 	});
-	toastInfo('The serviceWorker and the cache were deleted. A new serviceWorker will be generated on the next refresh.');
+	toastInfo('Der serviceWorker und alle Caches wurden gelöscht. Die Seite lädt in wenigen Sekunden neu und erstellt damit neue Caches.', 10000);
+	setTimeout(function(){ location.reload(); }, 3000);
 }
 
 var pushesPossible = false;
@@ -227,10 +249,10 @@ function urlB64ToUint8Array(base64String) {
 	const base64 = (base64String + padding)
 		.replace(/\-/g, '+')
 		.replace(/_/g, '/');
-	
+
 	const rawData = window.atob(base64);
 	const outputArray = new Uint8Array(rawData.length);
-	
+
 	for (let i = 0; i < rawData.length; ++i) {
 		outputArray[i] = rawData.charCodeAt(i);
 	}
@@ -317,7 +339,7 @@ async function updatePushSwitches() {
 	$('#switch-pushes-result-ready-my').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_result_ready_my'));
 	$('#switch-pushes-result-ready-all').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_result_ready_all'));
 	$('#switch-pushes-meldeschluss').prop('checked', await dbSettingsGet('notify_channel_' + BOATCLASS + '_meldeschluss'));
-	
+
 	if ($('#switch-pushes').prop('checked')) {
 		$('#p-pushes-info').show();
 		$('.a-switch-pushes-channel').show();
@@ -355,7 +377,7 @@ function pushesOpenMenu() {
 		toastWarn('Benachrichtigungen werden von Deinem Browser blockiert.', 5000);
 		return;
 	}
-	
+
 	swRegistration.pushManager.getSubscription().then(function(subscription) {
 		var isSub = (subscription !== null);
 		$('#switch-pushes').prop('checked', isSub);
@@ -382,9 +404,9 @@ function updatePushBadge() {
 
 var initRegatten = function() {
 	showLoader();
-	
+
 	initDatabase();
-	
+
 	if (isLoggedIn()) {
 		$('.show-loggedin').show();
 		$('.show-notloggedin').hide();
@@ -396,7 +418,7 @@ var initRegatten = function() {
 		$('.show-loggedin').hide();
 		$('.show-notloggedin').show();
 	}
-	
+
 	// Pushes
 	$('#a-switch-pushes').click(pushesSubscribeClicked);
 	$('.a-switch-pushes-channel').click(pushesChannelClicked);
@@ -415,3 +437,25 @@ var onDatabaseLoaded = function() {
 	onServiceWorkerLoaded();
 	initPushSettings();
 }
+
+// Add console opener to preloader
+var addConsoleOpenerToPreloader = function() {
+	addConsoleOpenerToPreloader = function(){};
+	var preloader = document.getElementById('preloader');
+	var button = document.createElement('a');
+	button.href = '#';
+	button.classList = 'btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight m-3';
+	button.style.position = 'fixed';
+	button.style.bottom = 0;
+	button.style.left = 0;
+	button.style.right = 0;
+	button.innerHTML = 'Show Console';
+	button.onclick = function(){
+		mobileConsole.displayConsole();
+		return false;
+	}
+	setTimeout(function(){
+		preloader.appendChild(button);
+	}, 5000);
+}
+addConsoleOpenerToPreloader();

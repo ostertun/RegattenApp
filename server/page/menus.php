@@ -211,22 +211,22 @@
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
 		<div class="list-group list-custom-small">
-			<a href="https://info.ostertun.net/regatten/beta">
+			<a href="https://github.com/ostertun/RegattenApp/wiki">
 				<i class="fa font-14 fa-info rounded-s bg-highlight color-white"></i>
-				<span>Infos zur BETA</span>
+				<span>App-Wiki</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="javascript:resetDb(false);">
+			<a href="javascript:deleteDb();">
 				<i class="fa font-14 fa-database rounded-s bg-highlight color-white"></i>
 				<span>Reset Database</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="javascript:resetCache();">
+			<a href="javascript:deleteCache();">
 				<i class="fa font-14 fa-trash-alt rounded-s bg-highlight color-white"></i>
 				<span>Reset Cache</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="https://report.regatten.net/">
+			<a href="https://github.com/ostertun/RegattenApp/issues">
 				<i class="fa font-14 fa-bug rounded-s bg-highlight color-white"></i>
 				<span>Problem melden</span>
 				<i class="fa fa-angle-right"></i>

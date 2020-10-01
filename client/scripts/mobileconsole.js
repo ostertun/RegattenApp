@@ -345,7 +345,7 @@ var mobileConsole = (function () {
       top: 'auto',
       right: 0,
       width: '100%',
-      zIndex: 10000,
+      zIndex: 1000000,
       padding: 0,
       paddingBottom: options.browserinfo.isMobile ? '35px' : '25px',
       margin: 0,
@@ -914,6 +914,7 @@ var mobileConsole = (function () {
       while (i--) {
         thisLine = lines[i].trim();
         lineAndColumn = thisLine.match(/(?::)(\d+)(?::)(\d+)/);
+        if (lineAndColumn === null) continue;
         url = urlFromString(thisLine).replace(lineAndColumn[0], '').split('#')[0] || '';
         caller = htmlToString(thisLine.replace(urlFromString(thisLine), '').replace(separator, '').replace('at ', '').trim());
         if (caller === '' || caller === lineAndColumn[0]) { continue; }
