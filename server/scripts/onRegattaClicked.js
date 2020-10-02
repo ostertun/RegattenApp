@@ -1,11 +1,11 @@
 async function onRegattaClicked(id) {
 	var regatta = await dbGetData('regattas', id);
-	
+
 	$('#menu-regatta').find('.menu-title').find('p').text(regatta.name);
-	
+
 	var dateTo = parseDate(regatta['date']);
 	dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
-	
+
 	var plannings = await dbGetDataIndex('plannings', 'regatta', regatta['id']);
 	var planning = null;
 	if (isLoggedIn()) {
@@ -16,7 +16,7 @@ async function onRegattaClicked(id) {
 			}
 		}
 	}
-	
+
 	// Your Planning
 	if (planning != null) {
 		$('#menu-item-yourplanning').show();
@@ -32,11 +32,26 @@ async function onRegattaClicked(id) {
 				crew.push(sailor.name);
 			}
 		}
+		var status = '';
+		if (planning.gemeldet == '1') status = 'gemeldet';
+		if (planning.bezahlt == '1') {
+			if (status != '') status += ' und ';
+			status += 'bezahlt';
+		}
+		if (status != '') crew.push('<font style="font-style:italic;">' + status + '</font>');
 		$('#menu-item-yourplanning').html(crew.join('<br>'));
 	} else {
 		$('#menu-item-yourplanning').hide();
 	}
-	
+
+	// Planning: Edit Status
+	if ((planning != null) && (typeof planningEditStatus === 'function')) {
+		$('#menu-item-status').show();
+		$('#menu-item-status').attr('onclick', 'planningEditStatus(' + regatta['id'] + ')');
+	} else {
+		$('#menu-item-status').hide();
+	}
+
 	// Planning
 	if ((plannings.length > 0) && (dateTo >= today)) {
 		$('#menu-item-plannings').show();
@@ -44,7 +59,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-plannings').hide();
 	}
-	
+
 	// Results
 	var results = await dbGetDataIndex('results', 'regatta', regatta['id']);
 	if (results.length > 0) {
@@ -53,7 +68,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-results').hide();
 	}
-	
+
 	// Bericht
 	if (regatta['bericht'] != '') {
 		$('#menu-item-bericht').show();
@@ -62,7 +77,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-bericht').hide();
 	}
-	
+
 	// Info
 	if (regatta['info'] != '') {
 		$('#menu-item-info').show();
@@ -71,7 +86,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-info').hide();
 	}
-	
+
 	// Meldung
 	if ((regatta['meldung'] != '') && (dateTo >= today)) {
 		$('#menu-item-meldung').show();
@@ -129,7 +144,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-meldung').hide();
 	}
-	
+
 	// off. results
 	if (regatta['oresults'] != '') {
 		$('#menu-item-oresults').show();
@@ -138,7 +153,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-oresults').hide();
 	}
-	
+
 	// club website
 	var clubwebsite = '';
 	if (regatta['club'] != null) {
@@ -151,7 +166,7 @@ async function onRegattaClicked(id) {
 	} else {
 		$('#menu-item-clubwebsite').hide();
 	}
-	
+
 	$('#menu-regatta').showMenu();
 	$('#menu-regatta').scrollTop(0);
 }
