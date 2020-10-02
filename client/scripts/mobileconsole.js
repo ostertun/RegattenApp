@@ -335,7 +335,7 @@ var mobileConsole = (function () {
   var elements = {
     lines: [],
     acItems: [],
-    base: createElem('div', 'base', {
+    base: createElem('div', 'base page-bg', {
       boxSizing: 'border-box',
       position: 'fixed',
       resize: 'none',
