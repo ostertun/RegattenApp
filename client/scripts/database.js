@@ -511,6 +511,7 @@ function sync() {
 				if (typeof onAfterSync === 'function') {
 					onAfterSync();
 				}
+				removeSyncInfoToPreloader();
 				runPageScript();
 			}
 		}, 100);
@@ -946,6 +947,7 @@ function initDatabase() {
 				if (lastSync > 0) {
 					runPageScript();
 				} else {
+					addSyncInfoToPreloader();
 					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
 				}
 			};
@@ -1055,4 +1057,21 @@ function resetDb() {
 		log('DB update times reset');
 		hideLoader();
 	}
+}
+
+function addSyncInfoToPreloader() {
+	var preloader = document.getElementById('preloader');
+	var div = document.createElement('div');
+	div.id = 'preloader-sync-info';
+	div.classList = 'rounded-s shadow-m bg-highlight m-3 p-3';
+	div.style.position = 'fixed';
+	div.style.top = 0;
+	div.style.left = 0;
+	div.style.right = 0;
+	div.innerHTML = '<h2 class="color-white">Datenbank SYNC</h2><p class="mb-0 color-white">Um Dir alle n&ouml;tigen Informationen anzeigen zu k&ouml;nnen, m&uuml;ssen wir die Datenbank synchronisieren.<br>Dies kann einen Moment dauern. Bitte habe etwas Geduld. Beim n&auml;chsten &Ouml;ffnen geht es schneller.</p>';
+	preloader.appendChild(div);
+}
+
+function removeSyncInfoToPreloader() {
+	$('#preloader-sync-info').remove();
 }
