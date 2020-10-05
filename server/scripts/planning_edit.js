@@ -17,13 +17,13 @@ async function planningSwitchChanged() {
 			},
 			error: function (xhr, status, error) {
 				if (xhr.status == 401) {
-					console.log('authentification failed');
+					log('authentification failed');
 					toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
 				} else if (xhr.status == 0) {
 					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um die &Auml;nderungen zu speichern');
 				} else {
-					console.log('planning_add: unbekannter Fehler', status, error);
-					console.log(xhr);
+					log('planning_add: unbekannter Fehler', status, error);
+					log(xhr);
 					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				}
 				$('#menu-edit').hideMenu();
@@ -46,13 +46,13 @@ async function planningSwitchChanged() {
 			},
 			error: function (xhr, status, error) {
 				if (xhr.status == 401) {
-					console.log('authentification failed');
+					log('authentification failed');
 					toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
 				} else if (xhr.status == 0) {
 					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um die &Auml;nderungen zu speichern');
 				} else {
-					console.log('planning_remove: unbekannter Fehler', status, error);
-					console.log(xhr);
+					log('planning_remove: unbekannter Fehler', status, error);
+					log(xhr);
 					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				}
 				$('#menu-edit').hideMenu();
@@ -90,13 +90,13 @@ async function sailorSelected(sid) {
 		},
 		error: function (xhr, status, error) {
 			if (xhr.status == 401) {
-				console.log('authentification failed');
+				log('authentification failed');
 				toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
 			} else if (xhr.status == 0) {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um die &Auml;nderungen zu speichern');
 			} else {
-				console.log(action + ': unbekannter Fehler', status, error);
-				console.log(xhr);
+				log(action + ': unbekannter Fehler', status, error);
+				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 			}
 			hideLoader();
@@ -167,13 +167,13 @@ async function planningChangeCrew(sid = null) {
 			},
 			error: function (xhr, status, error) {
 				if (xhr.status == 401) {
-					console.log('authentification failed');
+					log('authentification failed');
 					toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
 				} else if (xhr.status == 0) {
 					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um die &Auml;nderungen zu speichern');
 				} else {
-					console.log('planning_remove_crew: unbekannter Fehler', status, error);
-					console.log(xhr);
+					log('planning_remove_crew: unbekannter Fehler', status, error);
+					log(xhr);
 					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				}
 				$('#menu-edit').hideMenu();
