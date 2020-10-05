@@ -6,7 +6,8 @@
 
 	// Title
 	$content = '<h1>Saison-Planung</h1>';
-	$content .= '<p><b>Hinweis:</b> Diese Seite kannst nur Du sehen.<br>Wenn Du Deine Saison-Planung teilen möchtest, <a id="a-share-planning">klicke hier</a></p>';
+	$content .= '<p class="mb-1"><b>Hinweis:</b> Diese Seite kannst nur Du sehen.<br>Wenn Du Deine Saison-Planung teilen möchtest, <a id="a-share-planning">klicke hier</a></p>';
+	$content .= $tpl->load('button', ['<i class="fas fa-edit"></i>&ensp;bearbeiten', LINK_PRE . 'planning_edit']);
 	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
 
 	$sp['output'] .= $tpl->load('card', [$content, 'css-class' => 'show-loggedin']);
