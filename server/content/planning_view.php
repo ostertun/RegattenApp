@@ -16,7 +16,7 @@
 	$content .= $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text', 'css-class' => 'mt-2']);
 	$content .= '<div id="div-regattas" class="ranking-detail-list mb-0"></div>';
 
-	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas', 'css-class' => 'show-loggedin']);
+	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas']);
 
 	// Menu
 	$items = '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';

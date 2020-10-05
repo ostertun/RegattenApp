@@ -1,19 +1,27 @@
 <?php
-	
-	// TODO: Create site
-	
-	$sp['title'] = 'Seite noch nicht unterstuuml;tzt - Regatten.net ' . $_CLASS['name'];
-	$sp['backbutton'] = true;
-	
-	$content = $tpl->load('error', ['404', 'Seite existiert noch nicht']);
-	$content .= '<p>';
-	$content .= 'Die gesuchte Seite ist leider noch nicht verf&uuml;gbar.<br>';
-	$content .= 'Wir arbeiten daran, sie schnellstm&ouml;glich zur Verf&uuml;gung zu stellen.<br>';
-	$content .= 'Wie w&auml;re es mit der Homepage?';
-	$content .= '</p>';
-	$content .= $tpl->load('button', ['Zur Startseite', LINK_PRE . 'index', 'css-class' => 'mb-3']);
-	$content .= $tpl->load('button', ['Kontakt', LINK_PRE . 'contact']);
-	
-	$sp['output'] = $tpl->load('card', [$content, 'css-class' => 'text-center pt-3']);
-	
+
+	$sp['title'] = 'Saison-Planungen - Regatten.net ' . $_CLASS['name'];
+	$sp['backbutton'] = 'planning';
+	$sp['activenav'] = 5;
+
+	// Title
+	$content = '<h1>Saison-Planungen</h1>';
+	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
+
+	$sp['output'] .= $tpl->load('card', [$content, 'css-class' => 'show-loggedin']);
+
+	// Not loggedin
+	$content = '<h1>Saison-Planungen</h1>';
+	$content .= '<p>Um die Saison-Planungen anderer zu sehen, musst Du angemeldet sein.<br><a href="#" data-menu="menu-login">Melde Dich hier an</a> oder <a href="#" data-menu="menu-signup">registriere Dich jetzt kostenlos</a>.</p>';
+
+	$sp['output'] .= $tpl->load('card', [$content, 'css-class' => 'show-notloggedin']);
+
+	// Regattas
+	$content = $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text']);
+	$content .= '<div id="div-users" class="normal-list mb-0"></div>';
+
+	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas', 'css-class' => 'show-loggedin']);
+
+	$sp['scripts'] .= $scripts->load('planning_list');
+
 ?>
