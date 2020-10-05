@@ -35,7 +35,7 @@ $(document).ready(function(){
     //Enabling dismiss button
     setTimeout(function(){
         $('.pwa-dismiss').on('click',function(){
-            console.log('User Closed Add to Home / PWA Prompt')
+            log('User Closed Add to Home / PWA Prompt')
             createCookie('Sticky_pwa_rejected_install', true, 1);
             $('body').find('#menu-install-pwa-android, #menu-install-pwa-ios, .menu-hider').removeClass('menu-active');
         });
@@ -52,18 +52,16 @@ $(document).ready(function(){
 
     //Firing PWA prompts for specific versions and when not on home screen.
     if (isMobile.Android()) {
-        console.log('Android Detected');
+        log('Android Detected');
         function showInstallPromotion(){
             if($('#menu-install-pwa-android, .add-to-home').length){
-                console.log('Triggering PWA Menu for Android');
+                log('Triggering PWA Menu for Android');
                 if (!readCookie('Sticky_pwa_rejected_install')) {
                     setTimeout(function(){
                         $('.add-to-home').addClass('add-to-home-visible add-to-home-android');
                         $('#menu-install-pwa-android, .menu-hider').addClass('menu-active')
                     },3000);
                 }
-            } else {
-                console.log('The div #menu-install-pwa-android was not found. Please add this div to show the install window')
             }
         }
         let deferredPrompt;
@@ -82,9 +80,9 @@ $(document).ready(function(){
           deferredPrompt.userChoice
             .then((choiceResult) => {
               if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the A2HS prompt');
+                log('User accepted the A2HS prompt');
               } else {
-                console.log('User dismissed the A2HS prompt');
+                log('User dismissed the A2HS prompt');
               }
               deferredPrompt = null;
             });
@@ -96,11 +94,11 @@ $(document).ready(function(){
 
     if (isMobile.iOS()) {
         if(!isInWebAppiOS){
-            console.log('iOS Detected');
+            log('iOS Detected');
             if($('#menu-install-pwa-ios, .add-to-home').length){
                 if (!readCookie('Sticky_pwa_rejected_install')) {
 					function triggerPwaInstallIos() {
-	                    console.log('Triggering PWA / Add to Home Screen Menu for iOS');
+	                    log('Triggering PWA / Add to Home Screen Menu for iOS');
 	                    setTimeout(function(){
 	                        $('.add-to-home').addClass('add-to-home-visible add-to-home-ios');
 	                        $('#menu-install-pwa-ios, .menu-hider').addClass('menu-active');
@@ -113,8 +111,6 @@ $(document).ready(function(){
 						triggerPwaInstallIos();
 					}
                 };
-            } else {
-                console.log('The div #menu-install-pwa-ios was not found. Please add this div to show the install window')
             }
         }
     }
@@ -138,7 +134,7 @@ $(document).ready(function(){
         var counter = 3;
         var interval = setInterval(function() {
             counter--;
-            console.log(counter);
+            log(counter);
             $('.page-update').html('Aktuallisierung in ... '+ counter + ' Sekunden');
             if (counter == 0) {
                 clearInterval(interval);
@@ -146,7 +142,7 @@ $(document).ready(function(){
             }
         }, 1000);
         caches.delete('workbox-runtime').then(function() {
-          console.log('Content Updated - Cache Removed!');
+          log('Content Updated - Cache Removed!');
         });
         //localStorage.clear();
         sessionStorage.clear()
@@ -171,7 +167,7 @@ $(document).ready(function(){
                     //console.log(' Checking PWA Content for updates...\n PWA Server Version: ' + onlineVersionNumber + '\n' + ' PWA Cached Version: ' + localVersionNumber);
                     if(onlineVersionNumber != localVersionNumber && onlineVersionNumber != "Connection Offline. Waiting to Reconect"){
                         updateModal();
-                        console.log('New Version of Content Available. Refreshing. On Desktop Browsers a manual refresh maybe required.')
+                        log('New Version of Content Available. Refreshing. On Desktop Browsers a manual refresh maybe required.')
                         setTimeout(function(){
                             $('body').find('#menu-update').addClass('menu-active');
                             $('.menu-hider').addClass('menu-active-no-click');
@@ -246,13 +242,13 @@ $(document).ready(function(){
     function updateOnlineStatus(event) {
     var condition = navigator.onLine ? "online" : "offline";
         isOnline();
-        console.log( 'Connection: Online');
+        log( 'Connection: Online');
         $("a").off( "click", returnFalse );
     }
     function updateOfflineStatus(event) {
         isOffline();
         $("a").on( "click", returnFalse );
-        console.log( 'Connection: Offline');
+        log( 'Connection: Offline');
     }
     window.addEventListener('online',  updateOnlineStatus);
     window.addEventListener('offline', updateOfflineStatus);
