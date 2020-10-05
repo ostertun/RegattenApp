@@ -933,6 +933,8 @@ function initDatabase() {
 		request.onerror = function (event) {
 			log("Cannot open DB: " + event.target);
 
+			if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
+
 			runPageScript();
 		};
 		request.onsuccess = function (event) {
@@ -1048,6 +1050,8 @@ function initDatabase() {
 			osUpdateTimes.put({ table: 'last_sync', time: 0 });
 		}
 	} else {
+		if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
+
 		runPageScript();
 	}
 }
