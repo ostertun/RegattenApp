@@ -50,7 +50,7 @@ var siteScript = async function() {
 		// Your next
 		var planningsDB = await dbGetDataIndex('plannings', 'user', user.id);
 		var minDate = getToday();
-		minDate.setDate(minDate.getDate() - 1);
+		minDate.setDate(minDate.getDate());
 		var maxDate = getToday();
 		maxDate.setDate(maxDate.getDate() + 28);
 		var regattas = await dbGetRegattasRange(minDate, maxDate);
@@ -166,7 +166,7 @@ var siteScript = async function() {
 
 	// Next
 	var minDate = getToday();
-	minDate.setDate(minDate.getDate() - 1);
+	minDate.setDate(minDate.getDate());
 	var maxDate = getToday();
 	maxDate.setDate(maxDate.getDate() + 14);
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
