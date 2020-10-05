@@ -21,8 +21,8 @@ async function onEditYearClick() {
 				if (xhr.status == 0) {
 					toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Jahrgang zu bearbeiten');
 				} else {
-					console.log('EditYear: unbekannter Fehler', status, error);
-					console.log(xhr);
+					log('EditYear: unbekannter Fehler', status, error);
+					log(xhr);
 					toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				}
 				hideLoader();
@@ -47,9 +47,9 @@ async function onEditYearClick() {
 
 async function onListClicked(id) {
 	var sailor = await dbGetData('sailors', id);
-	
+
 	$('#menu-sailor').find('.menu-title').find('p').text(sailor.name);
-	
+
 	// Edit Year
 	$('#button-edityear').attr('data-sailor-id', sailor.id);
 	$('#menu-edityear').find('.menu-title').find('p').text(sailor.name);
@@ -63,7 +63,7 @@ async function onListClicked(id) {
 		$('#input-edityear').val(sailor.year);
 	}
 	$('#input-edityear').trigger('focusin').trigger('focusout');
-	
+
 	// club website
 	var clubwebsite = '';
 	if (sailor['club'] != null) {
@@ -76,7 +76,7 @@ async function onListClicked(id) {
 	} else {
 		$('#menu-item-clubwebsite').hide();
 	}
-	
+
 	$('#menu-sailor').showMenu();
 	$('#menu-sailor').scrollTop(0);
 }
@@ -89,19 +89,19 @@ function pageChange() {
 async function drawList() {
 	window.setTimeout(function () {
 		var list = '';
-		
+
 		if (displayed.length > 0) {
 			var offset = (page - 1) * showCount;
 			var count = (page == pageCount ? (displayed.length % showCount) : showCount);
 			if (count == 0) count = showCount;
-			
+
 			for (i = 0; i < count; i ++) {
 				list += displayed[i + offset];
 			}
 		} else {
 			list = '<div><div>Keine Ergebnisse, die der Suche entsprechen</div></div>';
 		}
-		
+
 		$('#div-list').html(list);
 	}, 0);
 }
@@ -135,9 +135,9 @@ var siteScript = async function() {
 		$('#menu-item-year').click(function(){ $('#menu-sailor').hideMenu(); $('#menu-edityear').showMenu(); });
 		$('#button-edityear').click(onEditYearClick);
 	}
-	
+
 	var results = await dbGetData('sailors');
-	
+
 	var count = results.length;
 	if (count > 0) {
 		if (count == 1) {
@@ -147,51 +147,51 @@ var siteScript = async function() {
 		}
 		$('#div-list').show();
 		$('#input-search').parent().show();
-		
+
 		results.sort(function (a, b) {
 			return a.name.localeCompare(b.name);
 		});
-		
+
 		rows = [];
-		
+
 		for (id in results) {
 			var entry = results[id];
 			var club = null;
 			if (entry['club'] != null)
 				club = await dbGetData('clubs', entry['club']);
-			
+
 			var row = { keywords: [], content: '' };
 			row.keywords.push(entry['name']);
 			if (entry['year'] != null) row.keywords.push(entry['year']);
 			if (club != null) row.keywords.push(club['kurz'], club['name']);
-			
+
 			row.content += '<div onclick="onListClicked(' + entry['id'] + ');">';
-			
+
 			// ZEILE 1
 			// Name
 			row.content += '<div><b>' + entry['name'] + '</b></div>';
-			
+
 			// ZEILE 2
 			row.content += '<div>';
-			
+
 			// Year
 			row.content += '<div>' + ((entry['year'] != null) ? (entry['year']) : '') + '</div>';
-			
+
 			// Club
 			row.content += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
-			
+
 			row.content += '</div></div>';
-			
+
 			rows.push(row);
 		}
-		
+
 		reSearch();
-		
+
 	} else {
 		$('#p-count').html('Keine Segler gefunden!');
 		$('#div-list').hide();
 		$('#input-search').parent().hide();
 	}
-	
+
 	hideLoader();
 }

@@ -13,6 +13,19 @@ const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';
 const YOUTH_GERMAN_NAME = '<?php echo $_CLASS['youth-german-name']; ?>';
 const PUSH_SERVER_KEY = '<?php echo PUSH_SERVER_KEY; ?>';
 
+function log() {
+	var now = new Date();
+	var hour = now.getHours().toString();
+	var min = now.getMinutes().toString();
+	var sec = now.getSeconds().toString();
+	var millis = now.getMilliseconds().toString();
+	hour = (hour.length < 2 ? '0' + hour : hour);
+	min = (min.length < 2 ? '0' + min : min);
+	sec = (sec.length < 2 ? '0' + sec : sec);
+	while (millis.length < 3) millis = '0' + millis;
+	console.log('[' + hour + ':' + min + ':' + sec + '.' + millis + ']', ...arguments);
+}
+
 var randomId = function() { return '_' + Math.random().toString(36).substr(2, 9); }
 
 var badges = {
@@ -140,8 +153,8 @@ var login = function() {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Dich anzumelden');
 				$('#menu-login').hideMenu();
 			} else {
-				console.log('Login: unbekannter Fehler', status, error);
-				console.log(xhr);
+				log('Login: unbekannter Fehler', status, error);
+				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 			}
 			hideLoader();
@@ -173,7 +186,7 @@ var logout = function() {
 		hash: localStorage.getItem('auth_hash')
 	}
 	if ((auth.id === null) || (auth.hash === null)) {
-		console.log('Not logged in');
+		log('Not logged in');
 		logoutClearStorage();
 		return;
 	}
@@ -185,14 +198,14 @@ var logout = function() {
 		},
 		error: function (xhr, status, error) {
 			if (xhr.status == 401) {
-				console.log('Not logged in');
+				log('Not logged in');
 				logoutClearStorage();
 			} else if (xhr.status == 0) {
-				console.log('Could not delete auth from server');
+				log('Could not delete auth from server');
 				logoutClearStorage();
 			} else {
-				console.log('Logout: unbekannter Fehler', status, error);
-				console.log(xhr);
+				log('Logout: unbekannter Fehler', status, error);
+				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				hideLoader();
 			}
@@ -209,12 +222,12 @@ function deleteDb() {
 		showLoader();
 		var request = window.indexedDB.deleteDatabase('regatten_app_db_' + BOATCLASS);
 		request.onerror = function (event) {
-			console.log('Cannot delete DB: ', event.target.errorCode);
+			log('Cannot delete DB: ', event.target.errorCode);
 			toastError('Beim Löschen der Datenbank ist ein Fehler aufgetreten.<br>Bitte melde diesen Fehler. (Dev-Menu => Problem melden)', 5000);
 			hideLoader();
 		}
 		request.onsuccess = function (event) {
-			console.log('DB deleted');
+			log('DB deleted');
 			toastInfo('Die Datenbank wurde gelöscht. Die Seite lädt in wenigen Sekunden neu und erstellt damit eine neue Datenbank.', 10000);
 			hideLoader();
 			setTimeout(function(){ location.reload(); }, 3000);
@@ -228,13 +241,13 @@ function deleteCache() {
 	$('#menu-developer').hideMenu();
 	navigator.serviceWorker.getRegistrations().then(function (registrations) {
 		for (let registration of registrations) {
-			console.log('Unregister sW:', registration);
+			log('Unregister sW:', registration);
 			registration.unregister();
 		}
 	});
 	caches.keys().then((keyList) => {
 		return Promise.all(keyList.map((key) => {
-			console.log('Cache deleted:', key);
+			log('Cache deleted:', key);
 			return caches.delete(key);
 		}));
 	});
@@ -260,7 +273,7 @@ function urlB64ToUint8Array(base64String) {
 }
 
 function pushesSubscribe() {
-	console.log('Subscribing');
+	log('Subscribing');
 	const applicationServerKey = urlB64ToUint8Array(PUSH_SERVER_KEY);
 	swRegistration.pushManager.subscribe({
 		userVisibleOnly: true,
@@ -272,14 +285,14 @@ function pushesSubscribe() {
 		updatePushBadge();
 	})
 	.catch(function(err) {
-		console.log('Failed to subscribe the user: ', err);
+		log('Failed to subscribe the user: ', err);
 		toastError('Da ist leider etwas schief gelaufen. Bitte stelle sicher, dass Du mit dem Internet verbunden bist und versuche es erneut.', 5000);
 		pushesUnSubscribe(true);
 	});
 }
 
 function pushesUnSubscribe(silent = false) {
-	console.log('Unsubscribing');
+	log('Unsubscribing');
 	swRegistration.pushManager.getSubscription()
 	.then(function(subscription) {
 		if (subscription) {
@@ -291,7 +304,7 @@ function pushesUnSubscribe(silent = false) {
 		}
 	})
 	.catch(function(error) {
-		console.log('Error unsubscribing', error);
+		log('Error unsubscribing', error);
 		$('#menu-pushes').hideMenu();
 		if (!silent) toastError('Da ist leider etwas schief gelaufen. Bitte versuche es erneut oder wende Dich an unseren Support.', 5000);
 		updatePushBadge();
@@ -300,7 +313,7 @@ function pushesUnSubscribe(silent = false) {
 }
 
 function pushesUpdateServerSubscription(subscription, enabled) {
-	console.log('updateServer', enabled, subscription);
+	log('updateServer', enabled, subscription);
 	$.ajax({
 		url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
 		type: 'POST',

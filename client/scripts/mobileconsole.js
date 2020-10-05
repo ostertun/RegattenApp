@@ -1038,7 +1038,7 @@ var mobileConsole = (function () {
     function isRepeat(message, method) {
       return (history.output.prevMsg === message && history.output.prevMethod === method) && (typeof message !== 'object') && (method !== 'trace') && (method !== 'group') && (method !== 'groupCollapsed') && (method !== 'groupEnd');
     }
-    function newConsole() {
+    function newConsole2() {
       try {
         //get arguments, set vars
         var method = arguments[0], className, isHTMLElement,
@@ -1195,11 +1195,7 @@ var mobileConsole = (function () {
         }
         //scroll
         consoleElement.toggleScroll();
-        //==========================================================
-        //make sure we still call the original method, if applicable (not window.onerror)
-        if (typeof arguments[1].original === 'function') {
-          arguments[1].original.apply(console, arguments[1].originalArguments);
-        }
+
       } catch (e) {
         //not logging. why? throw error
         if (options.browserinfo.isMobile) { alert(e); }
@@ -1211,6 +1207,37 @@ var mobileConsole = (function () {
       }
 
     }
+    function newConsole() {
+        if (typeof arguments[1].newMessage === 'object') {
+            var args = arguments[1].newMessage.slice();
+            var argString = [];
+            for (var i in args) {
+                if (typeof args[i] === 'object') {
+                    if (argString.length > 0) {
+                        arguments[1].newMessage = argString.join(' ');
+                        newConsole2(...arguments);
+                        argString = [];
+                    }
+                    arguments[1].newMessage = args[i];
+                    newConsole2(...arguments);
+                } else {
+                    argString.push(args[i]);
+                }
+            }
+            if (argString.length > 0) {
+                arguments[1].newMessage = argString.join(' ');
+                newConsole2(...arguments);
+                argString = [];
+            }
+        } else {
+            newConsole2(...arguments);
+        }
+        //==========================================================
+        //make sure we still call the original method, if applicable (not window.onerror)
+        if (typeof arguments[1].original === 'function') {
+          arguments[1].original.apply(console, arguments[1].originalArguments);
+        }
+    }
     function interceptConsole(method) {
       var original = console ? console[method] : missingMethod(), i, stackTraceOrig;
       if (!console) { console = {}; } //create empty console if we have no console (IE?)
@@ -1218,7 +1245,7 @@ var mobileConsole = (function () {
         var args = Array.prototype.slice.call(arguments);
         args.original = original;
         args.originalArguments = arguments;
-        args.newMessage = (method === 'assert') ? [args[0], args[1]] : args[0];
+        //args.newMessage = (method === 'assert') ? [args[0], args[1]] : args[0];
         //create an Error and get its stack trace and format it
         try { throw new Error(); } catch (e) { stackTraceOrig = e.stack; }
         args.newStackTrace = formatStackTrace(args.newStackTrace, stackTraceOrig);
@@ -1241,6 +1268,12 @@ var mobileConsole = (function () {
           return;
         }
         //Handle the new console logging
+        args.newMessage = [];
+        var i = 0;
+        while (typeof args[i] !== 'undefined') {
+            args.newMessage.push(args[i]);
+            i ++;
+        }
         newConsole(method, args);
       };
     }

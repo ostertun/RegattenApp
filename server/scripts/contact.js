@@ -23,8 +23,8 @@ function sendMessage() {
 			if (xhr.status == 0) {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um eine Nachricht zu versenden');
 			} else {
-				console.log('Contact: unbekannter Fehler', status, error);
-				console.log(xhr);
+				log('Contact: unbekannter Fehler', status, error);
+				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 			}
 			hideLoader();
