@@ -46,6 +46,15 @@ var siteScript = async function() {
 
 	$('#p-username').text(user.username);
 
+	if (isLoggedIn() && (userid == USER_ID)) {
+		$('#button-share').show();
+		$('#button-share').click(function(){
+			$('#menu-share').showMenu();
+		});
+	} else {
+		$('#button-share').hide();
+	}
+
 	if (firstCall) {
 		firstCall = false;
 		initYear();

@@ -115,6 +115,8 @@ var siteScript = async function() {
 		$('#switch-status-bezahlt').parent().parent().click(planningSwitchChanged);
 	}
 
+	$('#a-share-planning').attr('href', LINK_PRE + 'planning_view?user=' + USER_ID);
+
 	today = getToday();
 
 	var selectedYear = $('#select-year').val();

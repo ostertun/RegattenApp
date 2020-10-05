@@ -6,7 +6,8 @@
 
 	// Title
 	$content = '<h1>Saison-Planung</h1>';
-	$content .= '<p id="p-username"></p>';
+	$content .= '<p id="p-username" class="mb-1"></p>';
+	$content .= $tpl->load('button', ['<i class="fas fa-share-alt"></i>&ensp;Teilen', '#', 'html-id' => 'button-share']);
 	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
 
 	$sp['output'] .= $tpl->load('card', [$content]);
