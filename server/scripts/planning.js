@@ -18,13 +18,13 @@ async function planningSwitchChanged() {
 		},
 		error: function (xhr, status, error) {
 			if (xhr.status == 401) {
-				console.log('authentification failed');
+				log('authentification failed');
 				toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
 			} else if (xhr.status == 0) {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Status zu &auml;ndern');
 			} else {
-				console.log('Login: unbekannter Fehler', status, error);
-				console.log(xhr);
+				log('Login: unbekannter Fehler', status, error);
+				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 			}
 			$('#menu-status').hideMenu();
@@ -35,8 +35,6 @@ async function planningSwitchChanged() {
 			hideLoader();
 		}
 	});
-	console.log(id, gemeldet, bezahlt);
-	hideLoader();
 }
 
 async function planningEditStatus(id) {

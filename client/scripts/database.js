@@ -483,262 +483,49 @@ function sync() {
 	if (!canUseLocalDB) return false;
 	if (syncInProgress > 0) return false;
 
-	var now = Math.floor(Date.now() / 1000);
+	return new Promise(function(resolve) {
+		var now = Math.floor(Date.now() / 1000);
 
-	db.transaction('update_times').objectStore('update_times').getAll().onsuccess = function (event) {
-		var localTimes = {};
-		event.target.result.forEach(function (entry) {
-			localTimes[entry['table']] = entry['time'];
-		});
+		db.transaction('update_times').objectStore('update_times').getAll().onsuccess = function (event) {
+			var localTimes = {};
+			event.target.result.forEach(function (entry) {
+				localTimes[entry['table']] = entry['time'];
+			});
 
-		syncInProgress = 11;
-		var syncOkay = true;
-		log("Sync Start");
-		$('#i-sync').addClass('fa-spin');
+			syncInProgress = 11;
+			var syncOkay = true;
+			log("Sync Start");
+			$('#i-sync').addClass('fa-spin');
 
-		var interval = window.setInterval(function () {
-			if (syncInProgress <= 0) {
-				window.clearInterval(interval);
-				if (syncOkay) {
-					var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-					osUpdateTimes.put({ table: 'last_sync', time: now });
+			var interval = window.setInterval(function () {
+				if (syncInProgress <= 0) {
+					window.clearInterval(interval);
+					if (syncOkay) {
+						var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+						osUpdateTimes.put({ table: 'last_sync', time: now });
+					}
+					log("Sync Stop");
+					setTimeout(function(){
+						$('#i-sync').removeClass('fa-spin');
+					}, 500);
+
+					if (typeof onAfterSync === 'function') {
+						onAfterSync();
+					}
+					removeSyncInfoToPreloader();
+					runPageScript();
+					resolve();
 				}
-				log("Sync Stop");
-				setTimeout(function(){
-					$('#i-sync').removeClass('fa-spin');
-				}, 500);
+			}, 100);
 
-				if (typeof onAfterSync === 'function') {
-					onAfterSync();
-				}
-				removeSyncInfoToPreloader();
-				runPageScript();
-			}
-		}, 100);
+			getJSON(QUERY_URL + 'get_update_time', function (code, serverTimes) {
+				if (code == 200) {
 
-		getJSON(QUERY_URL + 'get_update_time', function (code, serverTimes) {
-			if (code == 200) {
-
-				// CLUBS
-				if (localTimes['clubs'] < serverTimes['clubs']) {
-					getJSON(QUERY_URL + 'get_clubs?changed-after=' + localTimes['clubs'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('clubs', 'readwrite').objectStore('clubs');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'clubs', time: serverTimes['clubs'] });
-									syncInProgress --;
-									log('clubs synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("clubs: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('clubs failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// BOATS
-				if (localTimes['boats'] < serverTimes['boats']) {
-					getJSON(QUERY_URL + 'get_boats?changed-after=' + localTimes['boats'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('boats', 'readwrite').objectStore('boats');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'boats', time: serverTimes['boats'] });
-									syncInProgress --;
-									log('boats synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("boats: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('boats failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// SAILORS
-				if (localTimes['sailors'] < serverTimes['sailors']) {
-					getJSON(QUERY_URL + 'get_sailors?changed-after=' + localTimes['sailors'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('sailors', 'readwrite').objectStore('sailors');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'sailors', time: serverTimes['sailors'] });
-									syncInProgress --;
-									log('sailors synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("sailors: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('sailors failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// REGATTAS
-				if (localTimes['regattas'] < serverTimes['regattas']) {
-					getJSON(QUERY_URL + 'get_regattas?changed-after=' + localTimes['regattas'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('regattas', 'readwrite').objectStore('regattas');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = async function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									// update years
-									var regattas = await dbGetData('regattas');
-									var years = {};
-									for (id in regattas) {
-										var entry = regattas[id];
-										var date = parseDate(entry['date']);
-										var y = date.getFullYear();
-										years[y] = y;
-									}
-									var osYears = db.transaction('years', 'readwrite').objectStore('years');
-									osYears.clear().onsuccess = function (event) {
-										for (var y in years) {
-											osYears.put({ year: y });
-										}
-									}
-
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'regattas', time: serverTimes['regattas'] });
-									syncInProgress --;
-									log('regattas synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("regattas: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('regattas failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// RESULTS
-				if (localTimes['results'] < serverTimes['results']) {
-					getJSON(QUERY_URL + 'get_results?changed-after=' + localTimes['results'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('results', 'readwrite').objectStore('results');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'results', time: serverTimes['results'] });
-									syncInProgress --;
-									log('results synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("results: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('results failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// PLANNINGS
-				if (localTimes['plannings'] < serverTimes['plannings']) {
-					getJSON(QUERY_URL + 'get_plannings?changed-after=' + localTimes['plannings'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('plannings', 'readwrite').objectStore('plannings');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'plannings', time: serverTimes['plannings'] });
-									syncInProgress --;
-									log('plannings synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("plannings: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('plannings failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				if (isLoggedIn()) {
-					// TRIM_BOATS
-					if (localTimes['trim_boats'] < serverTimes['trim_boats']) {
-						getJSON(QUERY_URL + 'get_trim_boats?changed-after=' + localTimes['trim_boats'], function (code, data) {
+					// CLUBS
+					if (localTimes['clubs'] < serverTimes['clubs']) {
+						getJSON(QUERY_URL + 'get_clubs?changed-after=' + localTimes['clubs'], function (code, data) {
 							if (code == 200) {
-								var os = db.transaction('trim_boats', 'readwrite').objectStore('trim_boats');
+								var os = db.transaction('clubs', 'readwrite').objectStore('clubs');
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -751,27 +538,27 @@ function sync() {
 										cursor.continue();
 									} else {
 										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-										osUpdateTimes.put({ table: 'trim_boats', time: serverTimes['trim_boats'] });
+										osUpdateTimes.put({ table: 'clubs', time: serverTimes['clubs'] });
 										syncInProgress --;
-										log('trim_boats synced, remaining:', syncInProgress);
+										log('clubs synced, remaining:', syncInProgress);
 									}
 								};
 							} else {
-								log("trim_boats: Something went wrong (HTTP " + code + ")");
+								log("clubs: Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
-								log('trim_boats failed, remaining:', syncInProgress);
+								log('clubs failed, remaining:', syncInProgress);
 							}
 						});
 					} else {
 						syncInProgress --;
 					}
 
-					// TRIM_USERS
-					if (localTimes['trim_users'] < serverTimes['trim_users']) {
-						getJSON(QUERY_URL + 'get_trim_users?changed-after=' + localTimes['trim_users'], function (code, data) {
+					// BOATS
+					if (localTimes['boats'] < serverTimes['boats']) {
+						getJSON(QUERY_URL + 'get_boats?changed-after=' + localTimes['boats'], function (code, data) {
 							if (code == 200) {
-								var os = db.transaction('trim_users', 'readwrite').objectStore('trim_users');
+								var os = db.transaction('boats', 'readwrite').objectStore('boats');
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -784,27 +571,27 @@ function sync() {
 										cursor.continue();
 									} else {
 										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-										osUpdateTimes.put({ table: 'trim_users', time: serverTimes['trim_users'] });
+										osUpdateTimes.put({ table: 'boats', time: serverTimes['boats'] });
 										syncInProgress --;
-										log('trim_users synced, remaining:', syncInProgress);
+										log('boats synced, remaining:', syncInProgress);
 									}
 								};
 							} else {
-								log("trim_users: Something went wrong (HTTP " + code + ")");
+								log("boats: Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
-								log('trim_users failed, remaining:', syncInProgress);
+								log('boats failed, remaining:', syncInProgress);
 							}
 						});
 					} else {
 						syncInProgress --;
 					}
 
-					// TRIM_TRIMS
-					if (localTimes['trim_trims'] < serverTimes['trim_trims']) {
-						getJSON(QUERY_URL + 'get_trim_trims?changed-after=' + localTimes['trim_trims'], function (code, data) {
+					// SAILORS
+					if (localTimes['sailors'] < serverTimes['sailors']) {
+						getJSON(QUERY_URL + 'get_sailors?changed-after=' + localTimes['sailors'], function (code, data) {
 							if (code == 200) {
-								var os = db.transaction('trim_trims', 'readwrite').objectStore('trim_trims');
+								var os = db.transaction('sailors', 'readwrite').objectStore('sailors');
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -817,16 +604,301 @@ function sync() {
 										cursor.continue();
 									} else {
 										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-										osUpdateTimes.put({ table: 'trim_trims', time: serverTimes['trim_trims'] });
+										osUpdateTimes.put({ table: 'sailors', time: serverTimes['sailors'] });
 										syncInProgress --;
-										log('trim_trims synced, remaining:', syncInProgress);
+										log('sailors synced, remaining:', syncInProgress);
 									}
 								};
 							} else {
-								log("trim_trims: Something went wrong (HTTP " + code + ")");
+								log("sailors: Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
-								log('trim_trims failed, remaining:', syncInProgress);
+								log('sailors failed, remaining:', syncInProgress);
+							}
+						});
+					} else {
+						syncInProgress --;
+					}
+
+					// REGATTAS
+					if (localTimes['regattas'] < serverTimes['regattas']) {
+						getJSON(QUERY_URL + 'get_regattas?changed-after=' + localTimes['regattas'], function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('regattas', 'readwrite').objectStore('regattas');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = async function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										// update years
+										var regattas = await dbGetData('regattas');
+										var years = {};
+										for (id in regattas) {
+											var entry = regattas[id];
+											var date = parseDate(entry['date']);
+											var y = date.getFullYear();
+											years[y] = y;
+										}
+										var osYears = db.transaction('years', 'readwrite').objectStore('years');
+										osYears.clear().onsuccess = function (event) {
+											for (var y in years) {
+												osYears.put({ year: y });
+											}
+										}
+
+										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+										osUpdateTimes.put({ table: 'regattas', time: serverTimes['regattas'] });
+										syncInProgress --;
+										log('regattas synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("regattas: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('regattas failed, remaining:', syncInProgress);
+							}
+						});
+					} else {
+						syncInProgress --;
+					}
+
+					// RESULTS
+					if (localTimes['results'] < serverTimes['results']) {
+						getJSON(QUERY_URL + 'get_results?changed-after=' + localTimes['results'], function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('results', 'readwrite').objectStore('results');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+										osUpdateTimes.put({ table: 'results', time: serverTimes['results'] });
+										syncInProgress --;
+										log('results synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("results: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('results failed, remaining:', syncInProgress);
+							}
+						});
+					} else {
+						syncInProgress --;
+					}
+
+					// PLANNINGS
+					if (localTimes['plannings'] < serverTimes['plannings']) {
+						getJSON(QUERY_URL + 'get_plannings?changed-after=' + localTimes['plannings'], function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('plannings', 'readwrite').objectStore('plannings');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+										osUpdateTimes.put({ table: 'plannings', time: serverTimes['plannings'] });
+										syncInProgress --;
+										log('plannings synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("plannings: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('plannings failed, remaining:', syncInProgress);
+							}
+						});
+					} else {
+						syncInProgress --;
+					}
+
+					if (isLoggedIn()) {
+						// TRIM_BOATS
+						if (localTimes['trim_boats'] < serverTimes['trim_boats']) {
+							getJSON(QUERY_URL + 'get_trim_boats?changed-after=' + localTimes['trim_boats'], function (code, data) {
+								if (code == 200) {
+									var os = db.transaction('trim_boats', 'readwrite').objectStore('trim_boats');
+									data.data.forEach(function (entry) {
+										os.put(entry);
+									});
+									os.openCursor().onsuccess = function (event) {
+										var cursor = event.target.result;
+										if (cursor) {
+											if (!data.keys.includes(parseInt(cursor.key))) {
+												os.delete(cursor.key);
+											}
+											cursor.continue();
+										} else {
+											var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+											osUpdateTimes.put({ table: 'trim_boats', time: serverTimes['trim_boats'] });
+											syncInProgress --;
+											log('trim_boats synced, remaining:', syncInProgress);
+										}
+									};
+								} else {
+									log("trim_boats: Something went wrong (HTTP " + code + ")");
+									syncOkay = false;
+									syncInProgress --;
+									log('trim_boats failed, remaining:', syncInProgress);
+								}
+							});
+						} else {
+							syncInProgress --;
+						}
+
+						// TRIM_USERS
+						if (localTimes['trim_users'] < serverTimes['trim_users']) {
+							getJSON(QUERY_URL + 'get_trim_users?changed-after=' + localTimes['trim_users'], function (code, data) {
+								if (code == 200) {
+									var os = db.transaction('trim_users', 'readwrite').objectStore('trim_users');
+									data.data.forEach(function (entry) {
+										os.put(entry);
+									});
+									os.openCursor().onsuccess = function (event) {
+										var cursor = event.target.result;
+										if (cursor) {
+											if (!data.keys.includes(parseInt(cursor.key))) {
+												os.delete(cursor.key);
+											}
+											cursor.continue();
+										} else {
+											var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+											osUpdateTimes.put({ table: 'trim_users', time: serverTimes['trim_users'] });
+											syncInProgress --;
+											log('trim_users synced, remaining:', syncInProgress);
+										}
+									};
+								} else {
+									log("trim_users: Something went wrong (HTTP " + code + ")");
+									syncOkay = false;
+									syncInProgress --;
+									log('trim_users failed, remaining:', syncInProgress);
+								}
+							});
+						} else {
+							syncInProgress --;
+						}
+
+						// TRIM_TRIMS
+						if (localTimes['trim_trims'] < serverTimes['trim_trims']) {
+							getJSON(QUERY_URL + 'get_trim_trims?changed-after=' + localTimes['trim_trims'], function (code, data) {
+								if (code == 200) {
+									var os = db.transaction('trim_trims', 'readwrite').objectStore('trim_trims');
+									data.data.forEach(function (entry) {
+										os.put(entry);
+									});
+									os.openCursor().onsuccess = function (event) {
+										var cursor = event.target.result;
+										if (cursor) {
+											if (!data.keys.includes(parseInt(cursor.key))) {
+												os.delete(cursor.key);
+											}
+											cursor.continue();
+										} else {
+											var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+											osUpdateTimes.put({ table: 'trim_trims', time: serverTimes['trim_trims'] });
+											syncInProgress --;
+											log('trim_trims synced, remaining:', syncInProgress);
+										}
+									};
+								} else {
+									log("trim_trims: Something went wrong (HTTP " + code + ")");
+									syncOkay = false;
+									syncInProgress --;
+									log('trim_trims failed, remaining:', syncInProgress);
+								}
+							});
+						} else {
+							syncInProgress --;
+						}
+
+					} else {
+						syncInProgress -= 3;
+					}
+
+					// NEWS
+					if (localTimes['news'] < serverTimes['news']) {
+						getJSON(QUERY_URL + 'get_news?changed-after=' + localTimes['news'], function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('news', 'readwrite').objectStore('news');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+										osUpdateTimes.put({ table: 'news', time: serverTimes['news'] });
+										syncInProgress --;
+										log('news synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("news: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('news failed, remaining:', syncInProgress);
+							}
+						});
+					} else {
+						syncInProgress --;
+					}
+
+					// USERS
+					if (localTimes['users'] < serverTimes['users']) {
+						getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('users', 'readwrite').objectStore('users');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+										osUpdateTimes.put({ table: 'users', time: serverTimes['users'] });
+										syncInProgress --;
+										log('users synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("users: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('users failed, remaining:', syncInProgress);
 							}
 						});
 					} else {
@@ -834,82 +906,13 @@ function sync() {
 					}
 
 				} else {
-					syncInProgress -= 3;
+					log("Something went wrong (HTTP " + code + ")");
+					syncOkay = false;
+					syncInProgress = 0;
 				}
-
-				// NEWS
-				if (localTimes['news'] < serverTimes['news']) {
-					getJSON(QUERY_URL + 'get_news?changed-after=' + localTimes['news'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('news', 'readwrite').objectStore('news');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'news', time: serverTimes['news'] });
-									syncInProgress --;
-									log('news synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("news: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('news failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-				// USERS
-				if (localTimes['users'] < serverTimes['users']) {
-					getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
-						if (code == 200) {
-							var os = db.transaction('users', 'readwrite').objectStore('users');
-							data.data.forEach(function (entry) {
-								os.put(entry);
-							});
-							os.openCursor().onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									if (!data.keys.includes(parseInt(cursor.key))) {
-										os.delete(cursor.key);
-									}
-									cursor.continue();
-								} else {
-									var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-									osUpdateTimes.put({ table: 'users', time: serverTimes['users'] });
-									syncInProgress --;
-									log('users synced, remaining:', syncInProgress);
-								}
-							};
-						} else {
-							log("users: Something went wrong (HTTP " + code + ")");
-							syncOkay = false;
-							syncInProgress --;
-							log('users failed, remaining:', syncInProgress);
-						}
-					});
-				} else {
-					syncInProgress --;
-				}
-
-			} else {
-				log("Something went wrong (HTTP " + code + ")");
-				syncOkay = false;
-				syncInProgress = 0;
-			}
-		});
-	};
+			});
+		};
+	});
 }
 
 function checkSync() {
