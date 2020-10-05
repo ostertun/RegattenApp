@@ -470,7 +470,7 @@ var onServiceWorkerLoaded = function() {
 }
 
 var onDatabaseLoaded = function() {
-	if (!canUseLocalDB) {
+	if (!canUseLocalDB && !$('#menu-welcome').hasClass('menu-active')) {
 		function NoDbWarningOk() {
 			createCookie('regatten_nodb_banner', true, 1);
 			$('#menu-nodb-warning').hideMenu();
