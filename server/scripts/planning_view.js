@@ -83,12 +83,6 @@ var siteScript = async function() {
 			regattas.splice(i, 1);
 		}
 	}
-	var regattaResults = [];
-	for (id in regattas) {
-		var entry = regattas[id];
-		var results = await dbGetDataIndex('results', 'regatta', entry['id']);
-		regattaResults[entry['id']] = (results.length > 0);
-	}
 
 	var years = await dbGetData('years');
 	years.sort(function (a, b) {
@@ -194,7 +188,7 @@ var siteScript = async function() {
 
 			// ZEILE 5
 			row.content += '<div>';
-			row.content += '<div>' + entry.planning.steuermann + '</div>';
+			row.content += '<div>' + (entry.planning.steuermann !== null ? entry.planning.steuermann : 'noch unklar') + '</div>';
 			row.content += '</div>';
 
 			// ZEILE 6...
@@ -205,72 +199,7 @@ var siteScript = async function() {
 			}
 
 			row.content += '</div>';
-/*
-			// ZEILE 2
-			row.content += '<div>';
 
-			// Number
-			row.content += '<div>' + ((entry['number'] != null) ? ('# ' + entry['number']) : '') + '</div>';
-
-			// Club
-			row.content += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
-
-			// Special
-			row.content += '<div>' + entry['special'] + '</div>';
-
-			// Icons
-			var icons = [];
-			if (entry['info'] != '')
-				icons.push('<i class="fas fa-info"></i>');
-			if ((entry['meldung'] != '') && (dateTo >= today) && (entry['meldungOffen'] == '1')) {
-				var color = '';
-				if (entry['meldungSchluss'] != null) {
-					var ms = 0;
-					if (entry['meldungEarly'] != null) {
-						ms = parseDate(entry['meldungEarly']);
-					}
-					if (ms < today) {
-						ms = parseDate(entry['meldungSchluss']);
-					}
-					var diff = Math.round((ms - today) / 86400000);
-					if (ms < today) {
-						color = ' color-red2-dark';
-					} else if (diff < 7) {
-						color = ' color-yellow2-dark';
-					}
-				}
-				icons.push('<i class="fas fa-file-signature' + color + '"></i>');
-			}
-			if (entry['bericht'] != '')
-				icons.push('<i class="fas fa-book"></i>');
-			if (entry['canceled'] == '1') {
-				icons.push('<i class="fas fa-times color-red2-dark"></i>');
-			} else if (regattaResults[entry['id']]) {
-				icons.push('<i class="fas fa-poll"></i>');
-			}
-			row.content += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
-
-			row.content += '</div>';
-
-			// ZEILE 3
-			row.content += '<div>';
-
-			// Date
-			if (entry['length'] < 1) {
-				if (formatDate('d.m', dateFrom) == '01.01') {
-					row.content += '<div><font class="color-red2-dark">Datum noch unklar</font></div>';
-				} else {
-					row.content += '<div>' + formatDate("d.m.Y", dateFrom) + ' - <font class="color-red2-dark">Datum nicht final</font></div>';
-				}
-			} else {
-				row.content += '<div>' + formatDate("d.m.Y", dateFrom) + ' - ' + formatDate("d.m.Y", dateTo) + '</div>';
-			}
-
-			// RLF
-			row.content += '<div>' + parseFloat(entry['rlf']).toFixed(2) + '</div>';
-
-			row.content += '</div></div>';
-*/
 			rows.push(row);
 		}
 

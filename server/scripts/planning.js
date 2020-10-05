@@ -35,8 +35,6 @@ async function planningSwitchChanged() {
 			hideLoader();
 		}
 	});
-	console.log(id, gemeldet, bezahlt);
-	hideLoader();
 }
 
 async function planningEditStatus(id) {
