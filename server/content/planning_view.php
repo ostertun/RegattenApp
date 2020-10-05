@@ -1,19 +1,35 @@
 <?php
-	
-	// TODO: Create site
-	
-	$sp['title'] = 'Seite noch nicht unterstuuml;tzt - Regatten.net ' . $_CLASS['name'];
-	$sp['backbutton'] = true;
-	
-	$content = $tpl->load('error', ['404', 'Seite existiert noch nicht']);
-	$content .= '<p>';
-	$content .= 'Die gesuchte Seite ist leider noch nicht verf&uuml;gbar.<br>';
-	$content .= 'Wir arbeiten daran, sie schnellstm&ouml;glich zur Verf&uuml;gung zu stellen.<br>';
-	$content .= 'Wie w&auml;re es mit der Homepage?';
-	$content .= '</p>';
-	$content .= $tpl->load('button', ['Zur Startseite', LINK_PRE . 'index', 'css-class' => 'mb-3']);
-	$content .= $tpl->load('button', ['Kontakt', LINK_PRE . 'contact']);
-	
-	$sp['output'] = $tpl->load('card', [$content, 'css-class' => 'text-center pt-3']);
-	
+
+	$sp['title'] = 'Saison-Planung - Regatten.net ' . $_CLASS['name'];
+	$sp['backbutton'] = 'planning_list';
+	$sp['activenav'] = 5;
+
+	// Title
+	$content = '<h1>Saison-Planung</h1>';
+	$content .= '<p id="p-username"></p>';
+	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
+
+	$sp['output'] .= $tpl->load('card', [$content]);
+
+	// Regattas
+	$content = '<p id="p-count" class="mb-0"></p>';
+	$content .= $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text', 'css-class' => 'mt-2']);
+	$content .= '<div id="div-regattas" class="ranking-detail-list mb-0"></div>';
+
+	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas', 'css-class' => 'show-loggedin']);
+
+	// Menu
+	$items = '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
+	$items .= $tpl->load('menu/item-icon', ['Saison-Planungen', '', 'html-id' => 'menu-item-plannings', 'icon' => 'fa-calendar-alt']);
+	$items .= $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Bericht', '', 'html-id' => 'menu-item-bericht', 'icon' => 'fa-book']);
+	$items .= $tpl->load('menu/item-icon', ['Informationen', '', 'html-id' => 'menu-item-info', 'icon' => 'fa-info']);
+	$items .= $tpl->load('menu/item-icon-badge', ['Meldung', '', 'html-id' => 'menu-item-meldung', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-meldung']);
+	$items .= $tpl->load('menu/item-icon', ['offizielle Ergebnisse', '', 'html-id' => 'menu-item-oresults', 'icon' => 'fa-poll']);
+	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 320]);
+
+	$sp['scripts'] .= $scripts->load('onRegattaClicked');
+	$sp['scripts'] .= $scripts->load('planning_view');
+
 ?>
