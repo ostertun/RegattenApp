@@ -229,6 +229,7 @@ self.addEventListener('push', async function(event) {
 					case 'meldeschluss':
 						if (await dbSettingsGet('notify_channel_<?php echo BOATCLASS; ?>_meldeschluss')) {
 							if (await isMyRegatta(getEntry(data, 'id', ''))) okay = true;
+							// TODO: only if not already registered
 						}
 						break;
 					default:
