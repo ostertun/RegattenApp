@@ -3,27 +3,27 @@
 	<div class="content mb-0">
 		<div class="divider mb-0"></div>
 		<div class="list-group list-custom-small list-icon-0">
-			<a href="#" class="shareToFacebook">
+			<a href="#" class="shareToFacebook" target="_blank">
 				<i class="font-18 fab fa-facebook color-facebook"></i>
 				<span class="font-13">Facebook</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" class="shareToTwitter">
+			<a href="#" class="shareToTwitter" target="_blank">
 				<i class="font-18 fab fa-twitter-square color-twitter"></i>
 				<span class="font-13">Twitter</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" class="shareToLinkedIn">
+			<a href="#" class="shareToLinkedIn" target="_blank">
 				<i class="font-18 fab fa-linkedin color-linkedin"></i>
 				<span class="font-13">LinkedIn</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" class="shareToWhatsApp">
+			<a href="#" class="shareToWhatsApp" target="_blank">
 				<i class="font-18 fab fa-whatsapp-square color-whatsapp"></i>
 				<span class="font-13">WhatsApp</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" class="shareToMail border-0">
+			<a href="#" class="shareToMail border-0" target="_blank">
 				<i class="font-18 fa fa-envelope-square color-mail"></i>
 				<span class="font-13">Email</span>
 				<i class="fa fa-angle-right"></i>

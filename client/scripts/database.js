@@ -20,11 +20,11 @@ var getJSON = function(url, callback) {
 		callback(xhr.status, xhr.response);
 	};
 	xhr.ontimeout = function () {
-		console.log("getJSON: timeout");
+		log("getJSON: timeout");
 		callback(0, null);
 	}
 	xhr.onerror = function () {
-		console.log("getJSON: error");
+		log("getJSON: error");
 		callback(0, null);
 	}
 	if (USER_ID != null) {
@@ -76,7 +76,7 @@ function dbGetData(table, id = null) {
 					if (code == 200) {
 						resolve(data.data);
 					} else {
-						console.log("Something went wrong (HTTP " + code + ")");
+						log("Something went wrong (HTTP " + code + ")");
 						fail(strings.error_network, 5000);
 						resolve([]);
 					}
@@ -86,7 +86,7 @@ function dbGetData(table, id = null) {
 					if (code == 200) {
 						resolve(data.data);
 					} else {
-						console.log("Something went wrong (HTTP " + code + ")");
+						log("Something went wrong (HTTP " + code + ")");
 						fail(strings.error_network, 5000);
 						resolve(null);
 					}
@@ -108,7 +108,7 @@ function dbGetDataIndex(table, indexName, value) {
 				if (code == 200) {
 					resolve(data.data);
 				} else {
-					console.log("Something went wrong (HTTP " + code + ")");
+					log("Something went wrong (HTTP " + code + ")");
 					fail(strings.error_network, 5000);
 					resolve([]);
 				}
@@ -493,7 +493,7 @@ function sync() {
 
 		syncInProgress = 11;
 		var syncOkay = true;
-		console.log("Sync Start");
+		log("Sync Start");
 		$('#i-sync').addClass('fa-spin');
 
 		var interval = window.setInterval(function () {
@@ -503,7 +503,7 @@ function sync() {
 					var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
 					osUpdateTimes.put({ table: 'last_sync', time: now });
 				}
-				console.log("Sync Stop");
+				log("Sync Stop");
 				setTimeout(function(){
 					$('#i-sync').removeClass('fa-spin');
 				}, 500);
@@ -511,6 +511,7 @@ function sync() {
 				if (typeof onAfterSync === 'function') {
 					onAfterSync();
 				}
+				removeSyncInfoToPreloader();
 				runPageScript();
 			}
 		}, 100);
@@ -523,7 +524,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_clubs?changed-after=' + localTimes['clubs'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('clubs', 'readwrite').objectStore('clubs');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -541,7 +542,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -555,7 +556,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_boats?changed-after=' + localTimes['boats'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('boats', 'readwrite').objectStore('boats');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -573,7 +574,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -587,7 +588,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_sailors?changed-after=' + localTimes['sailors'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('sailors', 'readwrite').objectStore('sailors');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -605,7 +606,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -619,7 +620,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_regattas?changed-after=' + localTimes['regattas'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('regattas', 'readwrite').objectStore('regattas');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -653,7 +654,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -667,7 +668,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_results?changed-after=' + localTimes['results'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('results', 'readwrite').objectStore('results');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -685,7 +686,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -699,7 +700,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_plannings?changed-after=' + localTimes['plannings'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('plannings', 'readwrite').objectStore('plannings');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -717,7 +718,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -732,7 +733,7 @@ function sync() {
 						getJSON(QUERY_URL + 'get_trim_boats?changed-after=' + localTimes['trim_boats'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_boats', 'readwrite').objectStore('trim_boats');
-								console.log(data);
+								log(data);
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -750,7 +751,7 @@ function sync() {
 									}
 								};
 							} else {
-								console.log("Something went wrong (HTTP " + code + ")");
+								log("Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
 							}
@@ -764,7 +765,7 @@ function sync() {
 						getJSON(QUERY_URL + 'get_trim_users?changed-after=' + localTimes['trim_users'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_users', 'readwrite').objectStore('trim_users');
-								console.log(data);
+								log(data);
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -782,7 +783,7 @@ function sync() {
 									}
 								};
 							} else {
-								console.log("Something went wrong (HTTP " + code + ")");
+								log("Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
 							}
@@ -796,7 +797,7 @@ function sync() {
 						getJSON(QUERY_URL + 'get_trim_trims?changed-after=' + localTimes['trim_trims'], function (code, data) {
 							if (code == 200) {
 								var os = db.transaction('trim_trims', 'readwrite').objectStore('trim_trims');
-								console.log(data);
+								log(data);
 								data.data.forEach(function (entry) {
 									os.put(entry);
 								});
@@ -814,7 +815,7 @@ function sync() {
 									}
 								};
 							} else {
-								console.log("Something went wrong (HTTP " + code + ")");
+								log("Something went wrong (HTTP " + code + ")");
 								syncOkay = false;
 								syncInProgress --;
 							}
@@ -832,7 +833,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_news?changed-after=' + localTimes['news'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('news', 'readwrite').objectStore('news');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -850,7 +851,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -864,7 +865,7 @@ function sync() {
 					getJSON(QUERY_URL + 'get_users?changed-after=' + localTimes['users'], function (code, data) {
 						if (code == 200) {
 							var os = db.transaction('users', 'readwrite').objectStore('users');
-							console.log(data);
+							log(data);
 							data.data.forEach(function (entry) {
 								os.put(entry);
 							});
@@ -882,7 +883,7 @@ function sync() {
 								}
 							};
 						} else {
-							console.log("Something went wrong (HTTP " + code + ")");
+							log("Something went wrong (HTTP " + code + ")");
 							syncOkay = false;
 							syncInProgress --;
 						}
@@ -892,7 +893,7 @@ function sync() {
 				}
 
 			} else {
-				console.log("Something went wrong (HTTP " + code + ")");
+				log("Something went wrong (HTTP " + code + ")");
 				syncOkay = false;
 				syncInProgress = 0;
 			}
@@ -916,12 +917,12 @@ function initDatabase() {
 	if (window.indexedDB) {
 		var request = window.indexedDB.open('regatten_app_db_' + BOATCLASS, DB_VERSION);
 		request.onerror = function (event) {
-			console.log("Cannot open DB: " + event.target.errorCode);
+			log("Cannot open DB: " + event.target.errorCode);
 
 			runPageScript();
 		};
 		request.onsuccess = function (event) {
-			console.log("Database loaded");
+			log("Database loaded");
 			db = event.target.result;
 
 			db.onversionchange = function (event) {
@@ -934,7 +935,7 @@ function initDatabase() {
 			}
 
 			db.onerror = function (event) {
-				console.log("DB Error: " + event.target.errorCode);
+				log("DB Error: " + event.target.errorCode);
 			};
 
 			canUseLocalDB = true;
@@ -946,6 +947,7 @@ function initDatabase() {
 				if (lastSync > 0) {
 					runPageScript();
 				} else {
+					addSyncInfoToPreloader();
 					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
 				}
 			};
@@ -964,10 +966,10 @@ function initDatabase() {
 			var oldVersion = event.oldVersion;
 			var newVersion = event.newVersion;
 
-			console.log("Datenbank Version Upgrade von " + oldVersion + " auf " + newVersion);
+			log("Datenbank Version Upgrade von " + oldVersion + " auf " + newVersion);
 
 			if ((oldVersion < 1) && (newVersion >= 1)) {
-				console.log('to version 1');
+				log('to version 1');
 				var osClubs = db.createObjectStore('clubs', { keyPath: 'id' });
 				var osBoats = db.createObjectStore('boats', { keyPath: 'id' });
 				var osSailors = db.createObjectStore('sailors', { keyPath: 'id' });
@@ -996,7 +998,7 @@ function initDatabase() {
 			}
 
 			if ((oldVersion < 2) && (newVersion >= 2)) {
-				console.log('to version 2');
+				log('to version 2');
 				var osUsers = db.createObjectStore('users', { keyPath: 'id' });
 				osUsers.createIndex('username', 'username', { unique: true });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
@@ -1004,25 +1006,25 @@ function initDatabase() {
 			}
 
 			if ((oldVersion < 3) && (newVersion >= 3)) {
-				console.log('to version 3');
+				log('to version 3');
 				var osYears = db.createObjectStore('years', { keyPath: 'year' });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.put({ table: 'regattas', time: 0 });
 			}
 
 			if ((oldVersion < 4) && (newVersion >= 4)) {
-				console.log('to version 4');
+				log('to version 4');
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'loggedin', status: isLoggedIn() });
 			}
 
 			if ((oldVersion < 5) && (newVersion >= 5)) {
-				console.log('to version 5');
+				log('to version 5');
 				var osPushes = db.createObjectStore('settings', { keyPath: 'key' });
 			}
 
 			if ((oldVersion < 6) && (newVersion >= 6)) {
-				console.log('to version 6');
+				log('to version 6');
 				var osNews = db.createObjectStore('news', { keyPath: 'id' });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'news', time: 0 });
@@ -1052,7 +1054,24 @@ function resetDb() {
 		osUpdateTimes.put({ table: 'trim_trims', time: 0 });
 		osUpdateTimes.put({ table: 'news', time: 0 });
 		osUpdateTimes.put({ table: 'users', time: 0 });
-		console.log('DB update times reset');
+		log('DB update times reset');
 		hideLoader();
 	}
+}
+
+function addSyncInfoToPreloader() {
+	var preloader = document.getElementById('preloader');
+	var div = document.createElement('div');
+	div.id = 'preloader-sync-info';
+	div.classList = 'rounded-s shadow-m bg-highlight m-3 p-3';
+	div.style.position = 'fixed';
+	div.style.top = 0;
+	div.style.left = 0;
+	div.style.right = 0;
+	div.innerHTML = '<h2 class="color-white">Datenbank SYNC</h2><p class="mb-0 color-white">Um Dir alle n&ouml;tigen Informationen anzeigen zu k&ouml;nnen, m&uuml;ssen wir die Datenbank synchronisieren.<br>Dies kann einen Moment dauern. Bitte habe etwas Geduld. Beim n&auml;chsten &Ouml;ffnen geht es schneller.</p>';
+	preloader.appendChild(div);
+}
+
+function removeSyncInfoToPreloader() {
+	$('#preloader-sync-info').remove();
 }
