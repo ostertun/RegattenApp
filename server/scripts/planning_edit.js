@@ -192,6 +192,7 @@ async function planningChangeCrew(sid = null) {
 		$('#menu-edit').hideMenu();
 		$('#menu-sailor').find('.menu-title').find('h1').text('Crew hinzufügen');
 		$('#menu-sailor').showMenu();
+		$('#input-edit-search').focus();
 	}
 }
 
@@ -202,6 +203,7 @@ async function planningChangeSteuermann() {
 	$('#menu-edit').hideMenu();
 	$('#menu-sailor').find('.menu-title').find('h1').text('Steuermann/-frau bearbeiten');
 	$('#menu-sailor').showMenu();
+	$('#input-edit-search').focus();
 }
 
 async function planningEdit(id) {
@@ -225,9 +227,9 @@ async function planningEdit(id) {
 		$('#switch-planning-include').prop('checked', true);
 		$('#item-steuermann').show();
 		if (planning.steuermann !== null) {
-			$('#item-steuermann').find('span').text('Steuer: ' + (await dbGetData('sailors', planning.steuermann)).name);
+			$('#item-steuermann').find('span').text('Am Steuer: ' + (await dbGetData('sailors', planning.steuermann)).name);
 		} else {
-			$('#item-steuermann').find('span').html('Steuer: <font style="font-style:italic;">noch unklar</font>');
+			$('#item-steuermann').find('span').html('Am Steuer: <font style="font-style:italic;">noch unklar</font>');
 		}
 		$('.item-crew').remove();
 		var crew = planning.crew.split(',');
