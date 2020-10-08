@@ -27,7 +27,8 @@
 			<?php include(__DIR__ . '/headerfooter.php'); ?>
 
 			<!--start of page content, add your stuff here-->
-			<div class="page-content header-clear-medium">
+			<div class="page-content header-clear">
+				<div id="syncstatus" class="text-right mr-2 mb-1">Zuletzt aktualisiert: nie</div>
 				<?php echo $sp['output']; ?>
 			</div>
 			<!--end of page content, off canvas elements here-->

@@ -417,29 +417,31 @@ function dbSettingsSet(key, value) {
 	}
 }
 
-async function updateSyncStatus() { // TODO
-//	var syncStatus = document.getElementById('syncstatus');
-//	var lastSync = await dbGetData('update_times', 'last_sync');
-//	lastSync = new Date(lastSync.time * 1000);
-//	var now = new Date();
-//	var diff = Math.round((now - lastSync) / 1000);
-//	var txt = '';
-//
-//	if (diff < 30) {  // 30 sec
-//		txt = 'jetzt';
-//	} else if (diff < 3600) {  // 60 min
-//		diff = Math.round(diff / 60);
-//		txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Minute' : 'Minuten');
-//	} else if (diff < 86400) {  // 24 std
-//		diff = Math.round(diff / 3600);
-//		txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Stunde' : 'Stunden');
-//	} else {
-//		diff = Math.round(diff / 86400);
-//		txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Tag' : 'Tagen');
-//	}
-//
-//	var btn = '<a href="#" onclick="setLoading(true); sync(); return false;"><i class="fas fa-sync"></i> Sync</a>';
-//	syncStatus.innerHTML = 'Zuletzt aktualisiert: ' + txt + btn;
+async function updateSyncStatus() {
+	var lastSync = await dbGetData('update_times', 'last_sync');
+	lastSync = new Date(lastSync.time * 1000);
+	if (lastSync > 0) {
+		var now = new Date();
+		var diff = Math.round((now - lastSync) / 1000);
+		var txt = '';
+
+		if (diff < 30) {  // 30 sec
+			txt = 'jetzt';
+		} else if (diff < 3600) {  // 60 min
+			diff = Math.round(diff / 60);
+			txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Minute' : 'Minuten');
+		} else if (diff < 86400) {  // 24 std
+			diff = Math.round(diff / 3600);
+			txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Stunde' : 'Stunden');
+		} else {
+			diff = Math.round(diff / 86400);
+			txt = 'vor ' + diff + ' ' + (diff == 1 ? 'Tag' : 'Tagen');
+		}
+	} else {
+		var txt = 'nie';
+	}
+
+	$('#syncstatus').html('Zuletzt aktualisiert: ' + txt);
 }
 
 async function runPageScript() {
@@ -460,16 +462,14 @@ async function runPageScript() {
 			dbSettingsSet('myregattas_' + BOATCLASS, plannings);
 		}
 	}
-	if (typeof updateSyncStatusTimer == 'undefined') { // TODO
-//		var syncStatus = document.getElementById('syncstatus');
+	if (typeof updateSyncStatusTimer == 'undefined') {
 		if (canUseLocalDB) {
 			updateSyncStatusTimer = window.setInterval(updateSyncStatus, 10000);
 		} else {
-//			syncStatus.innerHTML = 'Keine Offline-Nutzung möglich.';
+			$('#syncstatus').html('Keine Offline-Nutzung möglich.');
 			$('#i-sync').parent().hide();
 			updateSyncStatusTimer = null;
 		}
-//		syncStatus.style.display = 'block';
 	}
 
 	if (typeof siteScript === 'function') {
@@ -933,6 +933,8 @@ function initDatabase() {
 		request.onerror = function (event) {
 			log("Cannot open DB: " + event.target);
 
+			if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
+
 			runPageScript();
 		};
 		request.onsuccess = function (event) {
@@ -1048,6 +1050,8 @@ function initDatabase() {
 			osUpdateTimes.put({ table: 'last_sync', time: 0 });
 		}
 	} else {
+		if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
+
 		runPageScript();
 	}
 }

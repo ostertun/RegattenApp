@@ -470,6 +470,20 @@ var onServiceWorkerLoaded = function() {
 }
 
 var onDatabaseLoaded = function() {
+	if (!canUseLocalDB && !$('#menu-welcome').hasClass('menu-active')) {
+		function NoDbWarningOk() {
+			createCookie('regatten_nodb_banner', true, 1);
+			$('#menu-nodb-warning').hideMenu();
+		}
+		function showNoDbWarning() {
+			if (!readCookie('regatten_nodb_banner')) {
+				$('#menu-nodb-warning').showMenu();
+			}
+		}
+		$('#menu-nodb-warning-okay').click(NoDbWarningOk);
+		showNoDbWarning();
+	}
+
 	onServiceWorkerLoaded();
 	initPushSettings();
 

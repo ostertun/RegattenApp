@@ -291,6 +291,21 @@
 	</div>
 </div>
 
+<div id="menu-nodb-warning" class="menu menu-box-bottom menu-box-detached rounded-m" data-height="500">
+	<div class="menu-title"><h1>Warnung</h1><p class="color-highlight">Datenbank nicht unterst&uuml;tzt</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
+	<div class="divider divider-margins mb-n2"></div>
+	<div class="content bottom-0">
+		<p>
+			Das Speichern der ben&ouml;tigten Daten wird von Deinem Ger&auml;t nicht unterst&uuml;tzt.<br>
+			Da deshalb die Daten jedesmal direkt vom Server geladen werden m&uuml;ssen, kannst Du die App nicht offline nutzen.<br>
+			Das Nachladen kann au&szlig;erdem gerade bei gro&szlig;en Datenmengen (wie Ranglisten) sehr lange dauern.
+			Wir empfehlen Dir daher, auf diesem Ger&auml;t unsere normale Website zu benutzen. Diese ist auch f&uuml;r Mobil-Ger&auml;te optimiert.
+		</p>
+		<a class="btn btn-m mt-2 btn-full bg-highlight text-uppercase font-900" href="https://regatten.net/">Zur Website</a>
+		<a id="menu-nodb-warning-okay" class="btn btn-m mt-2 mb-3 btn-full bg-highlight text-uppercase font-900" href="#">Nicht erneut anzeigen</a>
+	</div>
+</div>
+
 <div id="menu-update">
 	<div class="content bottom-0">
 		<p class="text-center mt-5"><i class="fa fa-sync-alt fa-7x color-highlight fa-spin"></i></p>
