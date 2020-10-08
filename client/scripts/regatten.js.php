@@ -500,13 +500,13 @@ var addConsoleOpenerToPreloader = function() {
 	var preloader = document.getElementById('preloader');
 	var button = document.createElement('a');
 	button.href = '#';
-	button.classList = 'btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight m-3';
+	button.classList = 'btn rounded-s text-uppercase font-900 shadow-m m-3';
 	button.style.position = 'fixed';
 	button.style.bottom = 0;
-	button.style.left = 0;
 	button.style.right = 0;
-	button.innerHTML = 'Show Console';
+	button.innerHTML = '&lt;/&gt;';
 	button.onclick = function(){
+		alert('CONSOLE OPENED\nDir werden jetzt einige Entwickler-Informationen angezeigt. Du kannst die Console über das X oben rechts wieder schließen.');
 		mobileConsole.displayConsole();
 		return false;
 	}
