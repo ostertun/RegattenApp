@@ -311,3 +311,16 @@ self.addEventListener('notificationclick', function(event) {
 		clients.openWindow(url)
 	);
 });
+
+self.addEventListener('pushsubscriptionchange', function(event) {
+	var formData = new URLSearchParams();
+	formData.append('old', JSON.stringify(event.oldSubscription));
+	formData.append('new', JSON.stringify(event.newSubscription));
+	event.waitUntil(
+		fetch('<?php echo QUERY_URL; ?>update_subscription', {
+			method: 'POST',
+			cache: 'no-cache',
+			body: formData
+		})
+	);
+});
