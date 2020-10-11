@@ -440,7 +440,11 @@ async function updateNewsBadge() {
 var initRegatten = function() {
 	showLoader();
 
+	log('Initializing DB...');
+
 	initDatabase();
+
+	log('Loading app specific code...');
 
 	if (isLoggedIn()) {
 		$('.show-loggedin').show();
@@ -461,6 +465,7 @@ var initRegatten = function() {
 }
 
 var onServiceWorkerLoaded = function() {
+	log('sW loaded');
 	if ((swRegistration !== null) && canUseLocalDB) {
 		pushesPossible = true;
 		updatePushBadge();
@@ -470,6 +475,7 @@ var onServiceWorkerLoaded = function() {
 }
 
 var onDatabaseLoaded = function() {
+	log('DB loaded');
 	if (!canUseLocalDB && !$('#menu-welcome').hasClass('menu-active')) {
 		function NoDbWarningOk() {
 			createCookie('regatten_nodb_banner', true, 1);

@@ -445,6 +445,7 @@ async function updateSyncStatus() {
 }
 
 async function runPageScript() {
+	log('running page script...')
 	if (canUseLocalDB) {
 		var osUpdateTimes = db.transaction('update_times').objectStore('update_times');
 		osUpdateTimes.get('loggedin').onsuccess = function (event) {
@@ -473,8 +474,10 @@ async function runPageScript() {
 	}
 
 	if (typeof siteScript === 'function') {
+		log('loading site script');
 		siteScript();
 	} else {
+		log('no site script');
 		hideLoader();
 	}
 }
@@ -928,6 +931,7 @@ function checkSync() {
 }
 
 function initDatabase() {
+	log('Initializing DB...');
 	if (window.indexedDB) {
 		var request = window.indexedDB.open('regatten_app_db_' + BOATCLASS, DB_VERSION);
 		request.onerror = function (event) {
