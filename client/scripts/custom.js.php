@@ -6,6 +6,8 @@
 
 ?>
 
+log('Script "custom.js" loaded');
+
 var loaderCount = 2;
 var showLoader = function() {
 	if (loaderCount < 1) {
@@ -19,6 +21,7 @@ var hideLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').addClass('preloader-hide');
 		loaderCount = 0;
+		log('Loader hidden');
 	}
 }
 
@@ -35,10 +38,14 @@ function eraseCookie(e) {createCookie(e, "", -1)}
 $(document).ready(function(){
 	'use strict'
 
+	log('Document ready');
+
 	var isAJAX = false; //Enables or disable AJAX page transitions and loading.
 	var isDevelopment = false; // Enables development mode. Clean cache & Stops BG & Highlights from changing defaults.
 
 	function init_template(){
+
+		log('Initializing template...');
 
 		//ADD YOUR CUSTOM JAVASCRIPT CODES HERE!
 		//Do not put inside HTML files.
@@ -1344,6 +1351,9 @@ $(document).ready(function(){
 		}
 		$('#menu-welcome-a-okay').click(welcomeOk);
 		showWelcome();
+
+		log('Template initialized');
+		log('Initializing app');
 
 		initRegatten();
 
