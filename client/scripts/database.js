@@ -516,6 +516,7 @@ function sync() {
 						onAfterSync();
 					}
 					removeSyncInfoToPreloader();
+					showLoader();
 					runPageScript();
 					resolve();
 				}

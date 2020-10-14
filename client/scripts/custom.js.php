@@ -13,6 +13,7 @@ var showLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').removeClass('preloader-hide');
 		loaderCount = 0;
+		log('Loader shown');
 	}
 	loaderCount ++;
 }
