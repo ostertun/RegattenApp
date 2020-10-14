@@ -1051,8 +1051,11 @@ function initDatabase() {
 				osUpdateTimes.add({ table: 'news', time: 0 });
 			}
 
-			var osUpdateTimes = upgradeTransaction.objectStore('update_times');
-			osUpdateTimes.put({ table: 'last_sync', time: 0 });
+			// Force resync after db update
+			if (oldVersion >= 1) {
+				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
+				osUpdateTimes.put({ table: 'last_sync', time: 1 });
+			}
 		}
 	} else {
 		if (typeof onDatabaseLoaded == 'function') onDatabaseLoaded();
@@ -1065,7 +1068,7 @@ function resetDb() {
 	if (canUseLocalDB) {
 		showLoader();
 		var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
-		osUpdateTimes.put({ table: 'last_sync', time: 0 });
+		osUpdateTimes.put({ table: 'last_sync', time: 1 });
 		osUpdateTimes.put({ table: 'clubs', time: 0 });
 		osUpdateTimes.put({ table: 'boats', time: 0 });
 		osUpdateTimes.put({ table: 'sailors', time: 0 });

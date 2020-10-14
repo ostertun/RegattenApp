@@ -256,7 +256,7 @@ self.addEventListener('push', async function(event) {
 				var db = await openDb();
 				if (db != null) {
 					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
-					var request = os.put({ table: 'last_sync', time: 0 });
+					var request = os.put({ table: 'last_sync', time: 1 });
 					request.onerror = function (event) {
 						console.log('[sW] Error while saving data to DB:', e);
 						db.close();
@@ -277,7 +277,7 @@ self.addEventListener('push', async function(event) {
 				var db = await openDb();
 				if (db != null) {
 					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
-					var request = os.put({ table: 'last_sync', time: 0 });
+					var request = os.put({ table: 'last_sync', time: 1 });
 					request.onerror = function (event) {
 						console.log('[sW] Error while saving data to DB:', e);
 						db.close();
