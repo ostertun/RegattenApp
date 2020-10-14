@@ -273,12 +273,6 @@ var siteScript = async function() {
 	var maxDate = getToday();
 	maxDate.setDate(maxDate.getDate() - 1);
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
-	var regattaResults = [];
-	for (id in regattas) {
-		var entry = regattas[id];
-		var results = await dbGetDataIndex('results', 'regatta', entry['id']);
-		regattaResults[entry['id']] = (results.length > 0);
-	}
 	regattas.sort(function(a,b){
 		return b.date.localeCompare(a.date);
 	});
@@ -323,7 +317,7 @@ var siteScript = async function() {
 				icons.push('<i class="fas fa-book"></i>');
 			if (regatta['canceled'] == '1') {
 				icons.push('<i class="fas fa-times color-red2-dark"></i>');
-			} else if (regattaResults[regatta['id']]) {
+			} else if (regatta['results'] == '1') {
 				icons.push('<i class="fas fa-poll"></i>');
 			}
 			list += '<div class="color-green2-dark">' + icons.join('&ensp;') + '</div>';
