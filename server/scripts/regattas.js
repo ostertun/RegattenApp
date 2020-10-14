@@ -14,6 +14,7 @@ function selectChange(callSiteScript = true) {
 
 		if (callSiteScript && (typeof siteScript === 'function')) {
 			history.replaceState(null, '', '?year=' + val);
+			showLoader();
 			siteScript();
 		}
 	}
@@ -21,7 +22,8 @@ function selectChange(callSiteScript = true) {
 
 function buttonShowPressed() {
 	if (typeof siteScript === 'function') {
-		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val())
+		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val());
+		showLoader();
 		siteScript();
 	}
 }

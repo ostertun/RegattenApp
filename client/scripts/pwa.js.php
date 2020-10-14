@@ -20,8 +20,6 @@ $(document).ready(function(){
     'use strict'
 
     var pwaVersion = '<?php echo PWA_VERSION; ?>'; //must be identical to _manifest.json version. If not it will create update window loop
-    var pwaCookie = true; // if set to false, the PWA prompt will appear even if the user selects "maybe later"
-    var pwaNoCache = false; // always keep the cache clear to serve the freshest possible content
 
 
     $('[data-pwa-version]').data('pwa-version', pwaVersion);
@@ -35,7 +33,7 @@ $(document).ready(function(){
     //Enabling dismiss button
     setTimeout(function(){
         $('.pwa-dismiss').on('click',function(){
-            log('User Closed Add to Home / PWA Prompt')
+            log('[pwa] User Closed Add to Home / PWA Prompt')
             createCookie('Sticky_pwa_rejected_install', true, 1);
             $('body').find('#menu-install-pwa-android, #menu-install-pwa-ios, .menu-hider').removeClass('menu-active');
         });
@@ -52,10 +50,10 @@ $(document).ready(function(){
 
     //Firing PWA prompts for specific versions and when not on home screen.
     if (isMobile.Android()) {
-        log('Android Detected');
+        log('[pwa] Android Detected');
         function showInstallPromotion(){
             if($('#menu-install-pwa-android, .add-to-home').length){
-                log('Triggering PWA Menu for Android');
+                log('[pwa] Triggering PWA Menu for Android');
                 if (!readCookie('Sticky_pwa_rejected_install')) {
                     setTimeout(function(){
                         $('.add-to-home').addClass('add-to-home-visible add-to-home-android');
@@ -80,9 +78,9 @@ $(document).ready(function(){
           deferredPrompt.userChoice
             .then((choiceResult) => {
               if (choiceResult.outcome === 'accepted') {
-                log('User accepted the A2HS prompt');
+                log('[pwa] User accepted the A2HS prompt');
               } else {
-                log('User dismissed the A2HS prompt');
+                log('[pwa] User dismissed the A2HS prompt');
               }
               deferredPrompt = null;
             });
@@ -94,11 +92,11 @@ $(document).ready(function(){
 
     if (isMobile.iOS()) {
         if(!isInWebAppiOS){
-            log('iOS Detected');
+            log('[pwa] iOS Detected');
             if($('#menu-install-pwa-ios, .add-to-home').length){
                 if (!readCookie('Sticky_pwa_rejected_install')) {
 					function triggerPwaInstallIos() {
-	                    log('Triggering PWA / Add to Home Screen Menu for iOS');
+	                    log('[pwa] Triggering PWA / Add to Home Screen Menu for iOS');
 	                    setTimeout(function(){
 	                        $('.add-to-home').addClass('add-to-home-visible add-to-home-ios');
 	                        $('#menu-install-pwa-ios, .menu-hider').addClass('menu-active');
@@ -115,92 +113,10 @@ $(document).ready(function(){
         }
     }
 
-
-    //Creating Update Modal
-    function updateModal(){
-        var body = $('body');
-        var updateModal = $('#menu-update');
-        var mt = new Date();
-        var menuUpdate = mt.getHours() + ":" + mt.getMinutes() + ":" + mt.getSeconds();
-        if(!updateModal.length){
-           body.append('<div id="menu-update"></div>');
-           setTimeout(function(){
-               body.find('#menu-update').load('menu-update.html?ver='+menuUpdate);
-           },250);
-        }
-    };
-    //Update Version in 5 Seconds After New Version Detected
-    function updateButton(){
-        var counter = 3;
-        var interval = setInterval(function() {
-            counter--;
-            log(counter);
-            $('.page-update').html('Aktuallisierung in ... '+ counter + ' Sekunden');
-            if (counter == 0) {
-                clearInterval(interval);
-                window.location.reload(true)
-            }
-        }, 1000);
-        caches.delete('workbox-runtime').then(function() {
-          log('Content Updated - Cache Removed!');
-        });
-        //localStorage.clear();
-        sessionStorage.clear()
-        caches.keys().then(cacheNames => {
-          cacheNames.forEach(cacheName => {
-            caches.delete(cacheName);
-          });
-        });
-    };
-
-    //Check Version
-    function check_version(){
-        if($('link[data-pwa-version]').length){
-            function versionCheck(){
-                var dt = new Date();
-                var maniTimeVersion = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
-                var localVersionNumber = $('link[rel="manifest"]').data('pwa-version');
-                var onlineVersionJSON = "<?php echo SERVER_ADDR; ?>/manifest.json.php?ver=" + maniTimeVersion;
-                var onlineVersionNumber = "Connection Offline. Waiting to Reconect";
-                $.getJSON(onlineVersionJSON, function(onlineData) {onlineVersionNumber = onlineData.version;});
-                setTimeout(function(){
-                    //console.log(' Checking PWA Content for updates...\n PWA Server Version: ' + onlineVersionNumber + '\n' + ' PWA Cached Version: ' + localVersionNumber);
-                    if(onlineVersionNumber != localVersionNumber && onlineVersionNumber != "Connection Offline. Waiting to Reconect"){
-                        updateModal();
-                        log('New Version of Content Available. Refreshing. On Desktop Browsers a manual refresh maybe required.')
-                        setTimeout(function(){
-                            $('body').find('#menu-update').addClass('menu-active');
-                            $('.menu-hider').addClass('menu-active-no-click');
-                            updateButton();
-                        },500);
-                    }
-                    if(onlineVersionNumber == localVersionNumber){/*No update required. Versions Identical*/}
-                    if(onlineVersionNumber === "undefined"){/*Error Checking for Updates*/}
-                    if(onlineVersionNumber === "Finding Online Version..."){
-                        $('.reloadme').addClass('disabled');
-                        $('body').find('#menu-update').removeClass('menu-active');
-                        $('.menu-hider').removeClass('menu-active-no-click');
-                    }
-                },3000);
-            }
-            //Checking for new version every 60 seconds
-            setInterval(function(){versionCheck()}, 50000);
-            //Initial Load Version Check in 10 Second After Load
-            setTimeout(function(){versionCheck();}, 10000);
-        }
-    }
-
-    if(pwaCookie == false){
-        eraseCookie('Sticky_pwa_rejected_install');
-    }
-
     //Reload To Clear Button
     $('body').on('click', '.page-update, .reloadme', function() {
         location.reload();
     });
-
-    //Check for Version Change if Online If not Kill the Function
-    if (navigator.onLine) {check_version();} else {function check_version(){}}
 
     //Adding Offline Alerts
     var offlineAlerts = $('.offline-message');
@@ -224,47 +140,19 @@ $(document).ready(function(){
         setTimeout(function(){$('.online-message').removeClass('online-message-active');},2000);
     }
 
-    $('.simulate-offline').on('click',function(){isOffline();})
-    $('.simulate-online').on('click',function(){isOnline();})
-
-    //Disable links to other pages if offline.
-    //Warning! Enabling offline for iOS can cause issues
-    //To allow offline functionality delete the next 7 lines
-    function returnFalse(){
-        var detectHREF = $(this).attr('href');
-        if(detectHREF.match(/.html/)){
-            isOffline();
-            return false;
-        }
-    }
-
     //Check if Online / Offline
     function updateOnlineStatus(event) {
     var condition = navigator.onLine ? "online" : "offline";
         isOnline();
-        log( 'Connection: Online');
-        $("a").off( "click", returnFalse );
+        log('[pwa] Connection: Online');
     }
     function updateOfflineStatus(event) {
         isOffline();
-        $("a").on( "click", returnFalse );
-        log( 'Connection: Offline');
+        log('[pwa] Connection: Offline');
     }
     window.addEventListener('online',  updateOnlineStatus);
     window.addEventListener('offline', updateOfflineStatus);
 
-
-    if(pwaNoCache == true){
-        caches.delete('workbox-runtime').then(function() {
-        });
-        localStorage.clear();
-        sessionStorage.clear()
-        caches.keys().then(cacheNames => {
-          cacheNames.forEach(cacheName => {
-            caches.delete(cacheName);
-          });
-        });
-    }
 
 
 });

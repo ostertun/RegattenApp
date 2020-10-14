@@ -175,7 +175,8 @@ async function selectChange(callSiteScript = true) {
 		$('#input-jugstrict').prop('checked', jugstrict);
 
 		if (callSiteScript && (typeof siteScript === 'function')) {
-			history.replaceState(null, '', '?type=' + type + '&year=' + year)
+			history.replaceState(null, '', '?type=' + type + '&year=' + year);
+			showLoader();
 			siteScript();
 		}
 	}
@@ -187,6 +188,7 @@ function buttonShowPressed() {
 		if ($('#input-jugend').prop('checked')) chboxes += '&jugend=on'
 		if ($('#input-jugstrict').prop('checked')) chboxes += '&jugstrict=on'
 		history.replaceState(null, '', '?type=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val() + chboxes)
+		showLoader();
 		siteScript();
 	}
 }

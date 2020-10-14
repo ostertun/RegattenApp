@@ -279,6 +279,9 @@ var siteScript = async function() {
 		var results = await dbGetDataIndex('results', 'regatta', entry['id']);
 		regattaResults[entry['id']] = (results.length > 0);
 	}
+	regattas.sort(function(a,b){
+		return b.date.localeCompare(a.date);
+	});
 	if (regattas.length > 0) {
 		list = '';
 		for (i in regattas) {

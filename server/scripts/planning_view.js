@@ -3,6 +3,7 @@ function selectChange() {
 
 	if (typeof siteScript === 'function') {
 		history.replaceState(null, '', '?year=' + val);
+		showLoader();
 		siteScript();
 	}
 }

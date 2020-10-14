@@ -233,11 +233,11 @@ self.addEventListener('push', async function(event) {
 						}
 						break;
 					default:
-						console.log('Unknown channel:', data.channel);
+						console.log('[sW] Unknown channel:', data.channel);
 						break;
 				}
 				if (!okay) {
-					console.log('Notification channel not subscribed');
+					console.log('[sW] Notification channel not subscribed');
 					return;
 				}
 
@@ -256,7 +256,7 @@ self.addEventListener('push', async function(event) {
 				var db = await openDb();
 				if (db != null) {
 					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
-					var request = os.put({ table: 'last_sync', time: 0 });
+					var request = os.put({ table: 'last_sync', time: 1 });
 					request.onerror = function (event) {
 						console.log('[sW] Error while saving data to DB:', e);
 						db.close();
@@ -268,7 +268,7 @@ self.addEventListener('push', async function(event) {
 					}
 				}
 
-				console.log('Showing notification');
+				console.log('[sW] Showing notification');
 				self.registration.showNotification(data.title, options);
 				break;
 
@@ -277,7 +277,7 @@ self.addEventListener('push', async function(event) {
 				var db = await openDb();
 				if (db != null) {
 					var os = db.transaction('update_times', 'readwrite').objectStore('update_times');
-					var request = os.put({ table: 'last_sync', time: 0 });
+					var request = os.put({ table: 'last_sync', time: 1 });
 					request.onerror = function (event) {
 						console.log('[sW] Error while saving data to DB:', e);
 						db.close();

@@ -153,7 +153,7 @@ var login = function() {
 				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Dich anzumelden');
 				$('#menu-login').hideMenu();
 			} else {
-				log('Login: unbekannter Fehler', status, error);
+				log('[app] Login: unbekannter Fehler', status, error);
 				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 			}
@@ -186,7 +186,7 @@ var logout = function() {
 		hash: localStorage.getItem('auth_hash')
 	}
 	if ((auth.id === null) || (auth.hash === null)) {
-		log('Not logged in');
+		log('[app] Not logged in');
 		logoutClearStorage();
 		return;
 	}
@@ -198,13 +198,13 @@ var logout = function() {
 		},
 		error: function (xhr, status, error) {
 			if (xhr.status == 401) {
-				log('Not logged in');
+				log('[app] Not logged in');
 				logoutClearStorage();
 			} else if (xhr.status == 0) {
-				log('Could not delete auth from server');
+				log('[app] Could not delete auth from server');
 				logoutClearStorage();
 			} else {
-				log('Logout: unbekannter Fehler', status, error);
+				log('[app] Logout: unbekannter Fehler', status, error);
 				log(xhr);
 				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
 				hideLoader();
@@ -222,12 +222,12 @@ function deleteDb() {
 		showLoader();
 		var request = window.indexedDB.deleteDatabase('regatten_app_db_' + BOATCLASS);
 		request.onerror = function (event) {
-			log('Cannot delete DB: ', event.target.errorCode);
+			log('[app] Cannot delete DB: ', event.target.errorCode);
 			toastError('Beim Löschen der Datenbank ist ein Fehler aufgetreten.<br>Bitte melde diesen Fehler. (Dev-Menu => Problem melden)', 5000);
 			hideLoader();
 		}
 		request.onsuccess = function (event) {
-			log('DB deleted');
+			log('[app] DB deleted');
 			toastInfo('Die Datenbank wurde gelöscht. Die Seite lädt in wenigen Sekunden neu und erstellt damit eine neue Datenbank.', 10000);
 			hideLoader();
 			setTimeout(function(){ location.reload(); }, 3000);
@@ -241,13 +241,13 @@ function deleteCache() {
 	$('#menu-developer').hideMenu();
 	navigator.serviceWorker.getRegistrations().then(function (registrations) {
 		for (let registration of registrations) {
-			log('Unregister sW:', registration);
+			log('[app] Unregister sW:', registration);
 			registration.unregister();
 		}
 	});
 	caches.keys().then((keyList) => {
 		return Promise.all(keyList.map((key) => {
-			log('Cache deleted:', key);
+			log('[app] Cache deleted:', key);
 			return caches.delete(key);
 		}));
 	});
@@ -273,7 +273,7 @@ function urlB64ToUint8Array(base64String) {
 }
 
 function pushesSubscribe() {
-	log('Subscribing');
+	log('[app] Subscribing');
 	const applicationServerKey = urlB64ToUint8Array(PUSH_SERVER_KEY);
 	swRegistration.pushManager.subscribe({
 		userVisibleOnly: true,
@@ -285,14 +285,14 @@ function pushesSubscribe() {
 		updatePushBadge();
 	})
 	.catch(function(err) {
-		log('Failed to subscribe the user: ', err);
+		log('[app] Failed to subscribe the user: ', err);
 		toastError('Da ist leider etwas schief gelaufen. Bitte stelle sicher, dass Du mit dem Internet verbunden bist und versuche es erneut.', 5000);
 		pushesUnSubscribe(true);
 	});
 }
 
 function pushesUnSubscribe(silent = false) {
-	log('Unsubscribing');
+	log('[app] Unsubscribing');
 	swRegistration.pushManager.getSubscription()
 	.then(function(subscription) {
 		if (subscription) {
@@ -304,7 +304,7 @@ function pushesUnSubscribe(silent = false) {
 		}
 	})
 	.catch(function(error) {
-		log('Error unsubscribing', error);
+		log('[app] Error unsubscribing', error);
 		$('#menu-pushes').hideMenu();
 		if (!silent) toastError('Da ist leider etwas schief gelaufen. Bitte versuche es erneut oder wende Dich an unseren Support.', 5000);
 		updatePushBadge();
@@ -313,7 +313,7 @@ function pushesUnSubscribe(silent = false) {
 }
 
 function pushesUpdateServerSubscription(subscription, enabled) {
-	log('updateServer', enabled, subscription);
+	log('[app] updateServer', enabled, subscription);
 	$.ajax({
 		url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
 		type: 'POST',
@@ -440,11 +440,11 @@ async function updateNewsBadge() {
 var initRegatten = function() {
 	showLoader();
 
-	log('Initializing DB...');
+	log('[app] Initializing DB...');
 
 	initDatabase();
 
-	log('Loading app specific code...');
+	log('[app] Loading app specific code...');
 
 	if (isLoggedIn()) {
 		$('.show-loggedin').show();
@@ -465,7 +465,7 @@ var initRegatten = function() {
 }
 
 var onServiceWorkerLoaded = function() {
-	log('sW loaded');
+	log('[app] sW loaded');
 	if ((swRegistration !== null) && canUseLocalDB) {
 		pushesPossible = true;
 		updatePushBadge();
@@ -475,7 +475,7 @@ var onServiceWorkerLoaded = function() {
 }
 
 var onDatabaseLoaded = function() {
-	log('DB loaded');
+	log('[app] DB loaded');
 	if (!canUseLocalDB && !$('#menu-welcome').hasClass('menu-active')) {
 		function NoDbWarningOk() {
 			createCookie('regatten_nodb_banner', true, 1);
