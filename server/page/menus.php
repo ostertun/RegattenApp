@@ -307,15 +307,3 @@
 		<a id="menu-nodb-warning-okay" class="btn btn-m mt-2 mb-3 btn-full bg-highlight text-uppercase font-900" href="#">Nicht erneut anzeigen</a>
 	</div>
 </div>
-
-<div id="menu-update">
-	<div class="content bottom-0">
-		<p class="text-center mt-5"><i class="fa fa-sync-alt fa-7x color-highlight fa-spin"></i></p>
-		<h1 class="text-center mt-5 font-900">Update Verfügbar</h1>
-		<p class="text-center">
-			Eine neue Version unserer App ist verf&uuml;gbar. Keine Sorge, Du musst nichts machen. Wir aktuallisieren den Inhalt in wenigen Sekunden.
-		</p>
-		<a href="#" class="page-update btn btn-center-xl btn-m shadow-xl rounded-s bg-highlight font-900 text-center">Update</a>
-		<p class="text-center font-10 bottom-0">Die App wird neu laden und das Update ist abgeschlossen.</p>
-	</div>
-</div>

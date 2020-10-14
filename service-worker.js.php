@@ -233,11 +233,11 @@ self.addEventListener('push', async function(event) {
 						}
 						break;
 					default:
-						console.log('Unknown channel:', data.channel);
+						console.log('[sW] Unknown channel:', data.channel);
 						break;
 				}
 				if (!okay) {
-					console.log('Notification channel not subscribed');
+					console.log('[sW] Notification channel not subscribed');
 					return;
 				}
 
@@ -268,7 +268,7 @@ self.addEventListener('push', async function(event) {
 					}
 				}
 
-				console.log('Showing notification');
+				console.log('[sW] Showing notification');
 				self.registration.showNotification(data.title, options);
 				break;
 
