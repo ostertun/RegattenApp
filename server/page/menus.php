@@ -1,5 +1,5 @@
 <div id="menu-share" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="345" data-menu-effect="menu-over">
-	<div class="menu-title mt-n1"><h1>Share the Love</h1><p class="color-highlight">Just Tap the Social Icon. We'll add the Link</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
+	<div class="menu-title mt-n1"><h1>Seite Teilen</h1><p class="color-highlight">Teile diese Seite mit Deinen Freunden!</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="content mb-0">
 		<div class="divider mb-0"></div>
 		<div class="list-group list-custom-small list-icon-0">
@@ -92,11 +92,12 @@
 	</div>
 </div>
 
-<div id="menu-settings" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="310">
+<div id="menu-settings" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="260">
 	<div class="menu-title"><h1>Einstellungen</h1><p class="color-highlight">&nbsp;</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
 		<div class="list-group list-custom-small">
+			<?php if (false) { /* DARK MODE DISABLED (set menu height to 310) */ ?>
 			<a href="#" data-toggle-theme data-trigger-switch="switch-dark" class="pb-2">
 				<i class="fa font-14 fa-moon rounded-s bg-dark1-dark color-white"></i>
 				<span>Dark Mode</span>
@@ -105,6 +106,7 @@
 					<label class="custom-control-label" for="switch-dark"></label>
 				</div>
 			</a>
+			<?php } ?>
 			<a href="#" data-menu="menu-login" class="show-notloggedin">
 				<i class="fa font-14 fa-sign-in-alt rounded-s bg-highlight color-white"></i>
 				<span>Login</span>
