@@ -970,6 +970,7 @@ function initDatabase() {
 				} else {
 					addSyncInfoToPreloader();
 					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
+					loaderCount --;
 				}
 			};
 

@@ -61,8 +61,7 @@ async function onRegattaClicked(id) {
 	}
 
 	// Results
-	var results = await dbGetDataIndex('results', 'regatta', regatta['id']);
-	if (results.length > 0) {
+	if (regatta['results'] == '1') {
 		$('#menu-item-results').show();
 		$('#menu-item-results').attr('href', LINK_PRE + 'result?regatta=' + regatta['id']);
 	} else {
