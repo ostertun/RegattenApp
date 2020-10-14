@@ -33,7 +33,7 @@ $(document).ready(function(){
     //Enabling dismiss button
     setTimeout(function(){
         $('.pwa-dismiss').on('click',function(){
-            log('User Closed Add to Home / PWA Prompt')
+            log('[pwa] User Closed Add to Home / PWA Prompt')
             createCookie('Sticky_pwa_rejected_install', true, 1);
             $('body').find('#menu-install-pwa-android, #menu-install-pwa-ios, .menu-hider').removeClass('menu-active');
         });
@@ -50,10 +50,10 @@ $(document).ready(function(){
 
     //Firing PWA prompts for specific versions and when not on home screen.
     if (isMobile.Android()) {
-        log('Android Detected');
+        log('[pwa] Android Detected');
         function showInstallPromotion(){
             if($('#menu-install-pwa-android, .add-to-home').length){
-                log('Triggering PWA Menu for Android');
+                log('[pwa] Triggering PWA Menu for Android');
                 if (!readCookie('Sticky_pwa_rejected_install')) {
                     setTimeout(function(){
                         $('.add-to-home').addClass('add-to-home-visible add-to-home-android');
@@ -78,9 +78,9 @@ $(document).ready(function(){
           deferredPrompt.userChoice
             .then((choiceResult) => {
               if (choiceResult.outcome === 'accepted') {
-                log('User accepted the A2HS prompt');
+                log('[pwa] User accepted the A2HS prompt');
               } else {
-                log('User dismissed the A2HS prompt');
+                log('[pwa] User dismissed the A2HS prompt');
               }
               deferredPrompt = null;
             });
@@ -92,11 +92,11 @@ $(document).ready(function(){
 
     if (isMobile.iOS()) {
         if(!isInWebAppiOS){
-            log('iOS Detected');
+            log('[pwa] iOS Detected');
             if($('#menu-install-pwa-ios, .add-to-home').length){
                 if (!readCookie('Sticky_pwa_rejected_install')) {
 					function triggerPwaInstallIos() {
-	                    log('Triggering PWA / Add to Home Screen Menu for iOS');
+	                    log('[pwa] Triggering PWA / Add to Home Screen Menu for iOS');
 	                    setTimeout(function(){
 	                        $('.add-to-home').addClass('add-to-home-visible add-to-home-ios');
 	                        $('#menu-install-pwa-ios, .menu-hider').addClass('menu-active');
@@ -144,11 +144,11 @@ $(document).ready(function(){
     function updateOnlineStatus(event) {
     var condition = navigator.onLine ? "online" : "offline";
         isOnline();
-        log( 'Connection: Online');
+        log('[pwa] Connection: Online');
     }
     function updateOfflineStatus(event) {
         isOffline();
-        log( 'Connection: Offline');
+        log('[pwa] Connection: Offline');
     }
     window.addEventListener('online',  updateOnlineStatus);
     window.addEventListener('offline', updateOfflineStatus);

@@ -6,14 +6,14 @@
 
 ?>
 
-log('Script "custom.js" loaded');
+log('[tpl] Script "custom.js" loaded');
 
 var loaderCount = 2;
 var showLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').removeClass('preloader-hide');
 		loaderCount = 0;
-		log('Loader shown');
+		log('[tpl] Loader shown');
 	}
 	loaderCount ++;
 }
@@ -22,7 +22,7 @@ var hideLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').addClass('preloader-hide');
 		loaderCount = 0;
-		log('Loader hidden');
+		log('[tpl] Loader hidden');
 	}
 }
 
@@ -39,11 +39,11 @@ function eraseCookie(e) {createCookie(e, "", -1)}
 $(document).ready(function(){
 	'use strict'
 
-	log('Document ready');
+	log('[tpl] Document ready');
 
 	function init_template(){
 
-		log('Initializing template...');
+		log('[tpl] Initializing template...');
 
 		//ADD YOUR CUSTOM JAVASCRIPT CODES HERE!
 		//Do not put inside HTML files.
@@ -111,21 +111,23 @@ $(document).ready(function(){
 		//Disable Page Jump on Empty Links.
 		$('a').on('click', function(){var attrs = $(this).attr('href'); if(attrs === '#'){return false;}});
 
+		log('[tpl] init menus');
+
 		//Adding Background for Gradient
 		if(!$('.menu-hider').length){$('#page').append('<div class="menu-hider"><div>');}
 
 		var menuOpened = function() {
-			log('Menu opened', history.state);
+			log('[tpl] Menu opened', history.state);
 			if ((history.state === null) || (history.state.menu !== 'opened')) {
 				history.pushState({ menu: 'opened' }, '');
-				log('state pushed');
+				log('[tpl] state pushed');
 			}
 		}
 		var menuClosed = function() {
-			log('Menu closed', history.state);
+			log('[tpl] Menu closed', history.state);
 			if ((history.state !== null) && (history.state.menu === 'opened')) {
 				history.back();
-				log('history.back')
+				log('[tpl] history.back')
 			}
 		}
 
@@ -134,7 +136,7 @@ $(document).ready(function(){
 		$.fn.hideMenu = function() {$(this).removeClass('menu-active'); $('#footer-bar').removeClass('footer-menu-hidden');$('.menu-hider').removeClass('menu-active menu-active-clear');$('body').removeClass('modal-open');menuClosed();};
 
 		window.onpopstate = function(event) {
-			log('popstate event fired. location:' + document.location + ', state:' + JSON.stringify(event.state));
+			log('[tpl] popstate event fired. location:' + document.location + ', state:' + JSON.stringify(event.state));
 			if ((event.state === null) || (event.state.menu !== 'opened')) {
 				$('.menu').hideMenu();
 			}
@@ -215,6 +217,8 @@ $(document).ready(function(){
 			return false;
 		});
 
+		log('[tpl] init dark mode');
+
 		//Disabling & Enabling Dark Transitions in Dark Mode to Speed up Performance.
 		function allowTransitions(){$('body').find('#transitions-remove').remove();}
 		function removeTransitions(){$('body').append('<style id="transitions-remove">.btn, .header, #footer-bar, .menu-box, .menu-active{transition:all 0ms ease!important;}</style>'); setTimeout(function(){allowTransitions();},10);}
@@ -264,6 +268,9 @@ $(document).ready(function(){
 eraseCookie('sticky_light_mode');
 eraseCookie('sticky_dark_mode');
 // END
+
+		log('[tpl] init other ui elements');
+
 		//Footer Menu Active Elements
 		if($('.footer-bar-2, .footer-bar-4, .footer-bar-5').length){
 			if(!$('.footer-bar-2 strong, .footer-bar-4 strong, .footer-bar-5 strong').length){
@@ -277,6 +284,8 @@ eraseCookie('sticky_dark_mode');
 			window.history.go(-1);
 			//return false;
 		});
+
+		log('[tpl] detect mobile os');
 
 		//Detect Mobile OS//
 		var isMobile = {
@@ -302,6 +311,7 @@ eraseCookie('sticky_dark_mode');
 			$('.show-android, .show-no-device, .simulate-android, .simulate-iphones').addClass('disabled');
 		}
 
+		log('[tpl] init toasts');
 
 		//Toast, Snackbars and Notifications
 		$('[data-toast]').on('click',function(){
@@ -314,6 +324,7 @@ eraseCookie('sticky_dark_mode');
 			$('#'+thisData).toast('hide');
 		});
 
+		log('[tpl] init switches');
 
 		//Switches
 		$('.ios-input, .android-input, .classic-input').on('click',function(){
@@ -334,6 +345,8 @@ eraseCookie('sticky_dark_mode');
 				$('#'+thisID).prop('checked', true);
 			}
 		})
+
+		log('[tpl] init a2h');
 
 		//Adding added-to-homescreen class to be targeted when used as PWA.
 		function ath(){
@@ -360,6 +373,8 @@ eraseCookie('sticky_dark_mode');
 		$('.simulate-android-banner').on('click',function(){$('#menu-install-pwa-android, .menu-hider').addClass('menu-active')})
 		$('.simulate-ios-banner').on('click',function(){$('#menu-install-pwa-ios, .menu-hider').addClass('menu-active')})
 
+		log('[tpl] init offline alerts');
+
 		//Adding Offline Alerts
 		var offlineAlerts = $('.offline-message');
 		if(!offlineAlerts.length){
@@ -385,14 +400,16 @@ eraseCookie('sticky_dark_mode');
 		function updateOnlineStatus(event) {
 		var condition = navigator.onLine ? "online" : "offline";
 			isOnline();
-			log( 'Connection: Online');
+			log('[tpl] Connection: Online');
 		}
 		function updateOfflineStatus(event) {
 			isOffline();
-			log( 'Connection: Offline');
+			log('[tpl] Connection: Offline');
 		}
 		window.addEventListener('online',  updateOnlineStatus);
 		window.addEventListener('offline', updateOfflineStatus);
+
+		log('[tpl] init share buttons');
 
 		//Sharing
 		var share_link = window.location.href;
@@ -404,10 +421,7 @@ eraseCookie('sticky_dark_mode');
 		$('.shareToWhatsApp').prop("href", "whatsapp://send?text=" + share_link)
 		$('.shareToMail').prop("href", "mailto:?body=" + share_link)
 
-
-		//Preload Image
-		var preloadImages = $('.preload-img');
-		$(function() {preloadImages.lazyload({threshold : 500});});
+		log('[tpl] init colors');
 
 		//Style Generator
 		var generatedStyles = $('.generated-styles');
@@ -424,12 +438,11 @@ eraseCookie('sticky_dark_mode');
 			}
 		}
 
-		function highlight_colors(){
-			var bodyColor = readCookie('sticky-color-scheme')
-			if(bodyColor == undefined){var bodyColor = $('body').data('highlight');}
+		log('[tpl] init highlight colors');
 
-			var bodyBackground = readCookie('sticky-bg-scheme')
-			if(bodyBackground == undefined){var bodyBackground = $('body').data('background');}
+		function highlight_colors(){
+			var bodyColor = $('body').data('highlight');
+			var bodyBackground = $('body').data('background');
 
 			var data = colorsArray.map(colorsArray => colorsArray[0]);
 			if (data.indexOf(bodyColor) > -1) {
@@ -453,15 +466,21 @@ eraseCookie('sticky_dark_mode');
 		}
 		highlight_colors();
 
-		if (!generatedStyles.length){
-			$('body').append('<style class="generated-styles"></style>');
-			$('.generated-styles').append('/*Generated using JS for lower CSS file Size, Easier Editing & Faster Loading*/');
-			colorsArray.forEach(function (colorValue) {$('.generated-styles').append('.bg-'+colorValue[0]+'-light{ background-color: '+colorValue[1]+'!important; color:#FFFFFF!important;} .bg-'+colorValue[0]+'-light i, .bg-'+colorValue[0]+'-dark i{color:#FFFFFF;} .bg-'+colorValue[0]+'-dark{  background-color: '+colorValue[2]+'!important; color:#FFFFFF!important;} .border-'+colorValue[0]+'-light{ border-color:'+colorValue[1]+'!important;} .border-'+colorValue[0]+'-dark{  border-color:'+colorValue[2]+'!important;} .color-'+colorValue[0]+'-light{ color: '+colorValue[1]+'!important;} .color-'+colorValue[0]+'-dark{  color: '+colorValue[2]+'!important;}');});
-			colorsArray.forEach(function (colorFadeValue) {$('.generated-styles').append('.bg-fade-'+colorFadeValue[0]+'-light{ background-color: '+ HEXtoRGBA(colorFadeValue[1]) + '!important; color:#FFFFFF;} .bg-fade-'+colorFadeValue[0]+'-light i, .bg-'+colorFadeValue[0]+'-dark i{color:#FFFFFF;} .bg-fade-'+colorFadeValue[0]+'-dark{  background-color: '+HEXtoRGBA(colorFadeValue[2])+'!important; color:#FFFFFF;} .border-fade-'+colorFadeValue[0]+'-light{ border-color:'+HEXtoRGBA(colorFadeValue[1])+'!important;} .border-fade-'+colorFadeValue[0]+'-dark{  border-color:'+HEXtoRGBA(colorFadeValue[2])+'!important;} .color-fade-'+colorFadeValue[0]+'-light{ color: '+HEXtoRGBA(colorFadeValue[1])+'!important;} .color-fade-'+colorFadeValue[0]+'-dark{  color: '+HEXtoRGBA(colorFadeValue[2])+'!important;}');});
-			colorsArray.forEach(function (gradientValue) {$('.generated-styles').append('.bg-gradient-'+gradientValue[0]+'{background-image: linear-gradient(to bottom, '+gradientValue[1]+' 0, '+gradientValue[2]+' 100%)}')});
-			socialColorArray.forEach(function (socialColorValue) {$('.generated-styles').append('.bg-'+socialColorValue[0]+'{background-color:'+socialColorValue[1]+'!important; color:#FFFFFF;} .color-'+socialColorValue[0]+'{color:'+socialColorValue[1]+'!important;}')});
-			colorsArray.forEach(function (gradientBodyValue) {$('.generated-styles').append('.body-'+gradientBodyValue[0]+'{background-image: linear-gradient(to bottom, '+gradientBodyValue[1]+' 0, '+gradientBodyValue[3]+' 100%)}')});
-		}
+		setTimeout(function(){
+			log('[tpl] init other colors');
+			if (!generatedStyles.length){
+				$('body').append('<style class="generated-styles"></style>');
+				$('.generated-styles').append('/*Generated using JS for lower CSS file Size, Easier Editing & Faster Loading*/');
+				colorsArray.forEach(function (colorValue) {$('.generated-styles').append('.bg-'+colorValue[0]+'-light{ background-color: '+colorValue[1]+'!important; color:#FFFFFF!important;} .bg-'+colorValue[0]+'-light i, .bg-'+colorValue[0]+'-dark i{color:#FFFFFF;} .bg-'+colorValue[0]+'-dark{  background-color: '+colorValue[2]+'!important; color:#FFFFFF!important;} .border-'+colorValue[0]+'-light{ border-color:'+colorValue[1]+'!important;} .border-'+colorValue[0]+'-dark{  border-color:'+colorValue[2]+'!important;} .color-'+colorValue[0]+'-light{ color: '+colorValue[1]+'!important;} .color-'+colorValue[0]+'-dark{  color: '+colorValue[2]+'!important;}');});
+				colorsArray.forEach(function (colorFadeValue) {$('.generated-styles').append('.bg-fade-'+colorFadeValue[0]+'-light{ background-color: '+ HEXtoRGBA(colorFadeValue[1]) + '!important; color:#FFFFFF;} .bg-fade-'+colorFadeValue[0]+'-light i, .bg-'+colorFadeValue[0]+'-dark i{color:#FFFFFF;} .bg-fade-'+colorFadeValue[0]+'-dark{  background-color: '+HEXtoRGBA(colorFadeValue[2])+'!important; color:#FFFFFF;} .border-fade-'+colorFadeValue[0]+'-light{ border-color:'+HEXtoRGBA(colorFadeValue[1])+'!important;} .border-fade-'+colorFadeValue[0]+'-dark{  border-color:'+HEXtoRGBA(colorFadeValue[2])+'!important;} .color-fade-'+colorFadeValue[0]+'-light{ color: '+HEXtoRGBA(colorFadeValue[1])+'!important;} .color-fade-'+colorFadeValue[0]+'-dark{  color: '+HEXtoRGBA(colorFadeValue[2])+'!important;}');});
+				colorsArray.forEach(function (gradientValue) {$('.generated-styles').append('.bg-gradient-'+gradientValue[0]+'{background-image: linear-gradient(to bottom, '+gradientValue[1]+' 0, '+gradientValue[2]+' 100%)}')});
+				socialColorArray.forEach(function (socialColorValue) {$('.generated-styles').append('.bg-'+socialColorValue[0]+'{background-color:'+socialColorValue[1]+'!important; color:#FFFFFF;} .color-'+socialColorValue[0]+'{color:'+socialColorValue[1]+'!important;}')});
+				colorsArray.forEach(function (gradientBodyValue) {$('.generated-styles').append('.body-'+gradientBodyValue[0]+'{background-image: linear-gradient(to bottom, '+gradientBodyValue[1]+' 0, '+gradientBodyValue[3]+' 100%)}')});
+			}
+			log('[tpl] other colors initialized');
+		},0);
+
+		log('[tpl] init welcome banner');
 
 		function welcomeOk() {
 			createCookie('sticky_welcome_banner', true, 1);
@@ -477,8 +496,8 @@ eraseCookie('sticky_dark_mode');
 		$('#menu-welcome-a-okay').click(welcomeOk);
 		showWelcome();
 
-		log('Template initialized');
-		log('Initializing app');
+		log('[tpl] Template initialized');
+		log('[tpl] Initializing app');
 
 		initRegatten();
 
