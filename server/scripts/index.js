@@ -2,6 +2,49 @@ var firstCall = true;
 var today;
 var onUpdatePushBadge;
 
+var onUnfollowClicked = async function() {
+	var id = $('#menu-item-unfollow').attr('data-sailor-id');
+	showLoader();
+	$('#menu-favorite').hideMenu();
+	var auth = {
+		id: localStorage.getItem('auth_id'),
+		hash: localStorage.getItem('auth_hash')
+	}
+	$.ajax({
+		url: QUERY_URL + 'sailor_unfollow',
+		method: 'POST',
+		data: {
+			auth: auth,
+			sailor: id
+		},
+		error: function (xhr, status, error) {
+			if (xhr.status == 0) {
+				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Deine Favoriten zu bearbeiten.');
+			} else {
+				log('Unfollow: unbekannter Fehler', status, error);
+				log(xhr);
+				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
+			}
+			hideLoader();
+		},
+		success: async function (data, status, xhr) {
+			await sync();
+			toastOk('Erfolgreich');
+			hideLoader();
+		}
+	});
+}
+
+var onFavoriteClicked = async function(id) {
+	var sailor = await dbGetData('sailors', id);
+
+	$('#menu-favorite').find('.menu-title').find('p').text(sailor.name);
+
+	$('#menu-item-unfollow').attr('data-sailor-id', sailor.id);
+
+	$('#menu-favorite').showMenu();
+}
+
 var siteScript = async function() {
 	today = getToday();
 
@@ -33,6 +76,7 @@ var siteScript = async function() {
 			}
 			onUpdatePushBadge();
 		}
+		$('#menu-item-unfollow').click(onUnfollowClicked);
 	}
 
 	if (isLoggedIn()) {
@@ -50,31 +94,41 @@ var siteScript = async function() {
 		}
 		if (watched.length > 0) {
 			var year = (new Date()).getFullYear();
-			$('#th-ranking').html('Rangliste ' + year);
 			var ranking = (await dbGetRanking(parseDate('01.12.' + (year - 1)), parseDate('30.11.' + year), false, false))[0];
-			tbody = '';
+			var list = '';
 			for (i in watched) {
 				sailor = watched[i];
-				tbody += '<tr><td>' + sailor.name + '</td><td>';
+				var club = null;
+				if (sailor.club != null)
+					club = await dbGetData('clubs', sailor.club);
 				var rank = null;
 				for (r in ranking) {
 					if (ranking[r].id == sailor.id) {
-						rank = ranking[r].rank;
+						rank = ranking[r];
 						break;
 					}
 				}
+
+				list += '<div onclick="onFavoriteClicked(' + sailor.id + ');">';
+				list += '<div>';
+				// Name
+				list += '<div><b>' + sailor.name + '</b></div>';
+				list += '</div><div>';
 				if (rank == null) {
-					tbody += '<i>nicht in der Rangliste</i>';
+					list += '<div>Nicht in der Rangliste</div>';
 				} else {
-					tbody += '<b>' + rank + '.</b> Platz';
+					// Rank
+					list += '<div>Platz <b>' + rank.rank + '</b></div>';
+					// rlp
+					list += '<div>' + rank.rlp.toFixed(3) + ' Punkte</div>';
 				}
-				tbody += '</td></tr>';
+				list += '</div></div>';
 			}
-			$('#table-favorites').find('tbody').html(tbody);
+			$('#div-favorites').html(list);
 			$('#p-favorites').hide();
-			$('#table-favorites').show();
+			$('#div-favorites').show();
 		} else {
-			$('#table-favorites').hide();
+			$('#div-favorites').hide();
 			$('#p-favorites').show();
 		}
 		$('#card-favorites').show();

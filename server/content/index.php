@@ -11,8 +11,7 @@
 
 	// Favorites
 	$content = '<h2>Deine Favoriten</h2>';
-	$thead = '<tr><th>Segler</th><th id="th-ranking">Rangliste</th></tr>';
-	$content .= $tpl->load('table', [$thead, 'html-id' => 'table-favorites', 'css-class' => 'mb-0 mt-3']);
+	$content .= '<div id="div-favorites" class="normal-list mb-0"></div>';
 	$content .= '<p id="p-favorites" class="mt-3">';
 	$content .= 'Du folgst <b>keinen</b> Seglern.<br>';
 	$content .= 'Um jemandem zu folgen, gehe zur <a href="' . LINK_PRE . 'sailors">Segler-Liste</a> und w&auml;hle bis zu f&uuml;nf Segler aus.';
@@ -90,6 +89,10 @@
 	$items .= $tpl->load('menu/item-icon', ['offizielle Ergebnisse', '', 'html-id' => 'menu-item-oresults', 'icon' => 'fa-poll']);
 	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
 	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 320]);
+
+	// Favorites Menu
+	$items = $tpl->load('menu/item-icon', ['Nicht mehr folgen', '#', 'html-id' => 'menu-item-unfollow', 'icon' => 'fa-heart', 'css-class' => ' border-0']);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-favorite', 'title' => 'Favorit', 'height' => 150]);
 
 	$sp['scripts'] .= $scripts->load('onRegattaClicked');
 	$sp['scripts'] .= $scripts->load('index');
