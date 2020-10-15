@@ -406,6 +406,7 @@ function pushesOpenMenu() {
 }
 
 function updatePushBadge() {
+	if (typeof onUpdatePushBadge === 'function') onUpdatePushBadge();
 	if (!pushesPossible) return;
 	if (Notification.permission == 'denied') {
 		$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('BLOCKED');

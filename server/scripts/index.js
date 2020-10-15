@@ -1,7 +1,39 @@
+var firstCall = true;
 var today;
+var onUpdatePushBadge;
 
 var siteScript = async function() {
 	today = getToday();
+
+	if (firstCall) {
+		firstCall = false;
+		$('#button-notifications-activate').click(function(){
+			$('#menu-pushes').showMenu();
+		});
+		$('#a-notifications-later').click(function(){
+			createCookie('regatten_app_' + BOATCLASS + '_rejected_push', true, 1);
+			$('#card-notifications').hide();
+		});
+		if (readCookie('regatten_app_' + BOATCLASS + '_rejected_push')) {
+			$('#card-notifications').hide();
+		} else {
+			onUpdatePushBadge = function () {
+				if (!pushesPossible || (Notification.permission == 'denied')) {
+					$('#card-notifications').hide();
+				} else {
+					swRegistration.pushManager.getSubscription().then(function(subscription) {
+						var isSub = (subscription !== null);
+						if (isSub) {
+							$('#card-notifications').hide();
+						} else {
+							$('#card-notifications').show();
+						}
+					});
+				}
+			}
+			onUpdatePushBadge();
+		}
+	}
 
 	if (isLoggedIn()) {
 		$('#card-notloggedin').hide();
