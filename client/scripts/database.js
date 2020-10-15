@@ -965,10 +965,10 @@ function initDatabase() {
 
 			db.transaction('update_times').objectStore('update_times').get('last_sync').onsuccess = function (event) {
 				var lastSync = event.target.result.time;
-				if (lastSync > 0) {
+				if (lastSync > 1) {
 					runPageScript();
 				} else {
-					addSyncInfoToPreloader();
+					if (lastSync < 1) addSyncInfoToPreloader();
 					db.transaction('update_times', 'readwrite').objectStore('update_times').put({ table: 'loggedin', status: isLoggedIn() });
 					loaderCount --;
 				}
