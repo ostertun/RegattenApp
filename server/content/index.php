@@ -92,7 +92,7 @@
 
 	// Favorites Menu
 	$items = $tpl->load('menu/item-icon', ['Nicht mehr folgen', '#', 'html-id' => 'menu-item-unfollow', 'icon' => 'fa-heart', 'css-class' => ' border-0']);
-	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-favorite', 'title' => 'Favorit', 'height' => 150]);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-favorite', 'title' => 'Favorit', 'height' => 200]);
 
 	$sp['scripts'] .= $scripts->load('onRegattaClicked');
 	$sp['scripts'] .= $scripts->load('index');

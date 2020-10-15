@@ -245,7 +245,7 @@
 	</div>
 </div>
 
-<div id="menu-login" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="270">
+<div id="menu-login" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="320">
 	<div class="content bottom-0">
 		<h1 class="text-center mt-5 font-900">Login</h1>
 		<div class="input-style input-style-2 has-icon input-required">
@@ -259,18 +259,29 @@
 			<input id="input-login-password" class="form-control" type="password" placeholder="Passwort" />
 		</div>
 		<a class="btn btn-m mt-2 mb-2 btn-full bg-green2-dark text-uppercase font-900" href="#" onclick="login();">Login</a>
+		<p class="text-center mt-3"><a class="text-uppercase font-900" href="https://regatten.net/reset">Benutzername oder Passwort vergessen</a></p>
 	</div>
 </div>
 
-<div id="menu-signup" class="menu menu-box-modal menu-box-detached rounded-m" data-menu-height="300">
+<div id="menu-signup" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="340">
 	<div class="content bottom-0">
 		<h1 class="text-center mt-5 font-900">Registrieren</h1>
-		<p class="text-center">
-			Momentan kannst Du Dich leider nicht in der App registrieren.<br>
-			Das ist aber kein Problem, registriere Dich einfach kostenlos auf unserer Website!
-		</p>
-		<a href="https://regatten.net/de/signup" class="btn btn-center-xl btn-m shadow-xl rounded-s bg-highlight font-900 text-center">Registrieren</a>
-		<p class="text-center font-10 bottom-0">Du kannst Dich danach in dieser App anmelden.</p>
+		<div class="input-style input-style-2 has-icon input-required">
+			<i class="input-icon fa fa-user color-theme"></i>
+			<span class="color-highlight">Benutzername</span>
+			<input id="input-signup-username" class="form-control" type="name" placeholder="Benutzername" />
+		</div>
+		<div class="input-style input-style-2 has-icon input-required">
+			<i class="input-icon fa fa-envelope color-theme"></i>
+			<span class="color-highlight">Email</span>
+			<input id="input-signup-email" class="form-control" type="email" placeholder="Email" />
+		</div>
+		<div class="input-style input-style-2 has-icon input-required">
+			<i class="input-icon fa fa-lock color-theme"></i>
+			<span class="color-highlight">Passwort</span>
+			<input id="input-signup-password" class="form-control" type="password" placeholder="Passwort" />
+		</div>
+		<a class="btn btn-m mt-2 mb-2 btn-full bg-green2-dark text-uppercase font-900" href="#" onclick="signup();">Registrieren</a>
 	</div>
 </div>
 
