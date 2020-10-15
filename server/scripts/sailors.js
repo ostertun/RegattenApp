@@ -4,6 +4,40 @@ var displayed = [];
 var page = 1;
 var pageCount = 0;
 const showCount = 25;
+var followedSailors = [];
+
+async function onFollowChange() {
+	var id = $('#menu-item-follow').attr('data-sailor-id');
+	showLoader();
+	$('#menu-sailor').hideMenu();
+	var auth = {
+		id: localStorage.getItem('auth_id'),
+		hash: localStorage.getItem('auth_hash')
+	}
+	$.ajax({
+		url: QUERY_URL + ($('#menu-item-follow').prop('checked') ? 'sailor_follow' : 'sailor_unfollow'),
+		method: 'POST',
+		data: {
+			auth: auth,
+			sailor: id
+		},
+		error: function (xhr, status, error) {
+			if (xhr.status == 0) {
+				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Deine Favoriten zu bearbeiten.');
+			} else {
+				log('Un/Follow: unbekannter Fehler', status, error);
+				log(xhr);
+				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
+			}
+			hideLoader();
+		},
+		success: async function (data, status, xhr) {
+			await sync();
+			toastOk('Erfolgreich');
+			hideLoader();
+		}
+	});
+}
 
 async function onEditYearClick() {
 	var id = $('#button-edityear').attr('data-sailor-id');
@@ -49,6 +83,26 @@ async function onListClicked(id) {
 	var sailor = await dbGetData('sailors', id);
 
 	$('#menu-sailor').find('.menu-title').find('p').text(sailor.name);
+
+	// Follow
+	if (isLoggedIn()) {
+		var found = false;
+		for (var i in followedSailors) {
+			if (followedSailors[i].id == sailor.id) found = true;
+		}
+		if (found || (followedSailors.length < 5)) {
+			$('#menu-item-follow').attr('data-sailor-id', sailor.id);
+			$('#menu-item-follow').prop('checked', found);
+			$('#menu-item-follow').parent().parent().show();
+			$('#menu-item-follow-disabled').hide();
+		} else {
+			$('#menu-item-follow').parent().parent().hide();
+			$('#menu-item-follow-disabled').show();
+		}
+	} else {
+		$('#menu-item-follow').parent().parent().hide();
+		$('#menu-item-follow-disabled').hide();
+	}
 
 	// Edit Year
 	$('#button-edityear').attr('data-sailor-id', sailor.id);
@@ -134,6 +188,19 @@ var siteScript = async function() {
 		$('#input-search').on('input', reSearch);
 		$('#menu-item-year').click(function(){ $('#menu-sailor').hideMenu(); $('#menu-edityear').showMenu(); });
 		$('#button-edityear').click(onEditYearClick);
+		$('#menu-item-follow').parent().parent().click(onFollowChange);
+		$('#menu-item-follow-disabled').click(function(){ $('#menu-sailor').hideMenu(); toastInfo('Du kannst maximal 5 Seglern folgen. Entferne erst einen Segler aus Deinen Favoriten, bevor Du andere aufnimmst.', 5000); });
+	}
+
+	if (isLoggedIn()) {
+		var user = await dbGetData('users', USER_ID);
+		followedSailors = [];
+		for (var i = 1; i <= 5; i ++) {
+			sailor_id = user['sailor' + i];
+			if (sailor_id != null) {
+				followedSailors.push(await dbGetData('sailors', sailor_id));
+			}
+		}
 	}
 
 	var results = await dbGetData('sailors');
