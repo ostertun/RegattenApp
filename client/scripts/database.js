@@ -910,7 +910,12 @@ function sync() {
 					}
 
 				} else {
-					log("[db] Something went wrong (HTTP " + code + ")");
+					if (code == 401) {
+						log("[db] Auth invalid. Logout initiated");
+						logoutClearStorage();
+					} else {
+						log("[db] Something went wrong (HTTP " + code + ")");
+					}
 					syncOkay = false;
 					syncInProgress = 0;
 				}
