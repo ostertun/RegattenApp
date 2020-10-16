@@ -182,9 +182,9 @@ function getEntry(data, index, defaultValue) {
 	return ((typeof data[index] !== "undefined") ? data[index] : defaultValue);
 }
 
-function isMyRegatta(id) {
+function isMyRegatta(id, suffix = '') {
 	return new Promise(async function (resolve) {
-		var regattas = await dbSettingsGet('myregattas_<?php echo BOATCLASS; ?>');
+		var regattas = await dbSettingsGet('myregattas_<?php echo BOATCLASS; ?>' + suffix);
 		if (regattas == null) resolve(false);
 		else resolve(regattas.includes(id.toString()));
 	});
@@ -228,8 +228,7 @@ self.addEventListener('push', async function(event) {
 						break;
 					case 'meldeschluss':
 						if (await dbSettingsGet('notify_channel_<?php echo BOATCLASS; ?>_meldeschluss')) {
-							if (await isMyRegatta(getEntry(data, 'id', ''))) okay = true;
-							// TODO: only if not already registered
+							if (await isMyRegatta(getEntry(data, 'id', ''), '_meldung_off')) okay = true;
 						}
 						break;
 					default:

@@ -459,8 +459,16 @@ async function runPageScript() {
 
 		if (isLoggedIn()) {
 			var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
-			plannings = plannings.map(function (e) { return e.regatta; });
-			dbSettingsSet('myregattas_' + BOATCLASS, plannings);
+			plannings_all = plannings.map(function (e) { return e.regatta; });
+			dbSettingsSet('myregattas_' + BOATCLASS, plannings_all);
+			for (var i = plannings.length - 1; i >= 0; i --) {
+				if (plannings[i].gemeldet == '1') plannings.splice(i, 1);
+			}
+			plannings_meldung_off = plannings.map(function (e) { return e.regatta; });
+			dbSettingsSet('myregattas_' + BOATCLASS + '_meldung_off', plannings_meldung_off);
+		} else {
+			dbSettingsSet('myregattas_' + BOATCLASS, null);
+			dbSettingsSet('myregattas_' + BOATCLASS + '_meldung_off', null);
 		}
 	}
 	if (typeof updateSyncStatusTimer == 'undefined') {
@@ -954,7 +962,7 @@ function initDatabase() {
 			db.onversionchange = function (event) {
 				if (syncTimer != null) window.clearInterval(syncTimer);
 				if (updateSyncStatusTimer != null) window.clearInterval(updateSyncStatusTimer);
-// TODO				document.getElementById('syncstatus').innerHTML = '';
+				$('#syncstatus').html('');
 				canUseLocalDB = false;
 				db.close();
 				location.reload;
