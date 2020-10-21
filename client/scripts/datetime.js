@@ -38,6 +38,16 @@ function parseDate(string) {
 	return date;
 }
 
+function parseDbTimestamp(string) {
+	var year = string.substr(0, 4);
+	var month = string.substr(5, 2);
+	var day = string.substr(8, 2);
+	var hour = string.substr(11, 2);
+	var minute = string.substr(14, 2);
+	var second = string.substr(17, 2);
+	return new Date(year, month - 1, day, hour, minute, second);
+}
+
 function getToday() {
 	var date = new Date();
 	date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));

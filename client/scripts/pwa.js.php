@@ -95,19 +95,19 @@ $(document).ready(function(){
             log('[pwa] iOS Detected');
             if($('#menu-install-pwa-ios, .add-to-home').length){
                 if (!readCookie('Sticky_pwa_rejected_install')) {
-					function triggerPwaInstallIos() {
-	                    log('[pwa] Triggering PWA / Add to Home Screen Menu for iOS');
-	                    setTimeout(function(){
+					setTimeout(function(){
+						function triggerPwaInstallIos() {
+		                    log('[pwa] Triggering PWA / Add to Home Screen Menu for iOS');
 	                        $('.add-to-home').addClass('add-to-home-visible add-to-home-ios');
 	                        $('#menu-install-pwa-ios, .menu-hider').addClass('menu-active');
-	                    },3000);
-					}
-					var welcomActive = $('#menu-welcome').hasClass('menu-active');
-					if (welcomActive) {
-						$('#menu-welcome-a-okay').click(triggerPwaInstallIos);
-					} else {
-						triggerPwaInstallIos();
-					}
+						}
+						var welcomActive = $('#menu-welcome').hasClass('menu-active');
+						if (welcomActive) {
+							$('#menu-welcome-a-okay').click(triggerPwaInstallIos);
+						} else {
+							triggerPwaInstallIos();
+						}
+					},3000);
                 };
             }
         }

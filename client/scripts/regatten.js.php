@@ -471,7 +471,7 @@ async function updateNewsBadge() {
 	var sum = 0;
 	for (var n in news) {
 		var newsEntry = news[n];
-		newsEntry.date = new Date(Date.parse(newsEntry.date));
+		newsEntry.date = parseDbTimestamp(newsEntry.date);
 		if (newsEntry.date > now) continue;
 		if (newsEntry.date < newsRead) continue;
 		sum ++;
@@ -508,7 +508,7 @@ var initRegatten = function() {
 
 var onServiceWorkerLoaded = function() {
 	log('[app] sW loaded');
-	if ((swRegistration !== null) && canUseLocalDB) {
+	if ((swRegistration !== null) && (swRegistration.pushManager) && canUseLocalDB) {
 		pushesPossible = true;
 		updatePushBadge();
 	} else {
