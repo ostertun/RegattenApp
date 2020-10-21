@@ -3,6 +3,7 @@
 	header('Content-Type: text/javascript');
 
 	require_once(__DIR__ . '/../../server/config.php');
+	require_once(__DIR__ . '/../../server/version.php');
 
 ?>
 
@@ -12,6 +13,31 @@ const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
 const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';
 const YOUTH_GERMAN_NAME = '<?php echo $_CLASS['youth-german-name']; ?>';
 const PUSH_SERVER_KEY = '<?php echo PUSH_SERVER_KEY; ?>';
+
+var consoleOutput = [];
+
+function onConsoleOutput(entry) {
+	consoleOutput.push(entry);
+}
+
+window.onerror = function(message, source, lineno, colno, errorError) {
+	if (source.startsWith(LINK_PRE)) {
+		source = source.substr(LINK_PRE.length);
+	}
+	var pos = source.indexOf('?');
+	if (pos >= 0) {
+		source = source.substr(0, pos);
+	}
+	consoleOutput.push({
+		message: message,
+		stack: {
+			caller: '',
+			file: source,
+			line: lineno,
+			col: colno
+		}
+	});
+}
 
 function log() {
 	var now = new Date();
@@ -547,19 +573,39 @@ var addConsoleOpenerToPreloader = function() {
 	addConsoleOpenerToPreloader = function(){};
 	var preloader = document.getElementById('preloader');
 	var button = document.createElement('a');
+	button.id = 'button-show-console';
 	button.href = '#';
-	button.classList = 'btn rounded-s text-uppercase font-900 shadow-m m-3';
+	button.classList = 'btn rounded-s text-uppercase font-900 shadow-m m-3 bg-red2-dark bg-white';
 	button.style.position = 'fixed';
 	button.style.bottom = 0;
+	button.style.left = 0;
 	button.style.right = 0;
-	button.innerHTML = '&lt;/&gt;';
+	button.innerHTML = 'Fehlerbericht senden';
 	button.onclick = function(){
-		alert('CONSOLE OPENED\nDir werden jetzt einige Entwickler-Informationen angezeigt. Du kannst die Console über das X oben rechts wieder schließen.');
-		mobileConsole.displayConsole();
+		alert('FEHLERBERICHT\nEs wird jetzt ein Fehlerbericht an die Entwickler geschickt.\nBitte stelle sicher, dass Du mit dem Internet verbunden bist und drücke dann auf OK.');
+		$.ajax({
+			url: QUERY_URL + 'error_report',
+			method: 'POST',
+			data: {
+				errors: consoleOutput,
+				device: navigator.userAgent,
+				version: '<?php echo PWA_VERSION; ?>'
+			},
+			error: function (xhr, status, error) {
+				if (xhr.status == 0) {
+					alert('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Fehlerbericht zu senden');
+				} else {
+					alert('Beim Senden ist ein unbekannter Fehler aufgetreten. Bitte versuche es noch einmal');
+				}
+			},
+			success: function (data, status, xhr) {
+				alert('Wir leiten Dich jetzt zum erstellten Fehlerbericht um, sodass Du ggf. weitere Informationen ergänzen kannst.');
+				location.href = 'https://github.com/ostertun/RegattenApp/issues/' + data.issueNumber;
+			}
+		});
 		return false;
 	}
-	setTimeout(function(){
-		preloader.appendChild(button);
-	}, 5000);
+	preloader.appendChild(button);
+	$(button).hide();
 }
 addConsoleOpenerToPreloader();

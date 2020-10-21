@@ -1155,6 +1155,8 @@ var mobileConsole = (function () {
           if (!msgContainer.innerHTML) { return; }
           leftContainer.appendChild(msgContainer);
 
+          var errorReportEntry = { message: arguments[1].newMessage };
+
           if (detailTable || stackTable) {
             setCSS(msgContainer, {cursor : 'pointer'});
             leftContainer.appendChild(detailTable || stackTable);
@@ -1164,7 +1166,17 @@ var mobileConsole = (function () {
           //populate right side
           if (stackTrace && typeof stackTrace[stackTrace.length - 1] !== 'undefined') {
             rightContainer.appendChild(setCSS(getLink(stackTrace[0].url, stackTrace[0].linkText), {color: '#808080'}));
+            errorReportEntry.stack = { caller: stackTrace[0].caller, file: stackTrace[0].url, line: stackTrace[0].line, col: stackTrace[0].col };
+            if ((typeof LINK_PRE !== 'undefined') && (errorReportEntry.stack.file.startsWith(LINK_PRE))) {
+                errorReportEntry.stack.file = errorReportEntry.stack.file.substr(LINK_PRE.length);
+            }
+            var pos = errorReportEntry.stack.file.indexOf('?');
+            if (pos >= 0) {
+                errorReportEntry.stack.file = errorReportEntry.stack.file.substr(0, pos);
+            }
           }
+
+          if (typeof onConsoleOutput === 'function') onConsoleOutput(errorReportEntry);
 
           //add to line
           lineContainer.appendChild(leftContainer);
