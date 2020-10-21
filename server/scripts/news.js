@@ -66,7 +66,7 @@ var siteScript = async function() {
 	lastYear.setFullYear(lastYear.getFullYear() - 1);
 	for (var n in news) {
 		var newsEntry = news[n];
-		newsEntry.date = new Date(Date.parse(newsEntry.date));
+		newsEntry.date = parseDbTimestamp(newsEntry.date);
 		if (newsEntry.date > now) continue;
 		if (newsEntry.date < lastYear) break;
 		newsEntry.unread = (newsEntry.date > newsRead);
