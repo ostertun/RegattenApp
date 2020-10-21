@@ -9,10 +9,16 @@
 log('[tpl] Script "custom.js" loaded');
 
 var loaderCount = 2;
+var showConsoleButtonTimeout = setTimeout(function(){
+	$('#button-show-console').show();
+}, 10000);
 var showLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').removeClass('preloader-hide');
 		loaderCount = 0;
+		showConsoleButtonTimeout = setTimeout(function(){
+			$('#button-show-console').show();
+		}, 10000);
 		log('[tpl] Loader shown');
 	}
 	loaderCount ++;
@@ -22,6 +28,8 @@ var hideLoader = function() {
 	if (loaderCount < 1) {
 		$('#preloader').addClass('preloader-hide');
 		loaderCount = 0;
+		clearTimeout(showConsoleButtonTimeout);
+		$('#button-show-console').hide();
 		log('[tpl] Loader hidden');
 	}
 }
@@ -370,7 +378,7 @@ eraseCookie('sticky_dark_mode');
                 $(this).parent().find('span').removeClass('input-style-1-inactive input-style-1-active');
             }
         });
-        
+
 		log('[tpl] init a2h');
 
 		//Adding added-to-homescreen class to be targeted when used as PWA.
