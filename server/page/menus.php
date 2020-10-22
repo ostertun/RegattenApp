@@ -211,7 +211,7 @@
 	</div>
 </div>
 
-<div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="360">
+<div id="menu-developer" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="400">
 	<div class="menu-title"><h1>Entwickler-Optionen</h1><p class="color-highlight">Version <?php echo PWA_VERSION; ?></p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
@@ -231,9 +231,14 @@
 				<span>Reset Cache</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="https://github.com/ostertun/RegattenApp/issues">
+			<a href="https://github.com/ostertun/RegattenApp/issues/new">
 				<i class="fa font-14 fa-bug rounded-s bg-highlight color-white"></i>
 				<span>Problem melden</span>
+				<i class="fa fa-angle-right"></i>
+			</a>
+			<a href="#" onclick="sendErrorReport(); return false;" class="menu-close">
+				<i class="fa font-14 fa-bug rounded-s bg-highlight color-white"></i>
+				<span>Fehlerbericht senden</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
 			<a href="#" onclick="mobileConsole.displayConsole(); return false;" class="border-0 menu-close">

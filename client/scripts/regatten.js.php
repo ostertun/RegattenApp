@@ -566,6 +566,30 @@ var onAfterSync = function() {
 	updateNewsBadge();
 }
 
+function sendErrorReport() {
+	alert('FEHLERBERICHT\nEs wird jetzt ein Fehlerbericht an die Entwickler geschickt.\nBitte stelle sicher, dass Du mit dem Internet verbunden bist und drücke dann auf OK.');
+	$.ajax({
+		url: QUERY_URL + 'error_report',
+		method: 'POST',
+		data: {
+			errors: consoleOutput,
+			device: navigator.userAgent,
+			version: '<?php echo PWA_VERSION; ?>'
+		},
+		error: function (xhr, status, error) {
+			if (xhr.status == 0) {
+				alert('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Fehlerbericht zu senden');
+			} else {
+				alert('Beim Senden ist ein unbekannter Fehler aufgetreten. Bitte versuche es noch einmal');
+			}
+		},
+		success: function (data, status, xhr) {
+			alert('Wir leiten Dich jetzt zum erstellten Fehlerbericht um, sodass Du ggf. weitere Informationen ergänzen kannst.');
+			location.href = 'https://github.com/ostertun/RegattenApp/issues/' + data.issueNumber;
+		}
+	});
+}
+
 // Add console opener to preloader
 var addConsoleOpenerToPreloader = function() {
 	addConsoleOpenerToPreloader = function(){};
@@ -580,27 +604,7 @@ var addConsoleOpenerToPreloader = function() {
 	button.style.right = 0;
 	button.innerHTML = 'Fehlerbericht senden';
 	button.onclick = function(){
-		alert('FEHLERBERICHT\nEs wird jetzt ein Fehlerbericht an die Entwickler geschickt.\nBitte stelle sicher, dass Du mit dem Internet verbunden bist und drücke dann auf OK.');
-		$.ajax({
-			url: QUERY_URL + 'error_report',
-			method: 'POST',
-			data: {
-				errors: consoleOutput,
-				device: navigator.userAgent,
-				version: '<?php echo PWA_VERSION; ?>'
-			},
-			error: function (xhr, status, error) {
-				if (xhr.status == 0) {
-					alert('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um den Fehlerbericht zu senden');
-				} else {
-					alert('Beim Senden ist ein unbekannter Fehler aufgetreten. Bitte versuche es noch einmal');
-				}
-			},
-			success: function (data, status, xhr) {
-				alert('Wir leiten Dich jetzt zum erstellten Fehlerbericht um, sodass Du ggf. weitere Informationen ergänzen kannst.');
-				location.href = 'https://github.com/ostertun/RegattenApp/issues/' + data.issueNumber;
-			}
-		});
+		sendErrorReport();
 		return false;
 	}
 	preloader.appendChild(button);
