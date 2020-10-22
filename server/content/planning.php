@@ -27,7 +27,8 @@
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-regattas', 'css-class' => 'show-loggedin']);
 
 	// Menu
-	$items = '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
+	$items = '<p id="menu-item-special" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
+	$items .= '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
 	$items .= $tpl->load('menu/item-icon', ['Status bearbeiten', '#', 'html-id' => 'menu-item-status', 'icon' => 'fa-edit']);
 	$items .= $tpl->load('menu/item-icon', ['Saison-Planungen', '', 'html-id' => 'menu-item-plannings', 'icon' => 'fa-calendar-alt']);
 	$items .= $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);

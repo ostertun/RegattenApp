@@ -1,13 +1,13 @@
 <?php
-	
+
 	require_once(__DIR__ . '/server/version.php');
 	require_once(__DIR__ . '/server/config.php');
 	require_once(__DIR__ . '/server/log.php');
 	require_once(__DIR__ . '/server/templates.php');
 	require_once(__DIR__ . '/server/scripts.php');
-	
+
 	define('LINK_PRE', SERVER_ADDR . '/');
-	
+
 	$request = false;
 	if (isset($_GET['request'])) {
 		$request = explode('/', $_GET['request']);
@@ -24,11 +24,11 @@
 		header('Location: ' . LINK_PRE . 'index');
 		exit;
 	}
-	
+
 	if (!file_exists(__DIR__ . '/server/content/' . $site . '.php')) {
 		$site = '404';
 	}
-	
+
 	$sp = [
 		'title' => 'Regatten.net ' . $_CLASS['name'],     // This is the page title
 		'backbutton' => false,               // Show a back button (true, false, string). If a string is given, the back button is a link to this page.
@@ -37,12 +37,12 @@
 		'menus' => '',                       // Additional menus go here
 		'scripts' => ''                      // Site specific scripts
 	];
-	
+
 	$tpl = new Templates(__DIR__ . '/server/templates/');
 	$scripts = new Scripts(__DIR__ . '/server/scripts/');
-	
+
 	require_once(__DIR__ . '/server/content/' . $site . '.php');
-	
+
 	require_once(__DIR__ . '/server/buildpage.php');
-	
+
 ?>

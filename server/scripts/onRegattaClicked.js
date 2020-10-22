@@ -6,6 +6,20 @@ async function onRegattaClicked(id) {
 	var dateTo = parseDate(regatta['date']);
 	dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
 
+	var specialFields = await dbGetClassProp('special-fields');
+	if (specialFields === null) specialFields = {};
+	if (regatta.special.substr(0, 1) == '#') {
+		regatta.special = regatta.special.substr(1);
+		if (typeof specialFields[regatta.special] !== 'undefined') {
+			$('#menu-item-special').text(specialFields[regatta.special]);
+		} else {
+			$('#menu-item-special').text('ERROR');
+		}
+		$('#menu-item-special').show();
+	} else {
+		$('#menu-item-special').hide();
+	}
+
 	var plannings = await dbGetDataIndex('plannings', 'regatta', regatta['id']);
 	var planning = null;
 	if (isLoggedIn()) {

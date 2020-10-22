@@ -1,4 +1,4 @@
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -351,7 +351,7 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 			if (sailors[i].german == '0') {
 				sailors.splice(i, 1);
 			} else if (jugend) {
-				if (((sailors[i].year != null) && (sailors[i].year < (formatDate('Y', maxDate) - YOUTH_AGE))) ||
+				if (((sailors[i].year != null) && (sailors[i].year < (formatDate('Y', maxDate) - (await dbGetClassProp('youth-age'))))) ||
 					((sailors[i].year == null) && (jugstrict))) {
 						sailors.splice(i, 1);
 				}
@@ -415,6 +415,27 @@ function dbSettingsSet(key, value) {
 		var os = db.transaction('settings', 'readwrite').objectStore('settings');
 		os.put({ key: key, value: value});
 	}
+}
+
+function dbGetClassProp(key) {
+	return new Promise(function(resolve) {
+		if (canUseLocalDB) {
+			var request = db.transaction('class').objectStore('class').get(key);
+			request.onsuccess = function (event) {
+				resolve(typeof request.result != 'undefined' ? request.result.value : null);
+			}
+		} else {
+			getJSON(QUERY_URL + 'get_class_prop?key=' + key, function (code, data) {
+				if (code == 200) {
+					resolve(data.value);
+				} else {
+					log("[db] Something went wrong (HTTP " + code + ")");
+					fail(strings.error_network, 5000);
+					resolve(null);
+				}
+			});
+		}
+	});
 }
 
 async function updateSyncStatus() {
@@ -503,7 +524,7 @@ function sync() {
 				localTimes[entry['table']] = entry['time'];
 			});
 
-			syncInProgress = 11;
+			syncInProgress = 12;
 			var syncOkay = true;
 			log("[db] Sync Start");
 			$('#i-sync').addClass('fa-spin');
@@ -532,6 +553,24 @@ function sync() {
 
 			getJSON(QUERY_URL + 'get_update_time', function (code, serverTimes) {
 				if (code == 200) {
+
+					// CLASS
+					getJSON(QUERY_URL + 'get_class', function (code, data) {
+						if (code == 200) {
+							var os = db.transaction('class', 'readwrite').objectStore('class');
+							log(data);
+							for (key in data) {
+								os.put({ key: key, value: data[key] });
+							}
+							syncInProgress --;
+							log('[db] class synced, remaining:', syncInProgress);
+						} else {
+							log("[db] class: Something went wrong (HTTP " + code + ")");
+							syncOkay = false;
+							syncInProgress --;
+							log('[db] class failed, remaining:', syncInProgress);
+						}
+					});
 
 					// CLUBS
 					if (localTimes['clubs'] < serverTimes['clubs']) {
@@ -1063,6 +1102,11 @@ function initDatabase() {
 				var osNews = db.createObjectStore('news', { keyPath: 'id' });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'news', time: 0 });
+			}
+
+			if ((oldVersion < 7) && (newVersion >= 7)) {
+				log('[db] to version 7');
+				var osClass = db.createObjectStore('class', { keyPath: 'key' });
 			}
 
 			// Force resync after db update
