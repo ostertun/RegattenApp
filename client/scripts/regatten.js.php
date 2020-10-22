@@ -10,8 +10,6 @@
 const QUERY_URL = '<?php echo QUERY_URL; ?>';
 const BOATCLASS = '<?php echo BOATCLASS; ?>';
 const LINK_PRE = '<?php echo SERVER_ADDR; ?>/';
-const YOUTH_AGE = '<?php echo $_CLASS['youth-age']; ?>';
-const YOUTH_GERMAN_NAME = '<?php echo $_CLASS['youth-german-name']; ?>';
 const PUSH_SERVER_KEY = '<?php echo PUSH_SERVER_KEY; ?>';
 
 var consoleOutput = [];

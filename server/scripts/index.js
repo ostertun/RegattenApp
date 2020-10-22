@@ -188,6 +188,9 @@ var siteScript = async function() {
 				list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
 
 				// Special
+				if (regatta.special.substr(0, 1) == '#') {
+					regatta.special = '* ' + regatta.special.substr(1);
+				}
 				list += '<div>' + regatta['special'] + '</div>';
 
 				// Icons
@@ -287,6 +290,9 @@ var siteScript = async function() {
 			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
 
 			// Special
+			if (regatta.special.substr(0, 1) == '#') {
+				regatta.special = '* ' + regatta.special.substr(1);
+			}
 			list += '<div>' + regatta['special'] + '</div>';
 
 			// Icons
@@ -393,6 +399,9 @@ var siteScript = async function() {
 			list += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
 
 			// Special
+			if (regatta.special.substr(0, 1) == '#') {
+				regatta.special = '* ' + regatta.special.substr(1);
+			}
 			list += '<div>' + regatta['special'] + '</div>';
 
 			// Icons

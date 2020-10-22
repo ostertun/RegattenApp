@@ -137,6 +137,7 @@ async function selectChange(callSiteScript = true) {
 				jugend = jugstrict = true;
 				break;
 			case 'idjm':
+				var youthGermanName = await dbGetClassProp('youth-german-name');
 				var beginn = null;
 				var regattas = await dbGetData('regattas');
 				regattas.sort(function(a,b){ return b.date.localeCompare(a.date); });
@@ -146,7 +147,7 @@ async function selectChange(callSiteScript = true) {
 					if ((date < parseDate('01.01.' + year)) || (date > parseDate('31.12.' + year))) {
 						continue;
 					}
-					if (regatta.name.indexOf(YOUTH_GERMAN_NAME) >= 0) {
+					if (regatta.name.indexOf(youthGermanName) >= 0) {
 						beginn = ((regatta.meldungSchluss != null) ? parseDate(regatta.meldungSchluss) : date);
 						break;
 					}
@@ -162,7 +163,7 @@ async function selectChange(callSiteScript = true) {
 					jugend = true;
 					jugstrict = false;
 				} else {
-					$('#div-rank').html('Keine ' + YOUTH_GERMAN_NAME + ' gefunden!');
+					$('#div-rank').html('Keine ' + youthGermanName + ' gefunden!');
 					$('#input-search').parent().hide();
 					return;
 				}

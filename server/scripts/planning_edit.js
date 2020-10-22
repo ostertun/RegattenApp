@@ -408,6 +408,9 @@ var siteScript = async function() {
 			row.content += '<div>' + ((entry['number'] != null) ? ('# ' + entry['number']) : '') + '</div>';
 
 			// Special
+			if (entry.special.substr(0, 1) == '#') {
+				entry.special = '* ' + entry.special.substr(1);
+			}
 			row.content += '<div>' + entry['special'] + '</div>';
 
 			// Club

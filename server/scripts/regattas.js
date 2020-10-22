@@ -109,6 +109,9 @@ var siteScript = async function() {
 		var heute = false;
 
 		rows = [];
+		var specialFields = await dbGetClassProp('special-fields');
+		if (specialFields === null) specialFields = {};
+		var specialShown = {};
 
 		for (id in regattas) {
 			var entry = regattas[id];
@@ -146,7 +149,16 @@ var siteScript = async function() {
 			row.content += '<div>' + ((club != null) ? club['kurz'] : '') + '</div>';
 
 			// Special
-			row.content += '<div>' + entry['special'] + '</div>';
+			if (entry.special.substr(0, 1) == '#') {
+				entry.special = entry.special.substr(1);
+				if (typeof specialFields[entry.special] !== 'undefined') {
+					specialShown[entry.special] = specialFields[entry.special];
+					entry.special = '* ' + entry.special;
+				} else {
+					entry.special = 'ERROR';
+				}
+			}
+			row.content += '<div>' + entry.special + '</div>';
 
 			// Icons
 			var icons = [];
@@ -223,12 +235,24 @@ var siteScript = async function() {
 			rows.push(null);
 		}
 
+		if (Object.keys(specialShown).length > 0) {
+			var specialText = '';
+			for (key in specialShown) {
+				specialText += '* ' + key + ': ' + specialShown[key] + '<br>';
+			}
+			$('#card-special').find('p').html(specialText);
+			$('#card-special').show();
+		} else {
+			$('#card-special').hide();
+		}
+
 		drawList();
 
 	} else {
 		$('#p-count').html('Keine Regatten gefunden!');
 		$('#div-regattas').hide();
 		$('#input-search').parent().hide();
+		$('#card-special').hide();
 	}
 
 	hideLoader();
