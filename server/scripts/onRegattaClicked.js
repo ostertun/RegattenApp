@@ -68,10 +68,26 @@ async function onRegattaClicked(id) {
 
 	// Planning
 	if ((plannings.length > 0) && (dateTo >= today)) {
-		$('#menu-item-plannings').show();
+		$('#badge-regatta-plannings').text(plannings.length);
 		$('#menu-item-plannings').attr('href', LINK_PRE + 'regatta_plan?regatta=' + regatta['id']);
+		$('#menu-item-plannings').show();
 	} else {
 		$('#menu-item-plannings').hide();
+	}
+
+	// Entrylist
+	var extServiceData;
+	try {
+		extServiceData = JSON.parse(regatta.extServiceData);
+	} catch {
+		extServiceData = {};
+	}
+	if ((regatta.extService !== null) && ('entryCount' in extServiceData)) {
+		$('#badge-regatta-entrylist').text(extServiceData.entryCount);
+		$('#menu-item-entrylist').attr('href', extServiceGetLink(regatta.extService, 'entrylist', extServiceData.eventId)); // TODO
+		$('#menu-item-entrylist').show();
+	} else {
+		$('#menu-item-entrylist').hide();
 	}
 
 	// Results

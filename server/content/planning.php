@@ -30,7 +30,8 @@
 	$items = '<p id="menu-item-special" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
 	$items .= '<p id="menu-item-yourplanning" class="mb-2 mt-1" style="line-height: 1.5em;"></p>';
 	$items .= $tpl->load('menu/item-icon', ['Status bearbeiten', '#', 'html-id' => 'menu-item-status', 'icon' => 'fa-edit']);
-	$items .= $tpl->load('menu/item-icon', ['Saison-Planungen', '', 'html-id' => 'menu-item-plannings', 'icon' => 'fa-calendar-alt']);
+	$items .= $tpl->load('menu/item-icon-badge', ['Saison-Planungen', '', 'html-id' => 'menu-item-plannings', 'icon' => 'fa-calendar-alt', 'badge-id' => 'badge-regatta-plannings']);
+	$items .= $tpl->load('menu/item-icon-badge', ['Meldeliste', '', 'html-id' => 'menu-item-entrylist', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-entrylist']);
 	$items .= $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);
 	$items .= $tpl->load('menu/item-icon', ['Bericht', '', 'html-id' => 'menu-item-bericht', 'icon' => 'fa-book']);
 	$items .= $tpl->load('menu/item-icon', ['Informationen', '', 'html-id' => 'menu-item-info', 'icon' => 'fa-info']);
