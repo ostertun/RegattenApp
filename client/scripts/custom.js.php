@@ -124,29 +124,22 @@ $(document).ready(function(){
 		//Adding Background for Gradient
 		if(!$('.menu-hider').length){$('#page').append('<div class="menu-hider"><div>');}
 
-		var menuOpened = function() {
-			log('[tpl] Menu opened', history.state);
-			if ((history.state === null) || (history.state.menu !== 'opened')) {
-				history.pushState({ menu: 'opened' }, '');
-				log('[tpl] state pushed');
-			}
-		}
-		var menuClosed = function() {
-			log('[tpl] Menu closed', history.state);
-			if ((history.state !== null) && (history.state.menu === 'opened')) {
-				history.back();
-				log('[tpl] history.back')
-			}
-		}
+		history.pushState(null, '');
+		log('[tpl] state pushed');
 
 		/*Menu Extender Function*/
-		$.fn.showMenu = function() {$(this).addClass('menu-active'); $('#footer-bar').addClass('footer-menu-hidden');setTimeout(function(){$('.menu-hider').addClass('menu-active');},250);$('body').addClass('modal-open');menuOpened();};
-		$.fn.hideMenu = function() {$(this).removeClass('menu-active'); $('#footer-bar').removeClass('footer-menu-hidden');$('.menu-hider').removeClass('menu-active menu-active-clear');$('body').removeClass('modal-open');menuClosed();};
+		$.fn.showMenu = function() {$(this).addClass('menu-active'); $('#footer-bar').addClass('footer-menu-hidden');setTimeout(function(){$('.menu-hider').addClass('menu-active');},250);$('body').addClass('modal-open');};
+		$.fn.hideMenu = function() {$(this).removeClass('menu-active'); $('#footer-bar').removeClass('footer-menu-hidden');$('.menu-hider').removeClass('menu-active menu-active-clear');$('body').removeClass('modal-open');};
 
 		window.onpopstate = function(event) {
-			log('[tpl] popstate event fired. location:' + document.location + ', state:' + JSON.stringify(event.state));
-			if ((event.state === null) || (event.state.menu !== 'opened')) {
+			var menuOpened = $('body').hasClass('modal-open');
+			log('[tpl] popstate event fired. location:' + document.location + ', state:' + JSON.stringify(event.state) + ', menuOpened:' + menuOpened);
+			if (menuOpened) {
 				$('.menu').hideMenu();
+				log('Menu hidden');
+			} else {
+				log('history.back');
+				history.back();
 			}
 		};
 
@@ -209,7 +202,6 @@ $(document).ready(function(){
 				if(menuID.hasClass('menu-box-right')){headerAndContent.css("transform", "translateX(-100%)");}
 			}
 			menuActivate();
-			menuOpened();
 		});
 
 		//Allows clicking even if menu is loaded externally.
@@ -221,7 +213,6 @@ $(document).ready(function(){
 			menuHider.css('transform','translate(0,0)');
 			$('#footer-bar').removeClass('footer-menu-hidden');
 			$('body').removeClass('modal-open');
-			menuClosed();
 			return false;
 		});
 
