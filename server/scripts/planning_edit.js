@@ -69,6 +69,8 @@ async function planningSwitchChanged() {
 
 var sailorIsSteuermann;
 var sailors = [];
+var knownIds = [];
+var known = [];
 
 async function sailorSelected(sid) {
 	$('#menu-sailor').hideMenu();
@@ -103,8 +105,12 @@ async function sailorSelected(sid) {
 		},
 		success: async function (data, status, xhr) {
 			await sync();
-			planningEdit(rid);
-			hideLoader();
+			if ((sid === null) || (sid in knownIds)) {
+				planningEdit(rid);
+				hideLoader();
+			} else {
+				location.reload();
+			}
 		}
 	});
 }
@@ -118,6 +124,11 @@ async function sailorsSearch() {
 		item += '</a>';
 		$('#menu-sailor').find('.content').find('.list-group').append(item);
 	}
+	if ($('#input-edit-search').val().length == 0) {
+		known.forEach(function (entry) {
+			$('#menu-sailor').find('.content').find('.list-group').append(entry);
+		});
+	}
 	if ($('#input-edit-search').val().length >= 3) {
 		sailors.forEach(function (entry) {
 			if (search($('#input-edit-search').val(), entry.keywords)) {
@@ -125,18 +136,30 @@ async function sailorsSearch() {
 			}
 		});
 	} else {
-		var item = '<p class="item-sailor-search">Gib mindestens 3 Zeichen ein</p>';
+		var item = '<p class="item-sailor-search">Zum Suchen mindestens 3 Zeichen eingeben</p>';
 		$('#menu-sailor').find('.content').find('.list-group').append(item);
 	}
 }
 
 async function initSailors() {
 	sailors = [];
+	known = [];
+	var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
+	knownIds = {};
+	for (var p in plannings) {
+		p = plannings[p];
+		if (p.steuermann !== null) knownIds[p.steuermann] = true;
+		var crew = p.crew.split(',');
+		for (var c in crew) {
+			c = crew[c];
+			if (c != '') knownIds[c] = true;
+		}
+	}
 	var dbSailors = await dbGetData('sailors');
 	dbSailors.sort(function(a,b){
 		return a.name.localeCompare(b.name);
 	});
-	for (s in dbSailors) {
+	for (var s in dbSailors) {
 		var item = '<a class="item-sailor-search" onclick="sailorSelected(' + dbSailors[s].id + ')">';
 		item += '<span>' + dbSailors[s].name + '</span>';
 		item += '<i class="fa fa-angle-right"></i>';
@@ -145,6 +168,7 @@ async function initSailors() {
 			keywords: [dbSailors[s].name],
 			content: item
 		});
+		if (dbSailors[s].id in knownIds) known.push(item);
 	}
 }
 
