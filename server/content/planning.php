@@ -6,9 +6,9 @@
 
 	// Title
 	$content = '<h1>Saison-Planung</h1>';
-	$content .= $tpl->load('button', ['<i class="fas fa-list"></i>&ensp;Saison-Planungen anderer', LINK_PRE . 'planning_list', 'css-class' => 'mt-2 mb-2']);
+	$content .= $tpl->load('button', ['<i class="fas fa-list"></i>&ensp;Saison-Planungen anderer', 'html-id' => 'a-list-plannings', 'css-class' => 'mt-2 mb-2']);
 	$content .= '<p class="mb-1"><b>Hinweis:</b> Diese Seite kannst nur Du sehen.<br>Wenn Du Deine Saison-Planung teilen möchtest, <a id="a-share-planning">klicke hier</a></p>';
-	$content .= $tpl->load('button', ['<i class="fas fa-edit"></i>&ensp;bearbeiten', LINK_PRE . 'planning_edit']);
+	$content .= $tpl->load('button', ['<i class="fas fa-edit"></i>&ensp;bearbeiten', 'html-id' => 'a-edit-planning']);
 	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
 
 	$sp['output'] .= $tpl->load('card', [$content, 'css-class' => 'show-loggedin']);
