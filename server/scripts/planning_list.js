@@ -1,7 +1,7 @@
 async function onUserClicked(id) {
 	var user = await dbGetData('users', id);
 	if (user !== null) {
-		location.href = LINK_PRE + 'planning_view?user=' + user.id;
+		location.href = LINK_PRE + 'planning_view?user=' + user.id + '&year=' + $('#select-year').val();
 	}
 }
 

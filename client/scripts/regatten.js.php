@@ -611,3 +611,27 @@ var addConsoleOpenerToPreloader = function() {
 	$(button).hide();
 }
 addConsoleOpenerToPreloader();
+
+function m2s_getLink(type, eventId) {
+	switch (type) {
+		case 'entrylist':
+			return 'https://manage2sail.com/de-DE/event/' + eventId + '#!/entries';
+	}
+	return '';
+}
+function ro_getLink(type, eventId) {
+	switch (type) {
+		case 'entrylist':
+			return 'http://www.raceoffice.org/entrylist.php?eid=' + eventId;
+	}
+	return '';
+}
+function extServiceGetLink(serviceName, type, eventId = '') {
+	switch (serviceName) {
+		case 'm2s':
+			return m2s_getLink(type, eventId);
+		case 'ro':
+			return ro_getLink(type, eventId);
+	}
+	return '';
+}

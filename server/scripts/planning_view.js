@@ -1,8 +1,10 @@
+var userid;
+
 function selectChange() {
 	var val = $('#select-year').val();
 
 	if (typeof siteScript === 'function') {
-		history.replaceState(null, '', '?year=' + val);
+		history.replaceState(null, '', '?user=' + userid + '&year=' + val);
 		showLoader();
 		siteScript();
 	}
@@ -35,7 +37,7 @@ async function drawList () {
 }
 
 var siteScript = async function() {
-	var userid = findGetParameter('user');
+	userid = findGetParameter('user');
 	var user = null;
 	if (userid !== null) {
 		user = await dbGetData('users', userid);

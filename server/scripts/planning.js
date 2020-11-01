@@ -114,11 +114,14 @@ var siteScript = async function() {
 		$('#switch-status-bezahlt').parent().parent().click(planningSwitchChanged);
 	}
 
-	$('#a-share-planning').attr('href', LINK_PRE + 'planning_view?user=' + USER_ID);
+	var selectedYear = $('#select-year').val();
+
+	$('#a-share-planning').attr('href', LINK_PRE + 'planning_view?user=' + USER_ID + '&year=' + selectedYear);
+	$('#a-edit-planning').attr('href', LINK_PRE + 'planning_edit?year=' + selectedYear);
+	$('#a-list-plannings').attr('href', LINK_PRE + 'planning_list?year=' + selectedYear);
 
 	today = getToday();
 
-	var selectedYear = $('#select-year').val();
 	var minDate = parseDate(selectedYear + '-01-01');
 	var maxDate = parseDate(selectedYear + '-12-31');
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
