@@ -51,7 +51,7 @@ var siteScript = async function() {
 	if (firstCall) {
 		firstCall = false;
 		$('#button-notifications-activate').click(function(){
-			$('#menu-pushes').showMenu();
+			pushesOpenMenu();
 		});
 		$('#a-notifications-later').click(function(){
 			createCookie('regatten_app_' + BOATCLASS + '_rejected_push', true, 1);
