@@ -156,12 +156,14 @@ function findGetParameter(parameterName) {
 }
 
 var signup = function() {
+	log('[app] Signup');
 	var username = $('#input-signup-username').val();
 	var email = $('#input-signup-email').val();
 	var password = $('#input-signup-password').val();
 	if (username == '') { $('#input-signup-username').focus(); return; }
 	if (email == '') { $('#input-signup-email').focus(); return; }
 	if (password == '') { $('#input-signup-password').focus(); return; }
+	log('[app] Signup: All fields okay');
 	showLoader();
 	$('#input-signup-username').val('').trigger('focusin').trigger('focusout');
 	$('#input-signup-email').val('').trigger('focusin').trigger('focusout');
@@ -175,6 +177,7 @@ var signup = function() {
 			password: password
 		},
 		error: function (xhr, status, error) {
+			log('[app] Signup: error:', xhr.status, status);
 			if (xhr.status == 409) {
 				toastError('Benutzername bereits vergeben');
 				$('#input-signup-email').val(email).trigger('focusin').trigger('focusout');
@@ -189,6 +192,7 @@ var signup = function() {
 			hideLoader();
 		},
 		success: function (data, status, xhr) {
+			log('[app] Signup successful, logging in');
 			$('#input-login-username').val(username);
 			$('#input-login-password').val(password);
 			login();
@@ -197,6 +201,7 @@ var signup = function() {
 }
 
 var login = function() {
+	log('[app] Login');
 	showLoader();
 	var username = $('#input-login-username').val();
 	var password = $('#input-login-password').val();
@@ -211,6 +216,7 @@ var login = function() {
 			device: navigator.userAgent
 		},
 		error: function (xhr, status, error) {
+			log('[app] Login: error:', xhr.status, status);
 			if (xhr.status == 401) {
 				toastError('Benutzername oder Passwort falsch');
 				$('#input-login-username').val(username).trigger('focusin').trigger('focusout');
@@ -225,6 +231,7 @@ var login = function() {
 			hideLoader();
 		},
 		success: function (data, status, xhr) {
+			log('[app] Login successful');
 			localStorage.setItem('auth_id', data.id);
 			localStorage.setItem('auth_hash', data.auth);
 			localStorage.setItem('auth_user', data.user);
@@ -245,6 +252,7 @@ var logoutClearStorage = function() {
 }
 
 var logout = function() {
+	log('[app] Logout');
 	showLoader();
 	var auth = {
 		id: localStorage.getItem('auth_id'),
@@ -262,6 +270,7 @@ var logout = function() {
 			auth: auth
 		},
 		error: function (xhr, status, error) {
+			log('[app] Logout: error:', xhr.status, status);
 			if (xhr.status == 401) {
 				log('[app] Not logged in');
 				logoutClearStorage();
@@ -276,12 +285,14 @@ var logout = function() {
 			}
 		},
 		success: function (data, status, xhr) {
+			log('[app] Logout successful');
 			logoutClearStorage();
 		}
 	});
 }
 
 function deleteDb() {
+	log('[app] Deleting DB');
 	$('#menu-developer').hideMenu();
 	if (canUseLocalDB) {
 		showLoader();
@@ -298,11 +309,13 @@ function deleteDb() {
 			setTimeout(function(){ location.reload(); }, 3000);
 		}
 	} else {
+		log('[app] DB not supported');
 		toastWarn('Dein Gerät unterstützt kein lokales Speichern der Daten. Alle Daten werden direkt vom Server gezogen.<br>Entsprechend kannst Du die Datenbank auch nicht zurücksetzen.', 10000);
 	}
 }
 
 function deleteCache() {
+	log('[app] Deleting cache');
 	$('#menu-developer').hideMenu();
 	navigator.serviceWorker.getRegistrations().then(function (registrations) {
 		for (let registration of registrations) {
@@ -340,16 +353,27 @@ function urlB64ToUint8Array(base64String) {
 function pushesSubscribe() {
 	log('[app] Subscribing');
 	const applicationServerKey = urlB64ToUint8Array(PUSH_SERVER_KEY);
+	log('[app] Subscription app server key:', applicationServerKey);
 	swRegistration.pushManager.subscribe({
 		userVisibleOnly: true,
 		applicationServerKey: applicationServerKey
 	})
-	.then(function(subscription) {
-		pushesUpdateServerSubscription(subscription, true);
-		updatePushSwitches();
-		updatePushBadge();
+	.then(async function(subscription) {
+		log('[app] Subscription:', subscription);
+		if (await pushesUpdateServerSubscription(subscription, true)) {
+			log('[app] Subscription: Sent to server, updating UI');
+			updatePushSwitches();
+			updatePushBadge();
+		} else {
+			$('#menu-pushes').hideMenu();
+			log('[app] Failed to subscribe the user due to connection error');
+			toastError('Da ist leider etwas schief gelaufen. Bitte stelle sicher, dass Du mit dem Internet verbunden bist und versuche es erneut.', 5000);
+			pushesUnSubscribe(true);
+		}
+		hideLoader();
 	})
 	.catch(function(err) {
+		$('#menu-pushes').hideMenu();
 		log('[app] Failed to subscribe the user: ', err);
 		toastError('Da ist leider etwas schief gelaufen. Bitte stelle sicher, dass Du mit dem Internet verbunden bist und versuche es erneut.', 5000);
 		pushesUnSubscribe(true);
@@ -359,13 +383,21 @@ function pushesSubscribe() {
 function pushesUnSubscribe(silent = false) {
 	log('[app] Unsubscribing');
 	swRegistration.pushManager.getSubscription()
-	.then(function(subscription) {
+	.then(async function(subscription) {
+		log('[app] Subscription:', subscription);
 		if (subscription) {
-			pushesUpdateServerSubscription(subscription, false);
+			if (await pushesUpdateServerSubscription(subscription, false)) {
+				log('[app] Subscription: Removed from server');
+			} else {
+				log('[app] Failed to unsubscribe the user due to connection error');
+			}
+			log('[app] Removing subscription');
 			subscription.unsubscribe();
+			log('[app] Subscription: Updating UI');
 			$('#menu-pushes').hideMenu();
 			updatePushBadge();
 			hideLoader();
+			if (!silent) toastOk('Du erhältst ab sofort keine Benachrichtigungen mehr von uns.');
 		}
 	})
 	.catch(function(error) {
@@ -378,20 +410,21 @@ function pushesUnSubscribe(silent = false) {
 }
 
 function pushesUpdateServerSubscription(subscription, enabled) {
-	log('[app] updateServer', enabled, subscription);
-	$.ajax({
-		url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
-		type: 'POST',
-		data: { subscription: JSON.stringify(subscription) },
-		success: function (data, textStatus, jqXHR) {
-			if (!enabled) {
-				toastOk('Du erhältst ab sofort keine Benachrichtigungen mehr von uns.');
+	return new Promise(function(resolve){
+		log('[app] updateServer', enabled, subscription);
+		$.ajax({
+			url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
+			type: 'POST',
+			data: { subscription: JSON.stringify(subscription) },
+			success: function (data, textStatus, jqXHR) {
+				log('[app] Subscription sent to server');
+				resolve(true);
+			},
+			error: function (jqXHR, textStatus, errorThrown) {
+				log('[app] Error sending subscription to server');
+				resolve(false);
 			}
-			hideLoader();
-		},
-		error: function (jqXHR, textStatus, errorThrown) {
-			throw 'Cannot update server subscription';
-		}
+		});
 	});
 }
 
