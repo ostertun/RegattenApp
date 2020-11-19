@@ -13,6 +13,7 @@ var showConsoleButtonTimeout = setTimeout(function(){
 	$('#button-show-console').show();
 }, 10000);
 var showLoader = function() {
+	log('[tpl] showLoader called, loaderCount:', loaderCount);
 	if (loaderCount < 1) {
 		$('#preloader').removeClass('preloader-hide');
 		loaderCount = 0;
@@ -24,6 +25,7 @@ var showLoader = function() {
 	loaderCount ++;
 }
 var hideLoader = function() {
+	log('[tpl] hideLoader called, loaderCount:', loaderCount);
 	loaderCount --;
 	if (loaderCount < 1) {
 		$('#preloader').addClass('preloader-hide');
