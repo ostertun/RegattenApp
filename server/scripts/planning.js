@@ -74,11 +74,15 @@ function selectChange() {
 }
 
 function initYear() {
-	var year = findGetParameter('year');
-	if (year === null) year = new Date().getFullYear();
+	return new Promise(async function (resolve) {
+		var year = findGetParameter('year');
+		if (year === null) year = await dbGetCurrentYear();
 
-	$('#select-year').html('<option value="' + year + '">' + year + '</option>');
-	$('#select-year').val(year);
+		$('#select-year').html('<option value="' + year + '">' + year + '</option>');
+		$('#select-year').val(year);
+
+		resolve();
+	});
 }
 
 var firstCall = true;
@@ -107,7 +111,7 @@ var siteScript = async function() {
 
 	if (firstCall) {
 		firstCall = false;
-		initYear();
+		await initYear();
 		$('#select-year').change(selectChange);
 		$('#input-search').on('input', drawList);
 		$('#switch-status-gemeldet').parent().parent().click(planningSwitchChanged);

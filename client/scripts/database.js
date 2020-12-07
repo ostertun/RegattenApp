@@ -397,6 +397,33 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 	});
 }
 
+function dbGetCurrentYear() {
+	return new Promise(async function (resolve) {
+		var date = new Date();
+		var year = date.getFullYear();
+		if (date.getMonth() == 11) {
+			year ++; // In DECEMBER show next year
+		} else {
+			// if there are no more regattas until end of the year, show next year
+			var regattas = dbGetRegattasRange(parseDate(date.getDate() + '.' + (date.getMonth() + 1) + '.' + year), parseDate('31.12.' + year));
+			if (regattas.length == 0) {
+				year ++;
+			}
+		}
+		var years = await dbGetData('years');
+		years.sort(function (a, b) {
+			if (a['year'] > b['year']) return -1;
+			if (a['year'] < b['year']) return 1;
+			return 0;
+		});
+		for (id in years) {
+			if (years[id].year < year) year = years[id].year;
+			if (years[id].year == year) break;
+		}
+		resolve(year);
+	});
+}
+
 function dbSettingsGet(key) {
 	return new Promise(function(resolve) {
 		if (canUseLocalDB) {

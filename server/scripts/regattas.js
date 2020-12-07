@@ -29,22 +29,26 @@ function buttonShowPressed() {
 }
 
 function initYear() {
-	var year = findGetParameter('year');
-	if (year === null) year = new Date().getFullYear();
+	return new Promise(async function (resolve) {
+		var year = findGetParameter('year');
+		if (year === null) year = await dbGetCurrentYear();
 
-	$('#select-year').html('<option value="' + year + '">' + year + '</option>');
-	$('#select-year').val(year);
+		$('#select-year').html('<option value="' + year + '">' + year + '</option>');
+		$('#select-year').val(year);
 
-	if (year == "user") {
-		var from = findGetParameter('from');
-		var to = findGetParameter('to');
-		if (from === null) from = formatDate('Y-m-d')
-		if (to === null) to = formatDate('Y-m-d')
-		$('#input-from').val(from).trigger('focusin').trigger('focusout');
-		$('#input-to').val(to).trigger('focusin').trigger('focusout');
-	}
+		if (year == "user") {
+			var from = findGetParameter('from');
+			var to = findGetParameter('to');
+			if (from === null) from = formatDate('Y-m-d')
+			if (to === null) to = formatDate('Y-m-d')
+			$('#input-from').val(from).trigger('focusin').trigger('focusout');
+			$('#input-to').val(to).trigger('focusin').trigger('focusout');
+		}
 
-	selectChange(false);
+		selectChange(false);
+
+		resolve();
+	});
 }
 
 var firstCall = true;
@@ -68,7 +72,7 @@ async function drawList () {
 var siteScript = async function() {
 	if (firstCall) {
 		firstCall = false;
-		initYear();
+		await initYear();
 		$('#select-year').change(selectChange);
 		$('#button-show').click(buttonShowPressed);
 		$('#input-search').on('input', drawList);
