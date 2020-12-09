@@ -362,6 +362,7 @@ function pushesSubscribe() {
 		log('[app] Subscription:', subscription);
 		if (await pushesUpdateServerSubscription(subscription, true)) {
 			log('[app] Subscription: Sent to server, updating UI');
+			dbSettingsSet('notify_endpoint_' + BOATCLASS, subscription.endpoint);
 			updatePushSwitches();
 			updatePushBadge();
 		} else {
@@ -395,6 +396,7 @@ function pushesUnSubscribe(silent = false) {
 			subscription.unsubscribe();
 			log('[app] Subscription: Updating UI');
 			$('#menu-pushes').hideMenu();
+			dbSettingsSet('notify_endpoint_' + BOATCLASS, false);
 			updatePushBadge();
 			hideLoader();
 			if (!silent) toastOk('Du erhältst ab sofort keine Benachrichtigungen mehr von uns.');
@@ -510,12 +512,29 @@ function updatePushBadge() {
 		$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('BLOCKED');
 		return;
 	}
-	swRegistration.pushManager.getSubscription().then(function(subscription) {
+	swRegistration.pushManager.getSubscription().then(async function(subscription) {
+		var dbSub = await dbSettingsGet('notify_endpoint_' + BOATCLASS);
 		var isSub = (subscription !== null);
+		log('[app] DB Subscription:', dbSub);
+		log('[app] Real Subscription:', subscription);
 		if (isSub) {
 			$('#badge-pushes').removeClass('bg-red2-dark').addClass('bg-green2-dark').text('AN');
+			if (dbSub === null) dbSettingsSet('notify_endpoint_' + BOATCLASS, subscription.endpoint);
+			else if (dbSub !== subscription.endpoint) {
+				if (navigator.onLine) {
+					log('[app] Updating subscription');
+					pushesSubscribe();
+				}
+			}
 		} else {
 			$('#badge-pushes').removeClass('bg-green2-dark').addClass('bg-red2-dark').text('AUS');
+			if (dbSub === null) dbSettingsSet('notify_endpoint_' + BOATCLASS, false);
+			else if (dbSub !== false) {
+				if (navigator.onLine) {
+					log('[app] Re subscribe');
+					pushesSubscribe();
+				}
+			}
 		}
 	});
 }
