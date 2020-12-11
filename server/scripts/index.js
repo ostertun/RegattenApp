@@ -145,7 +145,7 @@ var siteScript = async function() {
 			var planning = planningsDB[i];
 			for (j in regattas) {
 				var regatta = regattas[j];
-				if (regatta.id == planning.regatta) {
+				if ((regatta.id == planning.regatta) && (regatta.length > 0)) {
 					planning.regatta = regatta;
 					plannings.push(planning);
 				}
@@ -161,8 +161,6 @@ var siteScript = async function() {
 			for (i in plannings) {
 				var planning = plannings[i];
 				var regatta = planning.regatta;
-
-				if (regatta['length'] < 1) continue;
 
 				var club = null;
 				if (regatta['club'] != null)
@@ -259,12 +257,18 @@ var siteScript = async function() {
 	var maxDate = getToday();
 	maxDate.setDate(maxDate.getDate() + 14);
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
+	i = 0;
+	while (i < regattas.length) {
+		if (regattas.length < 1) {
+			regattas.splice(i, 1);
+		} else {
+			i ++;
+		}
+	}
 	if (regattas.length > 0) {
 		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
-
-			if (regatta['length'] < 1) continue;
 
 			var club = null;
 			if (regatta['club'] != null)
@@ -365,6 +369,14 @@ var siteScript = async function() {
 	var maxDate = getToday();
 	maxDate.setDate(maxDate.getDate() - 1);
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
+	i = 0;
+	while (i < regattas.length) {
+		if (regattas.length < 1) {
+			regattas.splice(i, 1);
+		} else {
+			i ++;
+		}
+	}
 	regattas.sort(function(a,b){
 		return b.date.localeCompare(a.date);
 	});
@@ -372,8 +384,6 @@ var siteScript = async function() {
 		list = '';
 		for (i in regattas) {
 			var regatta = regattas[i];
-
-			if (regatta['length'] < 1) continue;
 
 			var club = null;
 			if (regatta['club'] != null)
