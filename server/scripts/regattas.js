@@ -162,6 +162,27 @@ var siteScript = async function() {
 					entry.special = 'ERROR';
 				}
 			}
+			// replace placeholders
+			var pos;
+			while ((pos = entry.special.indexOf('$')) >= 0) {
+				var pos2 = entry.special.indexOf('$', pos + 1);
+				if (pos2 < 0) break;
+				var key = entry.special.substring(pos + 1, pos2);
+
+				var value = '';
+				// age class
+				if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+					var year = parseDate(entry.date).getFullYear();
+					year = year - value + 1;
+					var text = 'Jahrgänge ' + year + ' und jünger';
+					value = 'U-' + value;
+					specialShown[value] = text;
+				} else {
+					break;
+				}
+
+				entry.special = entry.special.replace('$' + key + '$', value);
+			}
 			row.content += '<div>' + entry.special + '</div>';
 
 			// Icons
@@ -239,9 +260,12 @@ var siteScript = async function() {
 			rows.push(null);
 		}
 
-		if (Object.keys(specialShown).length > 0) {
+		var specialKeys = Object.keys(specialShown);
+		if (specialKeys.length > 0) {
+			specialKeys.sort();
 			var specialText = '';
-			for (key in specialShown) {
+			for (i in specialKeys) {
+				var key = specialKeys[i];
 				specialText += '* ' + key + ': ' + specialShown[key] + '<br>';
 			}
 			$('#card-special').find('p').html(specialText);
