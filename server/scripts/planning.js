@@ -224,6 +224,23 @@ var siteScript = async function() {
 			if (entry.special.substr(0, 1) == '#') {
 				entry.special = '* ' + entry.special.substr(1);
 			}
+			// replace placeholders
+			var pos;
+			while ((pos = entry.special.indexOf('$')) >= 0) {
+				var pos2 = entry.special.indexOf('$', pos + 1);
+				if (pos2 < 0) break;
+				var key = entry.special.substring(pos + 1, pos2);
+
+				var value = '';
+				// age class
+				if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+					value = 'U-' + value;
+				} else {
+					break;
+				}
+
+				entry.special = entry.special.replace('$' + key + '$', value);
+			}
 			row.content += '<div>' + entry['special'] + '</div>';
 
 			// Icons
