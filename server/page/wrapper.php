@@ -18,7 +18,7 @@
 		<link rel="apple-touch-icon" sizes="180x180" href="<?php echo SERVER_ADDR; ?>/client/app/icons/icon-192x192.png">
 	</head>
 
-	<body class="theme-light" data-background="none" data-highlight="blue2"><?php /* DARK MODE DISABLED: set class to "detect-theme" */ ?>
+	<body class="detect-theme" data-background="none" data-highlight="blue2">
 
 		<div id="preloader"><div class="spinner-border color-highlight" role="status"></div></div>
 

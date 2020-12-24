@@ -189,6 +189,23 @@ var siteScript = async function() {
 				if (regatta.special.substr(0, 1) == '#') {
 					regatta.special = '* ' + regatta.special.substr(1);
 				}
+				// replace placeholders
+				var pos;
+				while ((pos = regatta.special.indexOf('$')) >= 0) {
+					var pos2 = regatta.special.indexOf('$', pos + 1);
+					if (pos2 < 0) break;
+					var key = regatta.special.substring(pos + 1, pos2);
+
+					var value = '';
+					// age class
+					if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+						value = 'U-' + value;
+					} else {
+						break;
+					}
+
+					regatta.special = regatta.special.replace('$' + key + '$', value);
+				}
 				list += '<div>' + regatta['special'] + '</div>';
 
 				// Icons
@@ -259,7 +276,7 @@ var siteScript = async function() {
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
 	i = 0;
 	while (i < regattas.length) {
-		if (regattas.length < 1) {
+		if (regattas[i].length < 1) {
 			regattas.splice(i, 1);
 		} else {
 			i ++;
@@ -296,6 +313,23 @@ var siteScript = async function() {
 			// Special
 			if (regatta.special.substr(0, 1) == '#') {
 				regatta.special = '* ' + regatta.special.substr(1);
+			}
+			// replace placeholders
+			var pos;
+			while ((pos = regatta.special.indexOf('$')) >= 0) {
+				var pos2 = regatta.special.indexOf('$', pos + 1);
+				if (pos2 < 0) break;
+				var key = regatta.special.substring(pos + 1, pos2);
+
+				var value = '';
+				// age class
+				if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+					value = 'U-' + value;
+				} else {
+					break;
+				}
+
+				regatta.special = regatta.special.replace('$' + key + '$', value);
 			}
 			list += '<div>' + regatta['special'] + '</div>';
 
@@ -371,7 +405,7 @@ var siteScript = async function() {
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
 	i = 0;
 	while (i < regattas.length) {
-		if (regattas.length < 1) {
+		if (regattas[i].length < 1) {
 			regattas.splice(i, 1);
 		} else {
 			i ++;
@@ -411,6 +445,23 @@ var siteScript = async function() {
 			// Special
 			if (regatta.special.substr(0, 1) == '#') {
 				regatta.special = '* ' + regatta.special.substr(1);
+			}
+			// replace placeholders
+			var pos;
+			while ((pos = regatta.special.indexOf('$')) >= 0) {
+				var pos2 = regatta.special.indexOf('$', pos + 1);
+				if (pos2 < 0) break;
+				var key = regatta.special.substring(pos + 1, pos2);
+
+				var value = '';
+				// age class
+				if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+					value = 'U-' + value;
+				} else {
+					break;
+				}
+
+				regatta.special = regatta.special.replace('$' + key + '$', value);
 			}
 			list += '<div>' + regatta['special'] + '</div>';
 
