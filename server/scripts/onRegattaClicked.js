@@ -6,15 +6,38 @@ async function onRegattaClicked(id) {
 	var dateTo = parseDate(regatta['date']);
 	dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
 
+	var text = [];
 	var specialFields = await dbGetClassProp('special-fields');
 	if (specialFields === null) specialFields = {};
 	if (regatta.special.substr(0, 1) == '#') {
 		regatta.special = regatta.special.substr(1);
 		if (typeof specialFields[regatta.special] !== 'undefined') {
-			$('#menu-item-special').text(specialFields[regatta.special]);
-		} else {
-			$('#menu-item-special').text('ERROR');
+			text.push(specialFields[regatta.special]);
 		}
+	}
+	var pos;
+	while ((pos = regatta.special.indexOf('$')) >= 0) {
+		var pos2 = regatta.special.indexOf('$', pos + 1);
+		if (pos2 < 0) break;
+		var key = regatta.special.substring(pos + 1, pos2);
+
+		// age class
+		if ((key.substr(0, 1) == 'U') && (!isNaN(value = parseInt(key.substr(1))))) {
+			var year = parseDate(regatta.date).getFullYear();
+			year = year - value + 1;
+			text.push('Jahrgänge ' + year + ' und jünger');
+		} else {
+			break;
+		}
+
+		regatta.special = regatta.special.replace('$' + key + '$', '');
+	}
+	if (text.length > 0) {
+		text.sort();
+		for (i in text) {
+			text[i] = $('<div />').text(text[i]).html();
+		}
+		$('#menu-item-special').html(text.join('<br>'));
 		$('#menu-item-special').show();
 	} else {
 		$('#menu-item-special').hide();

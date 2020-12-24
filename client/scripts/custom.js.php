@@ -223,7 +223,7 @@ $(document).ready(function(){
 		//Disabling & Enabling Dark Transitions in Dark Mode to Speed up Performance.
 		function allowTransitions(){$('body').find('#transitions-remove').remove();}
 		function removeTransitions(){$('body').append('<style id="transitions-remove">.btn, .header, #footer-bar, .menu-box, .menu-active{transition:all 0ms ease!important;}</style>'); setTimeout(function(){allowTransitions();},10);}
-/* DARK MODE DISABLED
+
 		//Dark Mode
 		var darkSwitch = $('[data-toggle-theme-switch], [data-toggle-theme], [data-toggle-theme-switch] input, [data-toggle-theme] input');
 		$('[data-toggle-theme], [data-toggle-theme-switch]').on('click',function(){
@@ -265,10 +265,6 @@ $(document).ready(function(){
 		if($('body').hasClass('detect-theme')){setColorScheme();}
 		$('.detect-dark-mode').on('click',function(){ $('body').addClass('detect-theme'); setColorScheme(); return false;});
 		$('.disable-auto-dark-mode').on('click',function(){ $('body').removeClass('detect-theme'); $(this).remove(); return false;});
-*/
-eraseCookie('sticky_light_mode');
-eraseCookie('sticky_dark_mode');
-// END
 
 		log('[tpl] init other ui elements');
 
