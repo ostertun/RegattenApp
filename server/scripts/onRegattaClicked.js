@@ -107,7 +107,7 @@ async function onRegattaClicked(id) {
 	}
 	if ((regatta.extService !== null) && ('entryCount' in extServiceData)) {
 		$('#badge-regatta-entrylist').text(extServiceData.entryCount);
-		$('#menu-item-entrylist').attr('href', extServiceGetLink(regatta.extService, 'entrylist', extServiceData.eventId)); // TODO
+		$('#menu-item-entrylist').attr('href', extServiceGetLink(regatta.extService, 'entrylist', extServiceData.eventId, extServiceData.classId)); // TODO
 		$('#menu-item-entrylist').show();
 	} else {
 		$('#menu-item-entrylist').hide();
