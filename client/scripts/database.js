@@ -191,6 +191,8 @@ function dbGetResultCalculated(regatta) {
 							case 'DNF': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Did not finish
 							case 'RET': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Retired (Aufgegeben)
 							case 'RAF': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Retired after finish
+							// Kursfehler
+							case 'NSC': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Not sailed course
 							// Disqualifizierun
 							case 'DSQ': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Disqualified
 							case 'DNE': results[id]['values'][i] = gemeldet + 1; copy[i] = -1; break; // Disqualified, not excludable (disqu. kann nach 90.3(b) nicht gestrichen werden)
