@@ -187,7 +187,7 @@ async function onRegattaClicked(id) {
 					$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
 				}
 			} else {
-				$('#badge-regatta-meldung').text('Meldeschluss abgelaufen');
+				$('#badge-regatta-meldung').text('Meldeschluss abgelaufen, Nachmeldung möglich');
 				$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
 			}
 		} else {
