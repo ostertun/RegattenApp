@@ -145,9 +145,9 @@ var compareResultsRaceCount;
 function compareResults (a, b) {
 	if (a['netto'] != b['netto']) return (a['netto'] < b['netto']) ? -1 : 1;
 	var tempA = [...a['values']];
-	tempA.sort();
+	tempA.sort(function(a,b){return a-b;});
 	var tempB = [...b['values']];
-	tempB.sort();
+	tempB.sort(function(a,b){return a-b;});
 	for (var i = 0; i < compareResultsRaceCount; i ++) {
 		if (tempA[i] != tempB[i]) return (tempA[i] < tempB[i]) ? -1 : 1;
 	}
