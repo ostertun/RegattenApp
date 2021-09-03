@@ -624,7 +624,7 @@ function sendErrorReport() {
 		url: QUERY_URL + 'error_report',
 		method: 'POST',
 		data: {
-			errors: consoleOutput,
+			errors: JSON.stringify(consoleOutput),
 			device: navigator.userAgent,
 			version: '<?php echo PWA_VERSION; ?>'
 		},
