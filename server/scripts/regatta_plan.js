@@ -14,7 +14,7 @@ var siteScript = async function() {
 	var dateFrom = parseDate(regatta['date']);
 	var dateTo = parseDate(regatta['date']);
 	dateTo.setDate(dateTo.getDate() + Math.max(parseInt(regatta['length']) - 1, 0));
-	
+
 	$('#h1-title').text(regatta.name);
 	if (regatta.length < 1) {
 		if (formatDate('d.m', dateFrom) == '01.01') {
@@ -25,7 +25,7 @@ var siteScript = async function() {
 	} else {
 		$('#p-title').html(formatDate('d.m.Y', dateFrom) + ' - ' + formatDate('d.m.Y', dateTo));
 	}
-	
+
 	var plannings = await dbGetDataIndex('plannings', 'regatta', regatta.id);
 	if (plannings.length > 0) {
 		$('#table-plannings').show();
@@ -33,17 +33,23 @@ var siteScript = async function() {
 		var tbody = '';
 		for (var p in plannings) {
 			var planning = plannings[p];
-			
+
 			tbody += '<tr>';
-			
+
 			tbody += '<td>' + (await dbGetData('users', planning.user)).username + '</td>';
-			
+
+			if (planning.boat != null) {
+				tbody += '<td>' + (await dbGetData('boats', planning.boat)).sailnumber + '</td>';
+			} else {
+				tbody += '<td>(noch unklar)</td>';
+			}
+
 			if (planning.steuermann != null) {
 				tbody += '<td>' + (await dbGetData('sailors', planning.steuermann)).name + '</td>';
 			} else {
 				tbody += '<td>(noch unklar)</td>';
 			}
-			
+
 			var crew = [];
 			var cr = planning.crew.split(',');
 			for (c in cr) {
@@ -51,7 +57,7 @@ var siteScript = async function() {
 				if (s != null) crew.push(s.name);
 			}
 			tbody += '<td>' + crew.join('<br>') + '</td>';
-			
+
 			tbody += '</tr>';
 		}
 		$('#table-plannings').find('tbody').html(tbody);
@@ -60,6 +66,6 @@ var siteScript = async function() {
 		$('#p-info').show();
 		$('#table-plannings').hide();
 	}
-	
+
 	hideLoader();
 }

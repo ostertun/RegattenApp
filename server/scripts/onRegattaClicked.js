@@ -57,11 +57,18 @@ async function onRegattaClicked(id) {
 	// Your Planning
 	if (planning != null) {
 		$('#menu-item-yourplanning').show();
+		var boat = null;
+		if (planning.boat != null) {
+			boat = (await dbGetData('boats', planning.boat)).sailnumber;
+		}
 		var steuermann = null;
 		if (planning.steuermann != null) {
 			steuermann = (await dbGetData('sailors', planning.steuermann)).name;
 		}
-		var crew = [steuermann == null ? '[noch unklar]' : steuermann];
+		var crew = [
+			boat == null ? '[Boot unklar]' : boat,
+			steuermann == null ? '[St.mann unklar]' : steuermann
+		];
 		crewA = planning.crew.split(',');
 		for (i in crewA) {
 			var sailor = await dbGetData('sailors', crewA[i]);
