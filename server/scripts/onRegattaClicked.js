@@ -57,11 +57,18 @@ async function onRegattaClicked(id) {
 	// Your Planning
 	if (planning != null) {
 		$('#menu-item-yourplanning').show();
+		var boat = null;
+		if (planning.boat != null) {
+			boat = (await dbGetData('boats', planning.boat)).sailnumber;
+		}
 		var steuermann = null;
 		if (planning.steuermann != null) {
 			steuermann = (await dbGetData('sailors', planning.steuermann)).name;
 		}
-		var crew = [steuermann == null ? '[noch unklar]' : steuermann];
+		var crew = [
+			boat == null ? '[Boot unklar]' : boat,
+			steuermann == null ? '[St.mann unklar]' : steuermann
+		];
 		crewA = planning.crew.split(',');
 		for (i in crewA) {
 			var sailor = await dbGetData('sailors', crewA[i]);
@@ -107,7 +114,7 @@ async function onRegattaClicked(id) {
 	}
 	if ((regatta.extService !== null) && ('entryCount' in extServiceData)) {
 		$('#badge-regatta-entrylist').text(extServiceData.entryCount);
-		$('#menu-item-entrylist').attr('href', extServiceGetLink(regatta.extService, 'entrylist', extServiceData.eventId)); // TODO
+		$('#menu-item-entrylist').attr('href', extServiceGetLink(regatta.extService, 'entrylist', extServiceData.eventId, extServiceData.classId)); // TODO
 		$('#menu-item-entrylist').show();
 	} else {
 		$('#menu-item-entrylist').hide();

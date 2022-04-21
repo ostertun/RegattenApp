@@ -664,24 +664,24 @@ var addConsoleOpenerToPreloader = function() {
 }
 addConsoleOpenerToPreloader();
 
-function m2s_getLink(type, eventId) {
+function m2s_getLink(type, eventId, classId) {
 	switch (type) {
 		case 'entrylist':
-			return 'https://manage2sail.com/de-DE/event/' + eventId + '#!/entries';
+			return 'https://manage2sail.com/de-DE/event/' + eventId + '#!/entries?classId=' + classId;
 	}
 	return '';
 }
-function ro_getLink(type, eventId) {
+function ro_getLink(type, eventId, classId) {
 	switch (type) {
 		case 'entrylist':
 			return 'http://www.raceoffice.org/entrylist.php?eid=' + eventId;
 	}
 	return '';
 }
-function extServiceGetLink(serviceName, type, eventId = '') {
+function extServiceGetLink(serviceName, type, eventId = '', classId = '') {
 	switch (serviceName) {
 		case 'm2s':
-			return m2s_getLink(type, eventId);
+			return m2s_getLink(type, eventId, classId);
 		case 'ro':
 			return ro_getLink(type, eventId);
 	}

@@ -178,6 +178,9 @@ var siteScript = async function() {
 			var club = null;
 			if (entry['club'] != null)
 				club = await dbGetData('clubs', entry['club']);
+			if (entry.planning.boat !== null) {
+				entry.planning.boat = (await dbGetData('boats', entry.planning.boat)).sailnumber;
+			}
 			if (entry.planning.steuermann !== null) {
 				entry.planning.steuermann = (await dbGetData('sailors', entry.planning.steuermann)).name;
 			}
@@ -197,6 +200,7 @@ var siteScript = async function() {
 			row.keywords.push(entry['name']);
 			if (entry['number'] != null) row.keywords.push(entry['number']);
 			if (club != null) row.keywords.push(club['kurz'], club['name']);
+			if (entry.planning.boat != null) row.keywords.push(entry.planning.boat);
 			if (entry.planning.steuermann != null) row.keywords.push(entry.planning.steuermann);
 			for (c in entry.planning.crew) row.keywords.push(entry.planning.crew[c]);
 

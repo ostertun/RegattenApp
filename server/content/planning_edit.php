@@ -19,8 +19,13 @@
 
 	// Menu
 	$items = $tpl->load('menu/item-switch', ['In die Saison-Planung aufnehmen', 'html-id' => 'switch-planning-include', 'icon' => 'fa-check']);
+	$items .= $tpl->load('menu/item-simple', ['', '#', 'html-id' => 'item-boat']);
 	$items .= $tpl->load('menu/item-simple', ['', '#', 'html-id' => 'item-steuermann']);
-	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-edit', 'title' => 'Regatta bearbeiten', 'height' => 320]);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-edit', 'title' => 'Regatta bearbeiten', 'height' => 400]);
+
+	// Select boat
+	$items = $tpl->load('input', ['html-id' => 'input-edit-boat-search', 'placeholder' => 'Suche', 'type' => 'text']);
+	$sp['menus'] .= $tpl->load('menu/modal', [$items, 'html-id' => 'menu-boat', 'height' => 500, 'width' => 350]);
 
 	// Select sailor
 	$items = $tpl->load('input', ['html-id' => 'input-edit-search', 'placeholder' => 'Suche', 'type' => 'text']);

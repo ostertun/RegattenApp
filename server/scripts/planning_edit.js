@@ -141,37 +141,6 @@ async function sailorsSearch() {
 	}
 }
 
-async function initSailors() {
-	sailors = [];
-	known = [];
-	var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
-	knownIds = {};
-	for (var p in plannings) {
-		p = plannings[p];
-		if (p.steuermann !== null) knownIds[p.steuermann] = true;
-		var crew = p.crew.split(',');
-		for (var c in crew) {
-			c = crew[c];
-			if (c != '') knownIds[c] = true;
-		}
-	}
-	var dbSailors = await dbGetData('sailors');
-	dbSailors.sort(function(a,b){
-		return a.name.localeCompare(b.name);
-	});
-	for (var s in dbSailors) {
-		var item = '<a class="item-sailor-search" onclick="sailorSelected(' + dbSailors[s].id + ')">';
-		item += '<span>' + dbSailors[s].name + '</span>';
-		item += '<i class="fa fa-angle-right"></i>';
-		item += '</a>';
-		sailors.push({
-			keywords: [dbSailors[s].name],
-			content: item
-		});
-		if (dbSailors[s].id in knownIds) known.push(item);
-	}
-}
-
 async function planningChangeCrew(sid = null) {
 	if (sid !== null) {
 		showLoader();
@@ -230,6 +199,136 @@ async function planningChangeSteuermann() {
 	$('#input-edit-search').focus();
 }
 
+var boats = [];
+var boatKnownIds = [];
+var boatKnown = [];
+
+async function boatSelected(bid) {
+	$('#menu-boat').hideMenu();
+	showLoader();
+	var rid = $('#switch-planning-include').data('regatta');
+	var action = 'planning_set_boat';
+	// add boat
+	var auth = {
+		id: localStorage.getItem('auth_id'),
+		hash: localStorage.getItem('auth_hash')
+	}
+	$.ajax({
+		url: QUERY_URL + action,
+		method: 'POST',
+		data: {
+			auth: auth,
+			regatta: rid,
+			boat: bid
+		},
+		error: function (xhr, status, error) {
+			if (xhr.status == 401) {
+				log('authentification failed');
+				toastError('Authentifizierung fehlgeschlagen. Versuche es erneut.');
+			} else if (xhr.status == 0) {
+				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um die &Auml;nderungen zu speichern');
+			} else {
+				log(action + ': unbekannter Fehler', status, error);
+				log(xhr);
+				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
+			}
+			hideLoader();
+		},
+		success: async function (data, status, xhr) {
+			await sync();
+			if ((bid === null) || (bid in boatKnownIds)) {
+				planningEdit(rid);
+				hideLoader();
+			} else {
+				location.reload();
+			}
+		}
+	});
+}
+
+async function boatsSearch() {
+	$('.item-boat-search').remove();
+	var item = '<a class="item-boat-search" onclick="boatSelected(null)">';
+	item += '<span style="font-style:italic;">noch unklar</span>';
+	item += '<i class="fa fa-angle-right"></i>';
+	item += '</a>';
+	$('#menu-boat').find('.content').find('.list-group').append(item);
+	if ($('#input-edit-boat-search').val().length == 0) {
+		boatKnown.forEach(function (entry) {
+			$('#menu-boat').find('.content').find('.list-group').append(entry);
+		});
+	}
+	if ($('#input-edit-boat-search').val().length >= 3) {
+		boats.forEach(function (entry) {
+			if (search($('#input-edit-boat-search').val(), entry.keywords)) {
+				$('#menu-boat').find('.content').find('.list-group').append(entry.content);
+			}
+		});
+	} else {
+		var item = '<p class="item-boat-search">Zum Suchen mindestens 3 Zeichen eingeben</p>';
+		$('#menu-boat').find('.content').find('.list-group').append(item);
+	}
+}
+
+async function planningChangeBoat() {
+	$('#input-edit-boat-search').val('').trigger('focusin').trigger('focusout');
+	boatsSearch();
+	$('#menu-edit').hideMenu();
+	$('#menu-boat').find('.menu-title').find('h1').text('Boot bearbeiten');
+	$('#menu-boat').showMenu();
+	$('#input-edit-boat-search').focus();
+}
+
+async function initBoatsSailors() {
+	boats = [];
+	sailors = [];
+	boatKnown = [];
+	known = [];
+	var plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
+	boatKnownIds = {};
+	knownIds = {};
+	for (var p in plannings) {
+		p = plannings[p];
+		if (p.boat !== null) boatKnownIds[p.boat] = true;
+		if (p.steuermann !== null) knownIds[p.steuermann] = true;
+		var crew = p.crew.split(',');
+		for (var c in crew) {
+			c = crew[c];
+			if (c != '') knownIds[c] = true;
+		}
+	}
+	var dbBoats = await dbGetData('boats');
+	dbBoats.sort(function(a,b){
+		return a.sailnumber.localeCompare(b.sailnumber);
+	});
+	for (var b in dbBoats) {
+		var item = '<a class="item-boat-search" onclick="boatSelected(' + dbBoats[b].id + ')">';
+		item += '<span>' + dbBoats[b].sailnumber + ' - ' + dbBoats[b].name + '</span>';
+		item += '<i class="fa fa-angle-right"></i>';
+		item += '</a>';
+		boats.push({
+			keywords: [dbBoats[b].sailnumber, dbBoats[b].name],
+			content: item
+		});
+		if (dbBoats[b].id in boatKnownIds) boatKnown.push(item);
+	}
+	var dbSailors = await dbGetData('sailors');
+	dbSailors.sort(function(a,b){
+		return a.name.localeCompare(b.name);
+	});
+	for (var s in dbSailors) {
+		var item = '<a class="item-sailor-search" onclick="sailorSelected(' + dbSailors[s].id + ')">';
+		item += '<span>' + dbSailors[s].name + '</span>';
+		item += '<i class="fa fa-angle-right"></i>';
+		item += '</a>';
+		sailors.push({
+			keywords: [dbSailors[s].name],
+			content: item
+		});
+		if (dbSailors[s].id in knownIds) known.push(item);
+	}
+}
+
 async function planningEdit(id) {
 	var regatta = await dbGetData('regattas', id);
 
@@ -249,7 +348,13 @@ async function planningEdit(id) {
 	$('#switch-planning-include').data('regatta', id);
 	if (planning !== null) {
 		$('#switch-planning-include').prop('checked', true);
+		$('#item-boat').show();
 		$('#item-steuermann').show();
+		if (planning.boat !== null) {
+			$('#item-boat').find('span').text('Boot: ' + (await dbGetData('boats', planning.boat)).sailnumber);
+		} else {
+			$('#item-boat').find('span').html('Boot: <font style="font-style:italic;">noch unklar</font>');
+		}
 		if (planning.steuermann !== null) {
 			$('#item-steuermann').find('span').text('Am Steuer: ' + (await dbGetData('sailors', planning.steuermann)).name);
 		} else {
@@ -274,6 +379,7 @@ async function planningEdit(id) {
 		$('#menu-edit').find('.content').find('.list-group').append(item);
 	} else {
 		$('#switch-planning-include').prop('checked', false);
+		$('#item-boat').hide();
 		$('#item-steuermann').hide();
 		$('.item-crew').remove();
 	}
@@ -332,9 +438,11 @@ var siteScript = async function() {
 		$('#select-year').change(selectChange);
 		$('#input-search').on('input', drawList);
 		$('#switch-planning-include').parent().parent().click(planningSwitchChanged);
+		$('#item-boat').click(planningChangeBoat);
 		$('#item-steuermann').click(planningChangeSteuermann);
 		$('#input-edit-search').on('input', sailorsSearch);
-		initSailors();
+		$('#input-edit-boat-search').on('input', boatsSearch);
+		initBoatsSailors();
 	}
 
 	today = getToday();
@@ -393,6 +501,9 @@ var siteScript = async function() {
 			if (entry['club'] != null)
 				club = await dbGetData('clubs', entry['club']);
 			if (entry.planning !== null) {
+				if (entry.planning.boat !== null) {
+					entry.planning.boat = (await dbGetData('boats', entry.planning.boat)).sailnumber;
+				}
 				if (entry.planning.steuermann !== null) {
 					entry.planning.steuermann = (await dbGetData('sailors', entry.planning.steuermann)).name;
 				}
@@ -488,10 +599,15 @@ var siteScript = async function() {
 
 				// ZEILE 5
 				row.content += '<div>';
-				row.content += '<div>' + (entry.planning.steuermann !== null ? entry.planning.steuermann : 'noch unklar') + '</div>';
+				row.content += '<div>' + (entry.planning.boat !== null ? entry.planning.boat : '<i>Boot unklar</i>') + '</div>';
 				row.content += '</div>';
 
-				// ZEILE 6...
+				// ZEILE 6
+				row.content += '<div>';
+				row.content += '<div>' + (entry.planning.steuermann !== null ? entry.planning.steuermann : '<i>St.mann unklar</i>') + '</div>';
+				row.content += '</div>';
+
+				// ZEILE 7...
 				for (var i in entry.planning.crew) {
 					row.content += '<div>';
 					row.content += '<div>' + entry.planning.crew[i] + '</div>';
