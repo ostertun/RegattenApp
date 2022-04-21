@@ -258,7 +258,7 @@ function dbGetResultCalculated(regatta) {
 	});
 }
 
-function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
+function dbGetRanking(minDate, maxDate, maxAge, ageStrict, altM = 9, ageCrew = false) {
 	return new Promise(async function(resolve) {
 		var rankNoResults = [];
 
@@ -277,9 +277,13 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 
 		for (var i in regattas) {
 			var regatta = regattas[i];
+			var date = parseDate(regatta.date);
 
 			// regatta has to be min. 2 days to be ranking regatta
 			if (regatta.length < 2) continue;
+
+			// regatta has to have rlf
+			if (regatta.rlf == 0) continue;
 
 			var results = await dbGetDataIndex('results', 'regatta', regatta.id);
 			if (results.length <= 0) {
@@ -330,7 +334,20 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				if (result.rlp == 0) continue;
 
 				// check if crew is youth
-				// TODO: not used
+				if ((maxAge != false) && ageCrew) {
+					var crew = result.crew.split(',');
+					var okay = true;
+					for (var c in crew) {
+						if ((c == '') || !(c in sailorIds)) continue;
+						var sailor = sailors[sailorIds[c]];
+						if (((sailor.year != null) && (sailor.year < (formatDate('Y', date) - maxAge))) ||
+							((sailor.year == null) && (ageStrict))) {
+								okay = false;
+								break;
+						}
+					}
+					if (!okay) continue;
+				}
 
 				sailors[sailorIds[result.steuermann]].regattas[regatta.id] = {
 					regatta: regatta.id,
@@ -352,9 +369,9 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 		for (var i = sailors.length - 1; i >= 0; i --) {
 			if (sailors[i].german == '0') {
 				sailors.splice(i, 1);
-			} else if (jugend) {
-				if (((sailors[i].year != null) && (sailors[i].year < (formatDate('Y', maxDate) - (await dbGetClassProp('youth-age'))))) ||
-					((sailors[i].year == null) && (jugstrict))) {
+			} else if (maxAge != false) {
+				if (((sailors[i].year != null) && (sailors[i].year < (formatDate('Y', maxDate) - maxAge))) ||
+					((sailors[i].year == null) && (ageStrict))) {
 						sailors.splice(i, 1);
 				}
 			}
@@ -374,7 +391,7 @@ function dbGetRanking(minDate, maxDate, jugend, jugstrict) {
 				sum += parseFloat(r[1]);
 				sailors[i].regattas[r[0]].used ++;
 				cnt ++;
-				if (cnt >= 9) break;
+				if (cnt >= altM) break;
 			}
 			delete sailors[i].tmp_rlp;
 			if (cnt > 0) {
