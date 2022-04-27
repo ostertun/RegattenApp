@@ -106,38 +106,67 @@ async function onRankingClicked(id) {
 	$('#menu-rank').scrollTop(0);
 }
 
+var rankings;
+
 async function selectChange(callSiteScript = true) {
-	var type = $('#select-type').val();
-	var year = parseInt($('#select-year').val());
-	if (type == "user") {
-		$('#select-year').parent().hide();
+	var year = $('#select-year').val();
+	if (year == "user") {
+		$('#select-type').parent().hide();
 		$('#input-from').trigger('focusin').trigger('focusout').parent().show();
 		$('#input-to').trigger('focusin').trigger('focusout').parent().show();
-		$('#input-jugend').parent().parent().show();
-		$('#input-jugstrict').parent().parent().show();
+		$('#input-altm').trigger('focusin').trigger('focusout').parent().show();
+		$('#input-maxage').trigger('focusin').trigger('focusout').parent().show();
+		$('#input-agestrict').parent().show();
+		$('#input-agecrew').parent().show();
 		$('#button-show').show();
 	} else {
-		$('#select-year').parent().show();
+		year = parseInt(year);
+		var type = $('#select-type').val();
+		console.log('[rank] selected', year, type);
+		$('#select-type').parent().show();
 		$('#input-from').parent().hide();
 		$('#input-to').parent().hide();
-		$('#input-jugend').parent().parent().hide();
-		$('#input-jugstrict').parent().parent().hide();
+		$('#input-altm').parent().hide();
+		$('#input-maxage').parent().hide();
+		$('#input-agestrict').parent().hide();
+		$('#input-agecrew').parent().hide();
 		$('#button-show').hide();
 
-		var from, to, jugend, jugstrict;
-		switch (type) {
+		var rankingsShow = {};
+		var options = '';
+		for (var i in rankings) {
+			if (rankings[i].year_from !== null && rankings[i].year_from > year) continue;
+			if (rankings[i].year_to !== null && rankings[i].year_to < year) continue;
+			var alias = rankings[i].alias;
+			options += '<option value="' + alias + '">' + rankings[i].name + '</option>';
+			rankingsShow[alias] = rankings[i];
+		}
+		$('#select-type').html(options);
+		if (!(type in rankingsShow)) {
+			console.log('[rank] selected type', type, 'not found for year', year, '. Using `year`');
+			type = 'year';
+		}
+		$('#select-type').val(type).trigger('focusin').trigger('focusout');
+
+		var from, to, altm, maxage, agestrict, agecrew;
+		altm = 9; maxage = false; agestrict = false; agecrew = false;
+		var r = rankingsShow[type];
+		console.log('[rank] type', type, '=>', r);
+		if (r.max_age !== null) {
+			maxage = r.max_age;
+			agestrict = r.age_strict == 1;
+			agecrew = r.age_crew == 1;
+		}
+		if (r.alt_m !== null) {
+			altm = r.alt_m;
+		}
+		switch (r.type) {
 			case 'year':
 				from = (year - 1) + '-12-01';
 				to = year + '-11-30';
-				jugend = jugstrict = false;
 				break;
-			case 'youth':
-				from = (year - 1) + '-12-01';
-				to = year + '-11-30';
-				jugend = jugstrict = true;
-				break;
-			case 'idjm':
-				var youthGermanName = await dbGetClassProp('youth-german-name');
+			case 'quali':
+				// TODO: auslagern in function getRegattaBegin
 				var beginn = null;
 				var regattas = await dbGetData('regattas');
 				regattas.sort(function(a,b){ return b.date.localeCompare(a.date); });
@@ -147,12 +176,13 @@ async function selectChange(callSiteScript = true) {
 					if ((date < parseDate('01.01.' + year)) || (date > parseDate('31.12.' + year))) {
 						continue;
 					}
-					if (regatta.name.indexOf(youthGermanName) >= 0) {
+					if (regatta.name.indexOf(r.quali_search) >= 0) {
 						beginn = ((regatta.meldungSchluss != null) ? parseDate(regatta.meldungSchluss) : date);
 						break;
 					}
 				}
-				if (beginn != null) {
+				// END OF TODO
+				if (beginn !== null) {
 					from = new Date(beginn);
 					from.setFullYear(from.getFullYear() - 1);
 					from.setDate(from.getDate() - 13);
@@ -160,23 +190,28 @@ async function selectChange(callSiteScript = true) {
 					to = new Date(beginn);
 					to.setDate(to.getDate() - 14);
 					to = formatDate('Y-m-d', to);
-					jugend = true;
-					jugstrict = false;
 				} else {
-					$('#div-rank').html('Keine ' + youthGermanName + ' gefunden!');
-					$('#input-search').parent().hide();
-					return;
+					from = (year - 1) + '-12-01';
+					to = year + '-11-30';
+					break; // TODO: bessere Fehlermeldung - keine Regatta gefunden
 				}
+				break;
+			default: // TODO: bessere Fehlermeldung - tritt nur bei Fehlkonfiguration in DB auf
+				from = (year - 1) + '-12-01';
+				to = year + '-11-30';
 				break;
 		}
 
+		console.log('[rank] setting', from, to, altm, maxage, agestrict, agecrew);
 		$('#input-from').val(from);
 		$('#input-to').val(to);
-		$('#input-jugend').prop('checked', jugend);
-		$('#input-jugstrict').prop('checked', jugstrict);
+		$('#input-altm').val(altm);
+		$('#input-maxage').val(maxage == false ? '' : maxage);
+		$('#input-agestrict').prop('checked', agestrict);
+		$('#input-agecrew').prop('checked', agecrew);
 
 		if (callSiteScript && (typeof siteScript === 'function')) {
-			history.replaceState(null, '', '?type=' + type + '&year=' + year);
+			history.replaceState(null, '', '?year=' + year + '&type=' + type);
 			showLoader();
 			siteScript();
 		}
@@ -185,40 +220,65 @@ async function selectChange(callSiteScript = true) {
 
 function buttonShowPressed() {
 	if (typeof siteScript === 'function') {
-		var chboxes = '';
-		if ($('#input-jugend').prop('checked')) chboxes += '&jugend=on'
-		if ($('#input-jugstrict').prop('checked')) chboxes += '&jugstrict=on'
-		history.replaceState(null, '', '?type=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val() + chboxes)
+		var additional = '';
+		if ($('#input-maxage').val() != '') additional += '&maxage=' + $('#input-maxage').val();
+		if ($('#input-agestrict').prop('checked')) additional += '&agestrict=on';
+		if ($('#input-agecrew').prop('checked')) additional += '&agecrew=on';
+		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val() + "&altm=" + $('#input-altm').val() + additional)
 		showLoader();
 		siteScript();
 	}
 }
 
 function initSelects() {
-	var type = findGetParameter('type');
-	var year = findGetParameter('year');
-	if (type === null) type = 'year';
-	if (year === null) year = new Date().getFullYear();
+	return new Promise(async function(resolve) {
+		var year = findGetParameter('year');
+		var type = findGetParameter('type');
+		if (year === null) year = new Date().getFullYear();
+		if (type === null) type = 'year';
 
-	$('#select-type').val(type);
+		var years = await dbGetData('years');
+		years.sort(function (a, b) {
+			if (a['year'] > b['year']) return -1;
+			if (a['year'] < b['year']) return 1;
+			return 0;
+		});
+		var yearFound = year == 'user';
+		var options = '<option value="user">Benutzerdefiniert</option>';
+		for (id in years) {
+			var y = years[id]['year'];
+			options += '<option value="' + y + '">' + y + '</option>';
+			if (year == y) yearFound = true;
+		}
+		$('#select-year').html(options);
+		$('#select-year').val(yearFound ? year : years[0]);
 
-	$('#select-year').html('<option value="' + year + '">' + year + '</option>');
-	$('#select-year').val(year);
+		$('#select-type').html('<option value="' + type + '">' + type + '</option>');
+		$('#select-type').val(type);
 
-	if (type == "user") {
-		var from = findGetParameter('from');
-		var to = findGetParameter('to');
-		if (from === null) from = formatDate('Y-m-d')
-		if (to === null) to = formatDate('Y-m-d')
-		$('#input-from').val(from).trigger('focusin').trigger('focusout');
-		$('#input-to').val(to).trigger('focusin').trigger('focusout');
-		var jugend = findGetParameter('jugend');
-		var jugstrict = findGetParameter('jugstrict');
-		$('#input-jugend').prop('checked', jugend !== null);
-		$('#input-jugstrict').prop('checked', jugstrict !== null);
-	}
+		if (year == "user") {
+			var from = findGetParameter('from');
+			var to = findGetParameter('to');
+			if (from === null) from = formatDate('Y-m-d');
+			if (to === null) to = formatDate('Y-m-d');
+			$('#input-from').val(from).trigger('focusin').trigger('focusout');
+			$('#input-to').val(to).trigger('focusin').trigger('focusout');
+			var altm = findGetParameter('altm');
+			if (altm === null) altm = 9;
+			$('#input-altm').val(altm).trigger('focusin').trigger('focusout');
+			var maxage = findGetParameter('maxage');
+			if (maxage === null) maxage = '';
+			$('#input-maxage').val(maxage).trigger('focusin').trigger('focusout');
+			var agestrict = findGetParameter('agestrict');
+			var agecrew = findGetParameter('agecrew');
+			$('#input-agestrict').prop('checked', agestrict !== null);
+			$('#input-agecrew').prop('checked', agecrew !== null);
+		}
 
-	selectChange(false);
+		selectChange(false);
+
+		resolve();
+	});
 }
 
 var firstCall = true;
@@ -231,7 +291,12 @@ async function drawList () {
 		var list = '';
 		rows.forEach(function (entry) {
 			if (entry == null) {
-				list += '<div><div align="center" class="color-highlight" style="white-space:normal;"><b>Ende der Rangliste gem&auml;&szlig; DSV-Ranglistenverordnung (min. m = 9 Wertungen)</b></div></div>';
+				var altm = $('#input-altm').val(); if (altm == '') altm = 9; else altm = parseInt(altm);
+				if (altm == 9) {
+					list += '<div><div align="center" class="color-highlight" style="white-space:normal;"><b>Ende der Rangliste gem&auml;&szlig; DSV-Ranglistenverordnung (min. m = 9 Wertungen)</b></div></div>';
+				} else {
+					list += '<div><div align="center" class="color-highlight" style="white-space:normal;"><b>Ende der Rangliste (min. m = ' + altm + ' Wertungen)</b></div></div>';
+				}
 			} else if (search($('#input-search').val(), entry.keywords)) {
 				list += entry.content;
 			}
@@ -243,47 +308,37 @@ async function drawList () {
 var siteScript = async function() {
 	if (firstCall) {
 		firstCall = false;
-		initSelects();
-		$('#select-type').change(selectChange);
+		rankings = await dbGetData('rankings');
+		await initSelects();
 		$('#select-year').change(selectChange);
+		$('#select-type').change(selectChange);
 		$('#button-show').click(buttonShowPressed);
 		$('#input-search').on('input', drawList);
 	}
 
 	var minDate = parseDate($('#input-from').val());
 	var maxDate = parseDate($('#input-to').val());
-	var jugend = $('#input-jugend').prop('checked');
-	var jugstrict = $('#input-jugstrict').prop('checked');
-	var dbRanking = await dbGetRanking(minDate, maxDate, jugend, jugstrict);
+	var altm = $('#input-altm').val(); if (altm == '') altm = 9; else altm = parseInt(altm);
+	var maxage = $('#input-maxage').val(); if (maxage == '') maxage = false; else maxage = parseInt(maxage);
+	var agestrict = $('#input-agestrict').prop('checked');
+	var agecrew = $('#input-agecrew').prop('checked');
+	console.log('[rank] rank params:', minDate, maxDate, altm, maxage, agestrict, agecrew);
+	var dbRanking = await dbGetRanking(minDate, maxDate, maxage, agestrict, altm, agecrew);
 	ranking = dbRanking[0];
 
-	lastRanking = null;
+	lastRanking = null; // TODO: also for quali ranks
 	if (($('#select-type').val() == 'year') || ($('#select-type').val() == 'youth')) {
 		lastRanking = {};
 		var lYear = parseInt($('#select-year').val()) - 1;
 		var lMinDate = parseDate((lYear - 1) + '-12-01');
 		var lMaxDate = parseDate(lYear + '-11-30');
-		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, jugend, jugstrict))[0];
+		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, maxage, agestrict, altm, agecrew))[0];
 		for (var i in lDbRanking) {
 			lastRanking[lDbRanking[i].id] = lDbRanking[i].rank;
 		}
 	}
 
 	var selectedYear = $('#select-year').val();
-
-	var years = await dbGetData('years');
-	years.sort(function (a, b) {
-		if (a['year'] > b['year']) return -1;
-		if (a['year'] < b['year']) return 1;
-		return 0;
-	});
-	var options = '';
-	for (id in years) {
-		var year = years[id]['year'];
-		options += '<option value="' + year + '">' + year + '</option>';
-	}
-	$('#select-year').html(options);
-	$('#select-year').val(selectedYear);
 
 	if (dbRanking[1].length > 0) {
 		$('#card-noresults').show();
@@ -326,7 +381,7 @@ var siteScript = async function() {
 			if (entry['year'] != null) row.keywords.push(entry['year']);
 			if (club != null) row.keywords.push(club['kurz'], club['name']);
 
-			if (!dsvEnd && (entry.m < 9)) {
+			if (!dsvEnd && (entry.m < altm)) {
 				rows.push(null);
 				dsvEnd = true;
 			}
