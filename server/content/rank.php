@@ -19,6 +19,9 @@
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 
+	// Sepcial ranks
+	$sp['output'] .= $tpl->load('card', ['', 'html-id' => 'card-special-ranks']);
+
 	// No Results
 	$content = '<h2 class="color-white">ACHTUNG</h2>';
 	$content .= '<p class="color-white">Zu folgenden Regatten wurden noch keine Ergebnisse hinterlegt:</p>';

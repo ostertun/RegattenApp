@@ -119,6 +119,7 @@ async function selectChange(callSiteScript = true) {
 		$('#input-agestrict').parent().show();
 		$('#input-agecrew').parent().show();
 		$('#button-show').show();
+		$('#card-special-ranks').hide();
 	} else {
 		year = parseInt(year);
 		var type = $('#select-type').val();
@@ -131,6 +132,7 @@ async function selectChange(callSiteScript = true) {
 		$('#input-agestrict').parent().hide();
 		$('#input-agecrew').parent().hide();
 		$('#button-show').hide();
+		$('#card-special-ranks').hide(); // first hide, show only when there are special ranks
 
 		var rankingsShow = {};
 		var options = '';
@@ -147,6 +149,33 @@ async function selectChange(callSiteScript = true) {
 			type = 'year';
 		}
 		$('#select-type').val(type).trigger('focusin').trigger('focusout');
+
+		// special ranks
+		getJSON(QUERY_URL + 'get_special_rankings', function (code, data) {
+			if (code == 200) {
+				var specialRanks = [];
+				for (var i in data.data) {
+					var sr = data.data[i];
+					if (sr.to < (year + '-01-01')) continue;
+					if (sr.to > (year + '-12-31')) continue;
+					specialRanks.push(sr);
+				}
+				if (specialRanks.length > 0) {
+					var btns = '';
+					for (var i in specialRanks) {
+						var sr = specialRanks[i];
+						var link = 'https://regatten.net/frame.php?class=' + BOATCLASS + '&site=special_rank&rank_id=' + sr.id;
+						var name = sr.title;
+						var cssclass = i > 0 ? ' mt-3' : '';
+						btns += '<a class="btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight' + cssclass + '" href="' + link + '">' + name + '</a>';
+					}
+					$('#card-special-ranks').find('.content').html(btns);
+					$('#card-special-ranks').show();
+				}
+			} else {
+				log("[rank] special_ranks: Something went wrong (HTTP " + code + ")");
+			}
+		});
 
 		var from, to, altm, maxage, agestrict, agecrew;
 		altm = 9; maxage = false; agestrict = false; agecrew = false;
