@@ -108,143 +108,148 @@ async function onRankingClicked(id) {
 
 var rankings;
 
-async function selectChange(callSiteScript = true) {
-	var year = $('#select-year').val();
-	if (year == "user") {
-		$('#select-type').parent().hide();
-		$('#input-from').trigger('focusin').trigger('focusout').parent().show();
-		$('#input-to').trigger('focusin').trigger('focusout').parent().show();
-		$('#input-altm').trigger('focusin').trigger('focusout').parent().show();
-		$('#input-maxage').trigger('focusin').trigger('focusout').parent().show();
-		$('#input-agestrict').parent().show();
-		$('#input-agecrew').parent().show();
-		$('#button-show').show();
-		$('#card-special-ranks').hide();
-	} else {
-		year = parseInt(year);
-		var type = $('#select-type').val();
-		console.log('[rank] selected', year, type);
-		$('#select-type').parent().show();
-		$('#input-from').parent().hide();
-		$('#input-to').parent().hide();
-		$('#input-altm').parent().hide();
-		$('#input-maxage').parent().hide();
-		$('#input-agestrict').parent().hide();
-		$('#input-agecrew').parent().hide();
-		$('#button-show').hide();
-		$('#card-special-ranks').hide(); // first hide, show only when there are special ranks
+function selectChange(callSiteScript = true) {
+	return new Promise(async function (resolve) {
+		var year = $('#select-year').val();
+		if (year == "user") {
+			$('#select-type').parent().hide();
+			$('#input-from').trigger('focusin').trigger('focusout').parent().show();
+			$('#input-to').trigger('focusin').trigger('focusout').parent().show();
+			$('#input-altm').trigger('focusin').trigger('focusout').parent().show();
+			$('#input-maxage').trigger('focusin').trigger('focusout').parent().show();
+			$('#input-agestrict').parent().show();
+			$('#input-agecrew').parent().show();
+			$('#button-show').show();
+			$('#card-special-ranks').hide();
+		} else {
+			year = parseInt(year);
+			var type = $('#select-type').val();
+			console.log('[rank] selected', year, type);
+			$('#select-type').parent().show();
+			$('#input-from').parent().hide();
+			$('#input-to').parent().hide();
+			$('#input-altm').parent().hide();
+			$('#input-maxage').parent().hide();
+			$('#input-agestrict').parent().hide();
+			$('#input-agecrew').parent().hide();
+			$('#button-show').hide();
+			$('#card-special-ranks').hide(); // first hide, show only when there are special ranks
 
-		var rankingsShow = {};
-		var options = '';
-		for (var i in rankings) {
-			if (rankings[i].year_from !== null && rankings[i].year_from > year) continue;
-			if (rankings[i].year_to !== null && rankings[i].year_to < year) continue;
-			var alias = rankings[i].alias;
-			options += '<option value="' + alias + '">' + rankings[i].name + '</option>';
-			rankingsShow[alias] = rankings[i];
-		}
-		$('#select-type').html(options);
-		if (!(type in rankingsShow)) {
-			console.log('[rank] selected type', type, 'not found for year', year, '. Using `year`');
-			type = 'year';
-		}
-		$('#select-type').val(type).trigger('focusin').trigger('focusout');
-
-		// special ranks
-		getJSON(QUERY_URL + 'get_special_rankings', function (code, data) {
-			if (code == 200) {
-				var specialRanks = [];
-				for (var i in data.data) {
-					var sr = data.data[i];
-					if (sr.to < (year + '-01-01')) continue;
-					if (sr.to > (year + '-12-31')) continue;
-					specialRanks.push(sr);
-				}
-				if (specialRanks.length > 0) {
-					var btns = '';
-					for (var i in specialRanks) {
-						var sr = specialRanks[i];
-						var link = 'https://regatten.net/frame.php?class=' + BOATCLASS + '&site=special_rank&rank_id=' + sr.id;
-						var name = sr.title;
-						var cssclass = i > 0 ? ' mt-3' : '';
-						btns += '<a class="btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight' + cssclass + '" href="' + link + '">' + name + '</a>';
-					}
-					$('#card-special-ranks').find('.content').html(btns);
-					$('#card-special-ranks').show();
-				}
-			} else {
-				log("[rank] special_ranks: Something went wrong (HTTP " + code + ")");
+			var rankingsShow = {};
+			var options = '';
+			for (var i in rankings) {
+				if (rankings[i].year_from !== null && rankings[i].year_from > year) continue;
+				if (rankings[i].year_to !== null && rankings[i].year_to < year) continue;
+				var alias = rankings[i].alias;
+				options += '<option value="' + alias + '">' + rankings[i].name + '</option>';
+				rankingsShow[alias] = rankings[i];
 			}
-		});
+			$('#select-type').html(options);
+			if (!(type in rankingsShow)) {
+				console.log('[rank] selected type', type, 'not found for year', year, '. Using `year`');
+				type = 'year';
+			}
+			$('#select-type').val(type).trigger('focusin').trigger('focusout');
 
-		var from, to, altm, maxage, agestrict, agecrew;
-		altm = 9; maxage = false; agestrict = false; agecrew = false;
-		var r = rankingsShow[type];
-		console.log('[rank] type', type, '=>', r);
-		if (r.max_age !== null) {
-			maxage = r.max_age;
-			agestrict = r.age_strict == 1;
-			agecrew = r.age_crew == 1;
-		}
-		if (r.alt_m !== null) {
-			altm = r.alt_m;
-		}
-		switch (r.type) {
-			case 'year':
-				from = (year - 1) + '-12-01';
-				to = year + '-11-30';
-				break;
-			case 'quali':
-				// TODO: auslagern in function getRegattaBegin
-				var beginn = null;
-				var regattas = await dbGetData('regattas');
-				regattas.sort(function(a,b){ return b.date.localeCompare(a.date); });
-				for (var r in regattas) {
-					var regatta = regattas[r];
-					var date = parseDate(regatta.date);
-					if ((date < parseDate('01.01.' + year)) || (date > parseDate('31.12.' + year))) {
-						continue;
+			// special ranks
+			getJSON(QUERY_URL + 'get_special_rankings', function (code, data) {
+				if (code == 200) {
+					var specialRanks = [];
+					for (var i in data.data) {
+						var sr = data.data[i];
+						if (sr.to < (year + '-01-01')) continue;
+						if (sr.to > (year + '-12-31')) continue;
+						specialRanks.push(sr);
 					}
-					if (regatta.name.indexOf(r.quali_search) >= 0) {
-						beginn = ((regatta.meldungSchluss != null) ? parseDate(regatta.meldungSchluss) : date);
-						break;
+					if (specialRanks.length > 0) {
+						var btns = '';
+						for (var i in specialRanks) {
+							var sr = specialRanks[i];
+							var link = 'https://regatten.net/frame.php?class=' + BOATCLASS + '&site=special_rank&rank_id=' + sr.id;
+							var name = sr.title;
+							var cssclass = i > 0 ? ' mt-3' : '';
+							btns += '<a class="btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight' + cssclass + '" href="' + link + '">' + name + '</a>';
+						}
+						$('#card-special-ranks').find('.content').html(btns);
+						$('#card-special-ranks').show();
 					}
-				}
-				// END OF TODO
-				if (beginn !== null) {
-					from = new Date(beginn);
-					from.setFullYear(from.getFullYear() - 1);
-					from.setDate(from.getDate() - 13);
-					from = formatDate('Y-m-d', from);
-					to = new Date(beginn);
-					to.setDate(to.getDate() - 14);
-					to = formatDate('Y-m-d', to);
 				} else {
+					log("[rank] special_ranks: Something went wrong (HTTP " + code + ")");
+				}
+			});
+
+			var from, to, altm, maxage, agestrict, agecrew;
+			altm = 9; maxage = false; agestrict = false; agecrew = false;
+			var r = rankingsShow[type];
+			console.log('[rank] type', type, '=>', r);
+			if (r.max_age !== null) {
+				maxage = r.max_age;
+				agestrict = r.age_strict == 1;
+				agecrew = r.age_crew == 1;
+			}
+			if (r.alt_m !== null) {
+				altm = r.alt_m;
+			}
+			switch (r.type) {
+				case 'year':
 					from = (year - 1) + '-12-01';
 					to = year + '-11-30';
-					break; // TODO: bessere Fehlermeldung - keine Regatta gefunden
-				}
-				break;
-			default: // TODO: bessere Fehlermeldung - tritt nur bei Fehlkonfiguration in DB auf
-				from = (year - 1) + '-12-01';
-				to = year + '-11-30';
-				break;
-		}
+					break;
+				case 'quali':
+					// TODO: auslagern in function getRegattaBegin
+					var beginn = null;
+					var regattas = await dbGetData('regattas');
+					regattas.sort(function(a,b){ return b.date.localeCompare(a.date); });
+					for (var ri in regattas) {
+						var regatta = regattas[ri];
+						var date = parseDate(regatta.date);
+						if ((date < parseDate('01.01.' + year)) || (date > parseDate('31.12.' + year))) {
+							continue;
+						}
+						if (regatta.name.toLowerCase().indexOf(r.quali_search.toLowerCase()) >= 0) {
+							console.log('FOUND', regatta);
+							beginn = ((regatta.meldungSchluss != null) ? parseDate(regatta.meldungSchluss) : date);
+							break;
+						}
+					}
+					// END OF TODO
+					if (beginn !== null) {
+						from = new Date(beginn);
+						from.setFullYear(from.getFullYear() - 1);
+						from.setDate(from.getDate() - 13);
+						from = formatDate('Y-m-d', from);
+						to = new Date(beginn);
+						to.setDate(to.getDate() - 14);
+						to = formatDate('Y-m-d', to);
+					} else {
+						console.log('[rank] no regatta found');
+						from = year + '-12-31'; // reverse => no regattas will be found => no ranking
+						to = year + '-01-01';
+						break; // TODO: bessere Fehlermeldung - keine Regatta gefunden
+					}
+					break;
+				default: // TODO: bessere Fehlermeldung - tritt nur bei Fehlkonfiguration in DB auf
+					from = (year - 1) + '-12-01';
+					to = year + '-11-30';
+					break;
+			}
 
-		console.log('[rank] setting', from, to, altm, maxage, agestrict, agecrew);
-		$('#input-from').val(from);
-		$('#input-to').val(to);
-		$('#input-altm').val(altm);
-		$('#input-maxage').val(maxage == false ? '' : maxage);
-		$('#input-agestrict').prop('checked', agestrict);
-		$('#input-agecrew').prop('checked', agecrew);
+			console.log('[rank] setting', from, to, altm, maxage, agestrict, agecrew);
+			$('#input-from').val(from);
+			$('#input-to').val(to);
+			$('#input-altm').val(altm);
+			$('#input-maxage').val(maxage == false ? '' : maxage);
+			$('#input-agestrict').prop('checked', agestrict);
+			$('#input-agecrew').prop('checked', agecrew);
 
-		if (callSiteScript && (typeof siteScript === 'function')) {
-			history.replaceState(null, '', '?year=' + year + '&type=' + type);
-			showLoader();
-			siteScript();
+			if (callSiteScript && (typeof siteScript === 'function')) {
+				history.replaceState(null, '', '?year=' + year + '&type=' + type);
+				showLoader();
+				siteScript();
+			}
 		}
-	}
+		resolve();
+	});
 }
 
 function buttonShowPressed() {
@@ -304,7 +309,7 @@ function initSelects() {
 			$('#input-agecrew').prop('checked', agecrew !== null);
 		}
 
-		selectChange(false);
+		await selectChange(false);
 
 		resolve();
 	});
