@@ -1,4 +1,4 @@
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -261,6 +261,9 @@ function dbGetResultCalculated(regatta) {
 function dbGetRanking(minDate, maxDate, maxAge, ageStrict, altM = 9, ageCrew = false) {
 	return new Promise(async function(resolve) {
 		var rankNoResults = [];
+
+		// TODO: remove / Abwärtskompatibilität
+		//if (maxAge === true) maxAge = await dbGetClassProp('youth-age');
 
 		var sailors = await dbGetData('sailors');
 		var regattas = await dbGetRegattasRange(minDate, maxDate);
@@ -570,7 +573,7 @@ function sync() {
 				localTimes[entry['table']] = entry['time'];
 			});
 
-			syncInProgress = 12;
+			syncInProgress = 13;
 			var syncOkay = true;
 			log("[db] Sync Start");
 			$('#i-sync').addClass('fa-spin');
@@ -615,6 +618,33 @@ function sync() {
 							syncOkay = false;
 							syncInProgress --;
 							log('[db] class failed, remaining:', syncInProgress);
+						}
+					});
+
+					// RANKINGS
+					getJSON(QUERY_URL + 'get_rankings', function (code, data) {
+						if (code == 200) {
+							var os = db.transaction('rankings', 'readwrite').objectStore('rankings');
+							data.data.forEach(function (entry) {
+								os.put(entry);
+							});
+							os.openCursor().onsuccess = function (event) {
+								var cursor = event.target.result;
+								if (cursor) {
+									if (!data.keys.includes(parseInt(cursor.key))) {
+										os.delete(cursor.key);
+									}
+									cursor.continue();
+								} else {
+									syncInProgress --;
+									log('[db] rankings synced, remaining:', syncInProgress);
+								}
+							};
+						} else {
+							log("[db] rankings: Something went wrong (HTTP " + code + ")");
+							syncOkay = false;
+							syncInProgress --;
+							log('[db] rankings failed, remaining:', syncInProgress);
 						}
 					});
 
@@ -1153,6 +1183,11 @@ function initDatabase() {
 			if ((oldVersion < 7) && (newVersion >= 7)) {
 				log('[db] to version 7');
 				var osClass = db.createObjectStore('class', { keyPath: 'key' });
+			}
+
+			if ((oldVersion < 8) && (newVersion >= 8)) {
+				log('[db] to version 8');
+				var osRankings = db.createObjectStore('rankings', { keyPath: 'id' });
 			}
 
 			// Force resync after db update

@@ -7,27 +7,20 @@
 	// Title, Inputs
 	$content = "<h1>Ranglisten</h1>";
 
-	$options = '<option value="year">Jahres-Rangliste</option>';
-//	$options .= '<option value="youth">Jugend-Rangliste</option>';
-//	$options .= '<option value="idjm">' . $_CLASS['youth-german-name'] . '-Rangliste</option>';
-//	$options .= '<option value="user">Benutzerdefiniert</option>';
-	$content .= $tpl->load('select', ['html-id' => 'select-type', 'placeholder' => 'Rangliste', 'options' => $options, 'css-class' => 'mt-3 mb-0']);
 	$content .= $tpl->load('select', ['html-id' => 'select-year', 'placeholder' => 'Jahr', 'css-class' => 'mt-3 mb-0']);
+	$content .= $tpl->load('select', ['html-id' => 'select-type', 'placeholder' => 'Rangliste', 'css-class' => 'mt-3 mb-0']);
 	$content .= $tpl->load('input', ['html-id' => 'input-from', 'placeholder' => 'Von', 'type' => 'date', 'css-class' => 'mt-3']);
 	$content .= $tpl->load('input', ['html-id' => 'input-to', 'placeholder' => 'Bis', 'type' => 'date']);
-	$chbox = $tpl->load('checkbox', ['html-id' => 'input-jugend', 'placeholder' => 'Jugend']);
-	$content .= '<div class="mb-3" style="display:inline-block; width:50%;">' . $chbox . '</div>';
-	$chbox = $tpl->load('checkbox', ['html-id' => 'input-jugstrict', 'placeholder' => 'Streng']);
-	$content .= '<div class="mb-3" style="display:inline-block; width:50%;">' . $chbox . '</div>';
+	$content .= $tpl->load('input', ['html-id' => 'input-altm', 'placeholder' => 'alt. m', 'type' => 'number']);
+	$content .= $tpl->load('input', ['html-id' => 'input-maxage', 'placeholder' => 'max. Alter (leer = nicht prüfen)', 'type' => 'number']);
+	$content .= $tpl->load('checkbox', ['html-id' => 'input-agestrict', 'placeholder' => 'unb. Jahrgänge ausschließen']);
+	$content .= $tpl->load('checkbox', ['html-id' => 'input-agecrew', 'placeholder' => 'Crew auch prüfen']);
 	$content .= $tpl->load('button', ['Anzeigen', '#', 'html-id' => 'button-show']);
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 
-// TODO
-$content = '<h2>Störung</h2>';
-$content .= '<p>Momentan können wir Dir hier leider nur die Jahresrangliste anzeigen.<br>';
-$content .= 'Um die anderen Ranglisten zu sehen, besuche bitte <a href="https://regatten.net/' . BOATCLASS . '/rank">unsere Webseite</a>.</p>';
-$sp['output'] .= $tpl->load('card', [$content]);
+	// Sepcial ranks
+	$sp['output'] .= $tpl->load('card', ['', 'html-id' => 'card-special-ranks']);
 
 	// No Results
 	$content = '<h2 class="color-white">ACHTUNG</h2>';
