@@ -14,6 +14,11 @@
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 
+	// To today
+	$content = $tpl->load('button', ['<i class="fas fa-arrow-down"></i>&emsp;Heute&emsp;<i class="fas fa-arrow-down"></i>', '#', 'html-id' => 'button-totoday']);
+
+	$sp['output'] .= $tpl->load('card', [$content]);
+
 	// Regattas
 	$content = '<p id="p-count" class="mb-0"></p>';
 	$content .= $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text', 'css-class' => 'mt-2']);
