@@ -159,10 +159,10 @@ async function onRegattaClicked(id) {
 		$('#menu-item-meldung').show();
 		$('#menu-item-meldung').attr('href', regatta['meldung']);
 		$('#menu-item-meldung').attr('target', '_blank');
-		if ((planning != null) && (planning['gemeldet'] == '1')) {
+		/*if ((planning != null) && (planning['gemeldet'] == '1')) {
 			$('#badge-regatta-meldung').text('schon gemeldet');
 			$('#badge-regatta-meldung').addClass('bg-green2-dark').removeClass('bg-highlight bg-red2-dark bg-yellow2-dark');
-		} else if (regatta['meldungOffen'] == '0') {
+		} else*/ if (regatta['meldungOffen'] == '0') {
 			$('#badge-regatta-meldung').text('geschlossen');
 			$('#badge-regatta-meldung').addClass('bg-highlight').removeClass('bg-green2-dark bg-red2-dark bg-yellow2-dark');
 		} else if (regatta['meldungSchluss'] != null) {
