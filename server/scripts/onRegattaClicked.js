@@ -137,6 +137,14 @@ async function onRegattaClicked(id) {
 		$('#menu-item-bericht').hide();
 	}
 
+	// Fakten
+	if ('facts' in regatta && regatta['facts'] != null) {
+		$('#menu-item-facts').show();
+		$('#menu-item-facts').attr('href', LINK_PRE + 'regatta_facts?regatta=' + regatta['id']);
+	} else {
+		$('#menu-item-facts').hide();
+	}
+
 	// Info
 	if (regatta['info'] != '') {
 		$('#menu-item-info').show();

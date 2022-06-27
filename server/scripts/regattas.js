@@ -1,3 +1,10 @@
+Element.prototype.documentOffsetTop = function() {
+	return this.offsetTop + (this.offsetParent ? this.offsetParent.documentOffsetTop() : 0);
+};
+function scrollToToday() {
+	window.scrollTo({ top: document.getElementById('div-today').documentOffsetTop() - (window.innerHeight / 2), behavior: 'smooth' });
+}
+
 function selectChange(callSiteScript = true) {
 	var val = $('#select-year').val();
 	if (val == "user") {
@@ -60,7 +67,7 @@ async function drawList () {
 		var list = '';
 		rows.forEach(function (entry) {
 			if (entry == null) {
-				list += '<div><div align="center" class="color-highlight"><b>Heute ist der ' + formatDate('d.m.Y', today) + '</b></div></div>';
+				list += '<div><div id="div-today" align="center" class="color-highlight"><b>Heute ist der ' + formatDate('d.m.Y', today) + '</b></div></div>';
 			} else if (search($('#input-search').val(), entry.keywords)) {
 				list += entry.content;
 			}
@@ -76,6 +83,7 @@ var siteScript = async function() {
 		$('#select-year').change(selectChange);
 		$('#button-show').click(buttonShowPressed);
 		$('#input-search').on('input', drawList);
+		$('#button-totoday').click(scrollToToday);
 	}
 
 	today = getToday();
@@ -83,6 +91,9 @@ var siteScript = async function() {
 	var minDate = parseDate($('#input-from').val());
 	var maxDate = parseDate($('#input-to').val());
 	var regattas = await dbGetRegattasRange(minDate, maxDate);
+
+	if (minDate <= today && maxDate >= today) $('#button-totoday').parent().parent().show();
+	else $('#button-totoday').parent().parent().hide();
 
 	var selectedYear = $('#select-year').val();
 

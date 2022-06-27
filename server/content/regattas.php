@@ -14,6 +14,11 @@
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 
+	// To today
+	$content = $tpl->load('button', ['<i class="fas fa-arrow-down"></i>&emsp;Heute&emsp;<i class="fas fa-arrow-down"></i>', '#', 'html-id' => 'button-totoday']);
+
+	$sp['output'] .= $tpl->load('card', [$content]);
+
 	// Regattas
 	$content = '<p id="p-count" class="mb-0"></p>';
 	$content .= $tpl->load('input', ['html-id' => 'input-search', 'placeholder' => 'Suche', 'type' => 'text', 'css-class' => 'mt-2']);
@@ -30,11 +35,12 @@
 	$items .= $tpl->load('menu/item-icon-badge', ['Meldeliste', '', 'html-id' => 'menu-item-entrylist', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-entrylist']);
 	$items .= $tpl->load('menu/item-icon', ['Ergebnisse', '', 'html-id' => 'menu-item-results', 'icon' => 'fa-poll']);
 	$items .= $tpl->load('menu/item-icon', ['Bericht', '', 'html-id' => 'menu-item-bericht', 'icon' => 'fa-book']);
+	$items .= $tpl->load('menu/item-icon', ['Fakten', '', 'html-id' => 'menu-item-facts', 'icon' => 'fa-list']);
 	$items .= $tpl->load('menu/item-icon', ['Informationen', '', 'html-id' => 'menu-item-info', 'icon' => 'fa-info']);
 	$items .= $tpl->load('menu/item-icon-badge', ['Meldung', '', 'html-id' => 'menu-item-meldung', 'icon' => 'fa-file-signature', 'badge-id' => 'badge-regatta-meldung']);
 	$items .= $tpl->load('menu/item-icon', ['offizielle Ergebnisse', '', 'html-id' => 'menu-item-oresults', 'icon' => 'fa-poll']);
 	$items .= $tpl->load('menu/item-icon', ['Vereins-Website', '', 'html-id' => 'menu-item-clubwebsite', 'icon' => 'fa-globe']);
-	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 320]);
+	$sp['menus'] .= $tpl->load('menu/bottom', [$items, 'html-id' => 'menu-regatta', 'title' => 'Regatta-Details', 'height' => 400]);
 
 	$sp['scripts'] .= $scripts->load('onRegattaClicked');
 	$sp['scripts'] .= $scripts->load('regattas');
