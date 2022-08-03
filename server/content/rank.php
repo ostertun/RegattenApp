@@ -15,7 +15,8 @@
 	$content .= $tpl->load('input', ['html-id' => 'input-maxage', 'placeholder' => 'max. Alter (leer = nicht prüfen)', 'type' => 'number']);
 	$content .= $tpl->load('checkbox', ['html-id' => 'input-agestrict', 'placeholder' => 'unb. Jahrgänge ausschließen']);
 	$content .= $tpl->load('checkbox', ['html-id' => 'input-agecrew', 'placeholder' => 'Crew auch prüfen']);
-	$content .= $tpl->load('button', ['Anzeigen', '#', 'html-id' => 'button-show']);
+	$content .= $tpl->load('select', ['html-id' => 'select-personmode', 'placeholder' => 'nach', 'css-class' => 'mt-3 mb-0']);
+	$content .= $tpl->load('button', ['Anzeigen', '#', 'html-id' => 'button-show', 'css-class' => 'mt-3']);
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 

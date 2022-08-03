@@ -83,6 +83,7 @@ async function onRankingClicked(id) {
 
 		// ZEILE 5...
 		var crew = entry.crew.split(',');
+		crew.unshift(entry.helm);
 		for (var c in crew) {
 			var cr = await dbGetData('sailors', crew[c]);
 			if (cr != null) {
@@ -234,6 +235,8 @@ function selectChange(callSiteScript = true) {
 					break;
 			}
 
+			var personMode = $('#select-personmode').val();
+
 			console.log('[rank] setting', from, to, altm, maxage, agestrict, agecrew);
 			$('#input-from').val(from);
 			$('#input-to').val(to);
@@ -243,7 +246,7 @@ function selectChange(callSiteScript = true) {
 			$('#input-agecrew').prop('checked', agecrew);
 
 			if (callSiteScript && (typeof siteScript === 'function')) {
-				history.replaceState(null, '', '?year=' + year + '&type=' + type);
+				history.replaceState(null, '', '?year=' + year + '&type=' + type + '&pm=' + personMode);
 				showLoader();
 				siteScript();
 			}
@@ -258,7 +261,7 @@ function buttonShowPressed() {
 		if ($('#input-maxage').val() != '') additional += '&maxage=' + $('#input-maxage').val();
 		if ($('#input-agestrict').prop('checked')) additional += '&agestrict=on';
 		if ($('#input-agecrew').prop('checked')) additional += '&agecrew=on';
-		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val() + "&altm=" + $('#input-altm').val() + additional)
+		history.replaceState(null, '', '?year=user&from=' + $('#input-from').val() + "&to=" + $('#input-to').val() + "&altm=" + $('#input-altm').val() + "&pm=" + $('#select-personmode').val() + additional)
 		showLoader();
 		siteScript();
 	}
@@ -268,8 +271,10 @@ function initSelects() {
 	return new Promise(async function(resolve) {
 		var year = findGetParameter('year');
 		var type = findGetParameter('type');
+		var personMode = parseInt(findGetParameter('pm'));
 		if (year === null) year = new Date().getFullYear();
 		if (type === null) type = 'year';
+		if (isNaN(personMode) || personMode < 0 || personMode > 2) personMode = 0;
 
 		var years = await dbGetData('years');
 		years.sort(function (a, b) {
@@ -309,6 +314,12 @@ function initSelects() {
 			$('#input-agecrew').prop('checked', agecrew !== null);
 		}
 
+		options = '<option value="0">Steuerleuten</option>';
+		options += '<option value="1">Vorschotern</option>';
+		options += '<option value="2">allen Seglern</option>';
+		$('#select-personmode').html(options);
+		$('#select-personmode').val(personMode);
+
 		await selectChange(false);
 
 		resolve();
@@ -346,6 +357,7 @@ var siteScript = async function() {
 		await initSelects();
 		$('#select-year').change(selectChange);
 		$('#select-type').change(selectChange);
+		$('#select-personmode').change(selectChange);
 		$('#button-show').click(buttonShowPressed);
 		$('#input-search').on('input', drawList);
 	}
@@ -356,8 +368,9 @@ var siteScript = async function() {
 	var maxage = $('#input-maxage').val(); if (maxage == '') maxage = false; else maxage = parseInt(maxage);
 	var agestrict = $('#input-agestrict').prop('checked');
 	var agecrew = $('#input-agecrew').prop('checked');
-	console.log('[rank] rank params:', minDate, maxDate, altm, maxage, agestrict, agecrew);
-	var dbRanking = await dbGetRanking(minDate, maxDate, maxage, agestrict, altm, agecrew);
+	var personMode = $('#select-personmode').val();
+	console.log('[rank] rank params:', minDate, maxDate, altm, maxage, agestrict, agecrew, personMode);
+	var dbRanking = await dbGetRanking(minDate, maxDate, maxage, agestrict, altm, agecrew, personMode);
 	ranking = dbRanking[0];
 
 	lastRanking = null; // TODO: also for quali ranks
@@ -366,7 +379,7 @@ var siteScript = async function() {
 		var lYear = parseInt($('#select-year').val()) - 1;
 		var lMinDate = parseDate((lYear - 1) + '-12-01');
 		var lMaxDate = parseDate(lYear + '-11-30');
-		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, maxage, agestrict, altm, agecrew))[0];
+		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, maxage, agestrict, altm, agecrew, personMode))[0];
 		for (var i in lDbRanking) {
 			lastRanking[lDbRanking[i].id] = lDbRanking[i].rank;
 		}
