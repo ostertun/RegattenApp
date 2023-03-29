@@ -5,6 +5,8 @@
 	require_once(__DIR__ . '/../../server/config.php');
 	require_once(__DIR__ . '/../../server/version.php');
 
+// QUERY_URL changed in config.php (this is to update this file on client devices)
+
 ?>
 
 const QUERY_URL = '<?php echo QUERY_URL; ?>';
