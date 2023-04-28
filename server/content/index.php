@@ -74,8 +74,8 @@
 	$content .= '<font class="show-loggedin">Erstelle einfach eine <a href="' . LINK_PRE . 'planning">Saison-Planung</a> und abonniere Deinen persönlichen Kalender.</font>';
 	$content .= '<font class="show-notloggedin"><a href="#" data-menu="menu-signup">Registriere Dich einfach kostenlos</a>, erstelle eine Saison-Planung und wir erstellen Dir einen pers&ouml;nlichen Kalender.</font>';
 	$content .= '</p>';
-	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Regatta-Kalender', 'https://regatten.net/client/calendar/' . BOATCLASS . '/everything.ics', 'css-class' => 'mb-2']);
-	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Kalender f&uuml;r <font class="replace-username"></font>', 'https://regatten.net/client/calendar/' . BOATCLASS . '/user_%USERID%.ics', 'css-class' => 'show-loggedin replace-userid-href']);
+	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Regatta-Kalender', 'https://ranglisten.net/client/calendar/' . BOATCLASS . '/everything.ics', 'css-class' => 'mb-2']);
+	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Kalender f&uuml;r <font class="replace-username"></font>', 'https://ranglisten.net/client/calendar/' . BOATCLASS . '/user_%USERID%.ics', 'css-class' => 'show-loggedin replace-userid-href']);
 
 	$sp['output'] .= $tpl->load('card', [$content]);
 

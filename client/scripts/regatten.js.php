@@ -680,12 +680,21 @@ function ro_getLink(type, eventId, classId) {
 	}
 	return '';
 }
+function wfn_getLink(type, eventId, classId) {
+	switch (type) {
+		case 'entrylist':
+			return 'https://wettfahrten.net/event/' + eventId + '/entrylist?class=' + classId;
+	}
+	return '';
+}
 function extServiceGetLink(serviceName, type, eventId = '', classId = '') {
 	switch (serviceName) {
 		case 'm2s':
 			return m2s_getLink(type, eventId, classId);
 		case 'ro':
 			return ro_getLink(type, eventId);
+		case 'wfn':
+			return wfn_getLink(type, eventId);
 	}
 	return '';
 }

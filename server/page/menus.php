@@ -317,7 +317,7 @@
 			Das Nachladen kann au&szlig;erdem gerade bei gro&szlig;en Datenmengen (wie Ranglisten) sehr lange dauern.
 			Wir empfehlen Dir daher, auf diesem Ger&auml;t unsere normale Website zu benutzen. Diese ist auch f&uuml;r Mobil-Ger&auml;te optimiert.
 		</p>
-		<a class="btn btn-m mt-2 btn-full bg-highlight text-uppercase font-900" href="https://regatten.net/">Zur Website</a>
+		<a class="btn btn-m mt-2 btn-full bg-highlight text-uppercase font-900" href="https://ranglisten.net/">Zur Website</a>
 		<a id="menu-nodb-warning-okay" class="btn btn-m mt-2 mb-3 btn-full bg-highlight text-uppercase font-900" href="#">Nicht erneut anzeigen</a>
 	</div>
 </div>
