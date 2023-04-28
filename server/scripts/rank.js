@@ -166,7 +166,7 @@ function selectChange(callSiteScript = true) {
 						var btns = '';
 						for (var i in specialRanks) {
 							var sr = specialRanks[i];
-							var link = 'https://regatten.net/frame.php?class=' + BOATCLASS + '&site=special_rank&rank_id=' + sr.id;
+							var link = 'https://ranglisten.net/frame.php?class=' + BOATCLASS + '&site=special_rank&rank_id=' + sr.id;
 							var name = sr.title;
 							var cssclass = i > 0 ? ' mt-3' : '';
 							btns += '<a class="btn btn-full rounded-s text-uppercase font-900 shadow-m bg-highlight' + cssclass + '" href="' + link + '">' + name + '</a>';
