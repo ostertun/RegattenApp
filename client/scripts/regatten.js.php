@@ -692,9 +692,9 @@ function extServiceGetLink(serviceName, type, eventId = '', classId = '') {
 		case 'm2s':
 			return m2s_getLink(type, eventId, classId);
 		case 'ro':
-			return ro_getLink(type, eventId);
+			return ro_getLink(type, eventId, classId);
 		case 'wfn':
-			return wfn_getLink(type, eventId);
+			return wfn_getLink(type, eventId, classId);
 	}
 	return '';
 }
