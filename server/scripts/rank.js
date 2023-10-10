@@ -196,6 +196,10 @@ function selectChange(callSiteScript = true) {
 					from = (year - 1) + '-12-01';
 					to = year + '-11-30';
 					break;
+				case 'year2':
+					from = year + '-01-01';
+					to = year + '-12-31';
+					break;
 				case 'quali':
 					// TODO: auslagern in function getRegattaBegin
 					var beginn = null;
@@ -379,6 +383,16 @@ var siteScript = async function() {
 		var lYear = parseInt($('#select-year').val()) - 1;
 		var lMinDate = parseDate((lYear - 1) + '-12-01');
 		var lMaxDate = parseDate(lYear + '-11-30');
+		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, maxage, agestrict, altm, agecrew, personMode))[0];
+		for (var i in lDbRanking) {
+			lastRanking[lDbRanking[i].id] = lDbRanking[i].rank;
+		}
+	}
+	if ($('#select-type').val() == 'year2') {
+		lastRanking = {};
+		var lYear = parseInt($('#select-year').val()) - 1;
+		var lMinDate = parseDate(lYear + '-01-01');
+		var lMaxDate = parseDate(lYear + '-12-31');
 		var lDbRanking = (await dbGetRanking(lMinDate, lMaxDate, maxage, agestrict, altm, agecrew, personMode))[0];
 		for (var i in lDbRanking) {
 			lastRanking[lDbRanking[i].id] = lDbRanking[i].rank;
