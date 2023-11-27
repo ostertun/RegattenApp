@@ -237,7 +237,7 @@ function dbGetResultCalculated(regatta) {
 					/*if      (copy[i] == -1) { results[id]['values'][i] = gemeldet + 1; }
 					else if (copy[i] == -2) { results[id]['values'][i] = gemeldet + 1; }
 					else                    { results[id]['values'][i] = copy[i]; }*/
-					if (copy[$i] == 0) results[id]['values'][i] = 0;
+					if (copy[i] == 0) results[id]['values'][i] = 0;
 					if (results[id]['values'][i] == 0) {
 						results[id]['texts'][i] = '[' + results[id]['texts'][i] + ']';
 					}
