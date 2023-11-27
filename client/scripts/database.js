@@ -163,6 +163,15 @@ function dbGetResultCalculated(regatta) {
 		if (results.length > 0) {
 
 			var gemeldet = results.length;
+			var started = [];
+			for (var i = 0; i < regatta['races']; i++) {
+				started[i] = 0;
+				for (id in results) {
+					if (results[id]['race' + (i + 1)] != 'DNC') {
+						started[i]++;
+					}
+				}
+			}
 
 			for (id in results) {
 				results[id]['finished'] = false;
@@ -179,24 +188,25 @@ function dbGetResultCalculated(regatta) {
 						results[id]['texts'][i] = race;
 						results[id]['finished'] = true;
 					} else {
+						var p1points = (regatta.a53 ? started[i] : gemeldet) + 1;
 						switch (race.toUpperCase()) {
 							// Nicht gestartet
 							case 'DNC': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Did not come
-							case 'DNS': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Did not started
+							case 'DNS': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Did not started
 							// Startfehler
-							case 'OCS': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // On course site
-							case 'UFD': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Uniform Flag Disqualified (disqu. nach 30.3)
-							case 'BFD': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Black Flag Disqualified (disqu. nach 30.4)
+							case 'OCS': results[id]['values'][i] = p1points; copy[i] = p1points; break; // On course site
+							case 'UFD': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Uniform Flag Disqualified (disqu. nach 30.3)
+							case 'BFD': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Black Flag Disqualified (disqu. nach 30.4)
 							// Nicht durch Ziel gegangen
-							case 'DNF': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Did not finish
-							case 'RET': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Retired (Aufgegeben)
-							case 'RAF': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Retired after finish
+							case 'DNF': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Did not finish
+							case 'RET': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Retired (Aufgegeben)
+							case 'RAF': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Retired after finish
 							// Kursfehler
-							case 'NSC': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Not sailed course
+							case 'NSC': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Not sailed course
 							// Disqualifizierun
-							case 'DSQ': results[id]['values'][i] = gemeldet + 1; copy[i] = gemeldet + 1; break; // Disqualified
-							case 'DNE': results[id]['values'][i] = gemeldet + 1; copy[i] = -1; break; // Disqualified, not excludable (disqu. kann nach 90.3(b) nicht gestrichen werden)
-							case 'DGM': results[id]['values'][i] = gemeldet + 1; copy[i] = -2; break; // Disqualification Gross Missconduct (kann nach 69.1(b)(2) nicht gestr. werden, grobes Fehlverhalten)
+							case 'DSQ': results[id]['values'][i] = p1points; copy[i] = p1points; break; // Disqualified
+							case 'DNE': results[id]['values'][i] = p1points; copy[i] = -1; break; // Disqualified, not excludable (disqu. kann nach 90.3(b) nicht gestrichen werden)
+							case 'DGM': results[id]['values'][i] = p1points; copy[i] = -2; break; // Disqualification Gross Missconduct (kann nach 69.1(b)(2) nicht gestr. werden, grobes Fehlverhalten)
 							// Unbekannt
 							default: results[id]['values'][i] = 0; copy[i] = 0; break;
 						}
@@ -224,9 +234,10 @@ function dbGetResultCalculated(regatta) {
 				var netto = 0;
 				for (var i = 0; i < regatta['races']; i ++) {
 					brutto += results[id]['values_all'][i];
-					if      (copy[i] == -1) { results[id]['values'][i] = gemeldet + 1; }
+					/*if      (copy[i] == -1) { results[id]['values'][i] = gemeldet + 1; }
 					else if (copy[i] == -2) { results[id]['values'][i] = gemeldet + 1; }
-					else                    { results[id]['values'][i] = copy[i]; }
+					else                    { results[id]['values'][i] = copy[i]; }*/
+					if (copy[$i] == 0) results[id]['values'][i] = 0;
 					if (results[id]['values'][i] == 0) {
 						results[id]['texts'][i] = '[' + results[id]['texts'][i] + ']';
 					}
