@@ -88,7 +88,7 @@ var siteScript = async function() {
 		var follows = await dbGetData('follows');
 		var watched = [];
 		for (var i in follows) {
-			watched.push(await dbGetData('sailors', follows[i]));
+			watched.push(await dbGetData('sailors', follows[i].sailor));
 		}
 		if (watched.length > 0) {
 			var year = (new Date()).getFullYear();

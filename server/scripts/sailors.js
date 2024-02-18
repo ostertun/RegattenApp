@@ -197,7 +197,7 @@ var siteScript = async function() {
 		var follows = await dbGetData('follows');
 		followedSailors = [];
 		for (var i in follows) {
-			followedSailors.push(await dbGetData('sailors', follows[i]));
+			followedSailors.push(await dbGetData('sailors', follows[i].sailor));
 		}
 	}
 
