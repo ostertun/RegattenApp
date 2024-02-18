@@ -194,12 +194,10 @@ var siteScript = async function() {
 
 	if (isLoggedIn()) {
 		var user = await dbGetData('users', USER_ID);
+		var follows = await dbGetData('follows');
 		followedSailors = [];
-		for (var i = 1; i <= 5; i ++) {
-			sailor_id = user['sailor' + i];
-			if (sailor_id != null) {
-				followedSailors.push(await dbGetData('sailors', sailor_id));
-			}
+		for (var i in follows) {
+			followedSailors.push(await dbGetData('sailors', follows[i]));
 		}
 	}
 
