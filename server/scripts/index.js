@@ -85,12 +85,10 @@ var siteScript = async function() {
 		var user = await dbGetData('users', localStorage.getItem('auth_user'));
 
 		// Favorites
+		var follows = await dbGetData('follows');
 		var watched = [];
-		for (var i = 1; i <= 5; i ++) {
-			sailor_id = user['sailor' + i];
-			if (sailor_id != null) {
-				watched.push(await dbGetData('sailors', sailor_id));
-			}
+		for (var i in follows) {
+			watched.push(await dbGetData('sailors', follows[i]));
 		}
 		if (watched.length > 0) {
 			var year = (new Date()).getFullYear();

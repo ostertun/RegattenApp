@@ -1,4 +1,4 @@
-const DB_VERSION = 8;
+const DB_VERSION = 9;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -619,7 +619,7 @@ function sync() {
 				localTimes[entry['table']] = entry['time'];
 			});
 
-			syncInProgress = 13;
+			syncInProgress = 14;
 			var syncOkay = true;
 			log("[db] Sync Start");
 			$('#i-sync').addClass('fa-spin');
@@ -1008,8 +1008,35 @@ function sync() {
 							syncInProgress --;
 						}
 
+						// FOLLOWS
+						getJSON(QUERY_URL + 'get_follows', function (code, data) {
+							if (code == 200) {
+								var os = db.transaction('follows', 'readwrite').objectStore('follows');
+								data.data.forEach(function (entry) {
+									os.put(entry);
+								});
+								os.openCursor().onsuccess = function (event) {
+									var cursor = event.target.result;
+									if (cursor) {
+										if (!data.keys.includes(parseInt(cursor.key))) {
+											os.delete(cursor.key);
+										}
+										cursor.continue();
+									} else {
+										syncInProgress --;
+										log('[db] follows synced, remaining:', syncInProgress);
+									}
+								};
+							} else {
+								log("[db] follows: Something went wrong (HTTP " + code + ")");
+								syncOkay = false;
+								syncInProgress --;
+								log('[db] follows failed, remaining:', syncInProgress);
+							}
+						});
+
 					} else {
-						syncInProgress -= 3;
+						syncInProgress -= 4;
 					}
 
 					// NEWS
@@ -1234,6 +1261,11 @@ function initDatabase() {
 			if ((oldVersion < 8) && (newVersion >= 8)) {
 				log('[db] to version 8');
 				var osRankings = db.createObjectStore('rankings', { keyPath: 'id' });
+			}
+
+			if ((oldVersion < 9) && (newVersion >= 9)) {
+				log('[db] to version 9');
+				var osFollows = db.createObjectStore('follows', { keyPath: 'id' });
 			}
 
 			// Force resync after db update
