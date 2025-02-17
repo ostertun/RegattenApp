@@ -21,7 +21,7 @@
 	$content = '<p>Du planst, hier hinzufahren, aber stehst nicht auf dieser Liste?<br>';
 	$content .= 'Das kannst Du &auml;ndern! ';
 	$content .= '<font class="show-loggedin">Erstelle einfach <a href="' . LINK_PRE . 'planning">hier</a> Deine eigene Saison-Planung.</font>';
-	$content .= '<font class="show-notloggedin"><a href="#" data-menu="menu-login">Melde Dich an</a> oder <a href="#" data-menu="menu-signup">registriere Dich kostenlos</a> und erstelle Deine eigene Saison-Planung.</font>';
+	$content .= '<font class="show-notloggedin"><a href="#" data-menu="menu-login">Melde Dich an</a> oder <a href="https://regatten.net/#signup">registriere Dich kostenlos</a> und erstelle Deine eigene Saison-Planung.</font>';
 	$content .= '</p>';
 
 	$sp['output'] .= $tpl->load('card', [$content]);

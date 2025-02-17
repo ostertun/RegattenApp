@@ -157,51 +157,6 @@ function findGetParameter(parameterName) {
 	return result;
 }
 
-var signup = function() {
-	log('[app] Signup');
-	var username = $('#input-signup-username').val();
-	var email = $('#input-signup-email').val();
-	var password = $('#input-signup-password').val();
-	if (username == '') { $('#input-signup-username').focus(); return; }
-	if (email == '') { $('#input-signup-email').focus(); return; }
-	if (password == '') { $('#input-signup-password').focus(); return; }
-	log('[app] Signup: All fields okay');
-	showLoader();
-	$('#input-signup-username').val('').trigger('focusin').trigger('focusout');
-	$('#input-signup-email').val('').trigger('focusin').trigger('focusout');
-	$('#input-signup-password').val('').trigger('focusin').trigger('focusout');
-	$.ajax({
-		url: QUERY_URL + 'signup',
-		method: 'POST',
-		data: {
-			username: username,
-			email: email,
-			password: password
-		},
-		error: function (xhr, status, error) {
-			log('[app] Signup: error:', xhr.status, status);
-			if (xhr.status == 409) {
-				toastError('Benutzername bereits vergeben');
-				$('#input-signup-email').val(email).trigger('focusin').trigger('focusout');
-			} else if (xhr.status == 0) {
-				toastError('Du bist momentan offline.<br>Stelle eine Internetverbindung her, um Dich anzumelden');
-				$('#menu-signup').hideMenu();
-			} else {
-				log('[app] Signup: unbekannter Fehler', status, error);
-				log(xhr);
-				toastError('Ein unbekannter Fehler ist aufgetreten. Bitte versuche es noch einmal', 5000);
-			}
-			hideLoader();
-		},
-		success: function (data, status, xhr) {
-			log('[app] Signup successful, logging in');
-			$('#input-login-username').val(username);
-			$('#input-login-password').val(password);
-			login();
-		}
-	});
-}
-
 var login = function() {
 	log('[app] Login');
 	showLoader();
