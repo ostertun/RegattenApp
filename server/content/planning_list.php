@@ -12,7 +12,7 @@
 
 	// Not loggedin
 	$content = '<h1>Saison-Planungen</h1>';
-	$content .= '<p>Um die Saison-Planungen anderer zu sehen, musst Du angemeldet sein.<br><a href="#" data-menu="menu-login">Melde Dich hier an</a> oder <a href="#" data-menu="menu-signup">registriere Dich jetzt kostenlos</a>.</p>';
+	$content .= '<p>Um die Saison-Planungen anderer zu sehen, musst Du angemeldet sein.<br><a href="#" data-menu="menu-login">Melde Dich hier an</a> oder <a href="https://regatten.net/#signup">registriere Dich jetzt kostenlos</a>.</p>';
 
 	$sp['output'] .= $tpl->load('card', [$content, 'css-class' => 'show-notloggedin']);
 

@@ -32,7 +32,7 @@
 	$content = '<h2>Nicht angemeldet</h2>';
 	$content .= '<p class="mt-3">';
 	$content .= 'Um alle Funktionen dieser Seite nutzen zu k&ouml;nnen, <a href="#" data-menu="menu-login">logge Dich bitte ein</a>.<br>';
-	$content .= 'Solltest Du noch kein Benutzerkonto haben, kannst Du Dich kostenlos <a href="#" data-menu="menu-signup">registrieren</a>.';
+	$content .= 'Solltest Du noch kein Benutzerkonto haben, kannst Du Dich kostenlos <a href="https://regatten.net/#signup">registrieren</a>.';
 	$content .= '</p>';
 
 	$sp['output'] .= $tpl->load('card', [$content, 'html-id' => 'card-notloggedin']);
@@ -72,7 +72,7 @@
 	$content .= '<p>Du willst alle Regatta-Termine in deinem Kalender, aber nicht alles abtippen?<br>Kein Problem! Abonniere einfach unseren ics-Kalender.</p>';
 	$content .= '<p><b>Nur die Regatten, zu denen Du gehst?</b><br>Auch kein Problem! ';
 	$content .= '<font class="show-loggedin">Erstelle einfach eine <a href="' . LINK_PRE . 'planning">Saison-Planung</a> und abonniere Deinen persönlichen Kalender.</font>';
-	$content .= '<font class="show-notloggedin"><a href="#" data-menu="menu-signup">Registriere Dich einfach kostenlos</a>, erstelle eine Saison-Planung und wir erstellen Dir einen pers&ouml;nlichen Kalender.</font>';
+	$content .= '<font class="show-notloggedin"><a href="https://regatten.net/#signup">Registriere Dich einfach kostenlos</a>, erstelle eine Saison-Planung und wir erstellen Dir einen pers&ouml;nlichen Kalender.</font>';
 	$content .= '</p>';
 	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Regatta-Kalender', 'https://ranglisten.net/client/calendar/' . BOATCLASS . '/everything.ics', 'css-class' => 'mb-2']);
 	$content .= $tpl->load('button', ['<i class="fas fa-calendar-alt"></i> Kalender f&uuml;r <font class="replace-username"></font>', 'https://ranglisten.net/client/calendar/' . BOATCLASS . '/user_%USERID%.ics', 'css-class' => 'show-loggedin replace-userid-href']);

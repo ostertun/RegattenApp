@@ -110,7 +110,7 @@
 				<span>Login</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="#" data-menu="menu-signup" class="show-notloggedin">
+			<a href="https://regatten.net/#signup" class="show-notloggedin">
 				<i class="fa font-14 fa-user-plus rounded-s bg-highlight color-white"></i>
 				<span>Registrieren</span>
 				<span class="badge bg-red2-dark color-white">FREE</span>
@@ -263,28 +263,6 @@
 		</div>
 		<a class="btn btn-m mt-2 mb-2 btn-full bg-green2-dark text-uppercase font-900" href="#" onclick="login();">Login</a>
 		<p class="text-center mt-3"><a class="text-uppercase font-900" href="https://regatten.net/reset">Benutzername oder Passwort vergessen</a></p>
-	</div>
-</div>
-
-<div id="menu-signup" class="menu menu-box-top menu-box-detached rounded-m" data-menu-height="340">
-	<div class="content bottom-0">
-		<h1 class="text-center mt-5 font-900">Registrieren</h1>
-		<div class="input-style input-style-2 has-icon input-required">
-			<i class="input-icon fa fa-user color-theme"></i>
-			<span class="color-highlight">Benutzername</span>
-			<input id="input-signup-username" class="form-control" type="name" placeholder="Benutzername" />
-		</div>
-		<div class="input-style input-style-2 has-icon input-required">
-			<i class="input-icon fa fa-envelope color-theme"></i>
-			<span class="color-highlight">Email</span>
-			<input id="input-signup-email" class="form-control" type="email" placeholder="Email" />
-		</div>
-		<div class="input-style input-style-2 has-icon input-required">
-			<i class="input-icon fa fa-lock color-theme"></i>
-			<span class="color-highlight">Passwort</span>
-			<input id="input-signup-password" class="form-control" type="password" placeholder="Passwort" />
-		</div>
-		<a class="btn btn-m mt-2 mb-2 btn-full bg-green2-dark text-uppercase font-900" href="#" onclick="signup();">Registrieren</a>
 	</div>
 </div>
 
