@@ -3,3 +3,4 @@ server/config.php
 api/config.php
 .htaccess
 !.keepfolder
+.idea
