@@ -2,7 +2,7 @@
 
 	$sp['title'] = 'Saison-Planung bearbeiten - Regatten.net ' . $_CLASS['name'];
 	$sp['backbutton'] = true;
-	$sp['activenav'] = 5;
+	$sp['activenav'] = 4;
 
 	// Title, Inputs
 	$content = "<h1>Saison-Planung bearbeiten</h1>";

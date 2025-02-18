@@ -2,7 +2,7 @@
 	
 	$sp['title'] = 'Boote - Regatten.net ' . $_CLASS['name'];
 	$sp['backbutton'] = 'index';
-	$sp['activenav'] = 4;
+	$sp['activenav'] = 5;
 	
 	// Title
 	$content = "<h1>Boote</h1>";

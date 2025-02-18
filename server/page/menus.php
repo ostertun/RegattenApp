@@ -68,11 +68,6 @@
 				<span id="badge-more-news" class="badge bg-highlight color-white"></span>
 				<i class="fa fa-angle-right"></i>
 			</a>
-			<a href="<?php echo LINK_PRE; ?>planning">
-				<i class="fa font-14 fa-calendar-alt rounded-s bg-highlight color-white"></i>
-				<span>Saison-Planung</span>
-				<i class="fa fa-angle-right"></i>
-			</a>
 			<a href="<?php echo LINK_PRE; ?>trim_list">
 				<i class="fa font-14 fa-book rounded-s bg-highlight color-white"></i>
 				<span>Trimm-B&uuml;cher</span>
@@ -83,6 +78,11 @@
 				<span>RLP-Rechner</span>
 				<i class="fa fa-angle-right"></i>
 			</a>
+            <a href="#" data-menu="menu-lists">
+                <i class="fa font-14 fa-list rounded-s bg-highlight color-white"></i>
+                <span>Listen</span>
+                <i class="fa fa-angle-right"></i>
+            </a>
 			<a href="<?php echo LINK_PRE; ?>contact" class="border-0">
 				<i class="fa font-14 fa-phone rounded-s bg-highlight color-white"></i>
 				<span>Kontakt</span>
@@ -277,9 +277,6 @@
 		</p>
 		<p>
 			Mehr Informationen findest Du <a href="https://info.ostertun.net/regatten/beta">hier</a>.
-		</p>
-		<p>
-			Mit der Nutzung dieser App erkl&auml;rst Du Dich au&szlig;erdem damit einverstanden, dass wir Cookies einsetzen.
 		</p>
 		<a id="menu-welcome-a-okay" class="btn btn-m mt-2 mb-3 btn-full bg-green2-dark text-uppercase font-900" href="#">Alles klar</a>
 	</div>
