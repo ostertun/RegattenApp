@@ -201,10 +201,13 @@
 	justify-content: center;
 }
 .expenditures-list > div.sum > div:nth-child(1) > div:nth-child(1) {
-	background: white;
+	background: #fff;
 	width: initial;
 	margin-top: -1em;
 	padding: 0 .5em;
+}
+.theme-dark .expenditures-list > div.sum > div:nth-child(1) > div:nth-child(1) {
+	background-color: #0f1117;
 }
 
 /*** NORMAL LIST ***/
