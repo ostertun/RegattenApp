@@ -307,15 +307,15 @@ async function expendituresShowAdd(defaultUser = 0) {
     $('#menu-add').showMenu();
 }
 
-async function expendituresShowAddTransfer(defaultUser = 0) {
-    $('#switch-add-transfer-received').prop('checked', true).parent().prev().text('Geld gegeben').prev().removeClass('fa-arrow-left').addClass('fa-arrow-right');
+async function expendituresShowAddTransfer(defaultUser = 0, defaultDirection = true, defaultAmount = '') {
+    $('#switch-add-transfer-received').prop('checked', defaultDirection).parent().prev().text(defaultDirection ? 'Geld gegeben' : 'Geld bekommen').prev().removeClass(defaultDirection ? 'fa-arrow-left' : 'fa-arrow-right').addClass(defaultDirection ? 'fa-arrow-right' : 'fa-arrow-left');
     if (defaultUser == 0) {
-        $('#item-add-transfer-user').data('userid', 0).find('span').html('an: <font style="font-style:italic;">bitte auswählen</font>');
+        $('#item-add-transfer-user').data('userid', 0).find('span').html((defaultDirection ? 'an: ' : 'von: ') + '<font style="font-style:italic;">bitte auswählen</font>');
     } else {
-        $('#item-add-transfer-user').data('userid', defaultUser).find('span').html('an: ' + (await dbGetData('users', defaultUser)).username);
+        $('#item-add-transfer-user').data('userid', defaultUser).find('span').html((defaultDirection ? 'an: ' : 'von: ') + (await dbGetData('users', defaultUser)).username);
     }
     $('#input-add-transfer-date').val(formatDate('Y-m-d')).trigger('focusin');
-    $('#input-add-transfer-amount').val('');
+    $('#input-add-transfer-amount').val(defaultAmount).trigger('focusin').trigger('focusout');
     $('#input-add-transfer-purpose-text').val('');
     $('#menu-add-transfer').showMenu();
 }

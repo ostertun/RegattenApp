@@ -189,9 +189,16 @@ let siteScript = async function() {
 	}
 
 	let sumText = '';
-	if (sum == 0) sumText = 'Du und ' + user.username + ' seid quitt.';
-	else if (sum > 0) sumText = user.username + ' schuldet Dir noch ' + (sum / 100).toFixed(2) + ' €.'; // TODO: Ausgleichen Button?
-	else sumText = 'Du schuldest ' + user.username + ' noch ' + (-sum / 100).toFixed(2) + ' €.'; // TODO: Ausgleichen Button?
+	let sumButton = '';
+	if (sum == 0) {
+		sumText = 'Du und ' + user.username + ' seid quitt.';
+	} else if (sum > 0) {
+		sumText = user.username + ' schuldet Dir noch ' + (sum / 100).toFixed(2) + ' €.';
+		sumButton = '&emsp;<a href="#" onclick="expendituresShowAddTransfer(' + user.id + ', false, ' + (sum/100) + '); return false;">Ausgleichen</a>';
+	} else {
+		sumText = 'Du schuldest ' + user.username + ' noch ' + (-sum / 100).toFixed(2) + ' €.';
+		sumButton = '&emsp;<a href="#" onclick="expendituresShowAddTransfer(' + user.id + ', true, ' + (-sum/100) + '); return false;">Ausgleichen</a>';
+	}
 
 	results = exps.reverse();
 
@@ -200,6 +207,7 @@ let siteScript = async function() {
 	let count = results.length;
 	if (count > 0) {
 		$('#p-count').text(sumText);
+		$('#p-count').html($('#p-count').html() + sumButton);
 		$('#div-list').show();
 		$('#input-search').parent().show();
 
