@@ -71,7 +71,7 @@
             <a href="<?php echo LINK_PRE; ?>expenditures" class="show-loggedin">
                 <i class="fa font-14 fa-money-bill-wave rounded-s bg-highlight color-white"></i>
                 <span>Ausgaben-Verwaltung</span>
-                <!--<span id="badge-more-expenditures" class="badge bg-highlight color-white"></span>-->
+                <span id="badge-more-expenditures" class="badge bg-highlight color-white"></span>
                 <i class="fa fa-angle-right"></i>
             </a>
 			<a href="<?php echo LINK_PRE; ?>trim_list">

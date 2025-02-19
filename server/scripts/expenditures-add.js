@@ -100,6 +100,7 @@ async function expendituresInitModals() {
             },
             success: async function (data, status, xhr) {
                 await sync();
+                updateExpendituresBadge();
                 $('#menu-add').hideMenu();
                 hideLoader();
                 toastOk('Ausgabe gespeichert. Betrag wurde durch ' + data.count + ' Personen geteilt.');
@@ -199,6 +200,7 @@ async function expendituresInitModals() {
             },
             success: async function (data, status, xhr) {
                 await sync();
+                updateExpendituresBadge();
                 $('#menu-add-transfer').hideMenu();
                 hideLoader();
                 toastOk(direction ? 'Geldtransfer gespeichert. ' + (await dbGetData('users', selectedUser)).username + ' muss dies noch bestätigen' : 'Geldtransfer wurde gespeichert');

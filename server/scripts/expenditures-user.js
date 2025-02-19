@@ -78,8 +78,9 @@ function expenditureAction(action, expId, successStr) {
 			}
 			hideLoader();
 		},
-		success: function (data, status, xhr) {
-			sync();
+		success: async function (data, status, xhr) {
+			await sync();
+			updateExpendituresBadge();
 			hideLoader();
 			toastOk(successStr);
 		}
