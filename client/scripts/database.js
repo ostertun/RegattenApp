@@ -1,4 +1,4 @@
-const DB_VERSION = 9;
+const DB_VERSION = 10;
 
 const USER_ID = localStorage.getItem('auth_user');
 const USER_NAME = localStorage.getItem('auth_username');
@@ -44,15 +44,17 @@ function search(string, fields) {
 	var keywords = string.split(' ');
 	for (kid in keywords) {
 		var keyword = keywords[kid].toLowerCase();
-		var found = false;
-		for (fid in fields) {
-			var field = fields[fid].toLowerCase();
-			if (field.indexOf(keyword) >= 0) {
-				found = true;
-				break;
+		if (keyword != '') {
+			var found = false;
+			for (fid in fields) {
+				var field = fields[fid].toLowerCase();
+				if (field.indexOf(keyword) >= 0) {
+					found = true;
+					break;
+				}
 			}
+			if (!found) return false;
 		}
-		if (!found) return false;
 	}
 	return true;
 }
@@ -619,7 +621,7 @@ function sync() {
 				localTimes[entry['table']] = entry['time'];
 			});
 
-			syncInProgress = 14;
+			syncInProgress = 15;
 			var syncOkay = true;
 			log("[db] Sync Start");
 			$('#i-sync').addClass('fa-spin');
@@ -1035,8 +1037,41 @@ function sync() {
 							}
 						});
 
+						// EXPENDITURES
+						if (localTimes['expenditures'] < serverTimes['expenditures']) {
+							getJSON(QUERY_URL + 'get_expenditures?changed-after=' + localTimes['expenditures'], function (code, data) {
+								if (code == 200) {
+									var os = db.transaction('expenditures', 'readwrite').objectStore('expenditures');
+									data.data.forEach(function (entry) {
+										os.put(entry);
+									});
+									os.openCursor().onsuccess = function (event) {
+										var cursor = event.target.result;
+										if (cursor) {
+											if (!data.keys.includes(parseInt(cursor.key))) {
+												os.delete(cursor.key);
+											}
+											cursor.continue();
+										} else {
+											var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+											osUpdateTimes.put({ table: 'expenditures', time: serverTimes['expenditures'] });
+											syncInProgress --;
+											log('[db] expenditures synced, remaining:', syncInProgress);
+										}
+									};
+								} else {
+									log("[db] expenditures: Something went wrong (HTTP " + code + ")");
+									syncOkay = false;
+									syncInProgress --;
+									log('[db] expenditures failed, remaining:', syncInProgress);
+								}
+							});
+						} else {
+							syncInProgress --;
+						}
+
 					} else {
-						syncInProgress -= 4;
+						syncInProgress -= 5;
 					}
 
 					// NEWS
@@ -1268,6 +1303,14 @@ function initDatabase() {
 				var osFollows = db.createObjectStore('follows', { keyPath: 'id' });
 			}
 
+			if ((oldVersion < 10) && (newVersion >= 10)) {
+				log('[db] to version 10');
+				var osExpenditures = db.createObjectStore('expenditures', { keyPath: 'id' });
+				osExpenditures.createIndex('user', 'user', { unique: false });
+				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
+				osUpdateTimes.add({ table: 'expenditures', time: 0 });
+			}
+
 			// Force resync after db update
 			if (oldVersion >= 1) {
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
@@ -1284,6 +1327,22 @@ function initDatabase() {
 function resetDb() {
 	if (canUseLocalDB) {
 		showLoader();
+		db.transaction('clubs', 'readwrite').objectStore('clubs').clear();
+		db.transaction('boats', 'readwrite').objectStore('boats').clear();
+		db.transaction('sailors', 'readwrite').objectStore('sailors').clear();
+		db.transaction('regattas', 'readwrite').objectStore('regattas').clear();
+		db.transaction('results', 'readwrite').objectStore('results').clear();
+		db.transaction('plannings', 'readwrite').objectStore('plannings').clear();
+		db.transaction('trim_boats', 'readwrite').objectStore('trim_boats').clear();
+		db.transaction('trim_users', 'readwrite').objectStore('trim_users').clear();
+		db.transaction('trim_trims', 'readwrite').objectStore('trim_trims').clear();
+		db.transaction('users', 'readwrite').objectStore('users').clear();
+		db.transaction('years', 'readwrite').objectStore('years').clear();
+		db.transaction('news', 'readwrite').objectStore('news').clear();
+		db.transaction('class', 'readwrite').objectStore('class').clear();
+		db.transaction('rankings', 'readwrite').objectStore('rankings').clear();
+		db.transaction('follows', 'readwrite').objectStore('follows').clear();
+		db.transaction('expenditures', 'readwrite').objectStore('expenditures').clear();
 		var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
 		osUpdateTimes.put({ table: 'last_sync', time: 1 });
 		osUpdateTimes.put({ table: 'clubs', time: 0 });
@@ -1297,6 +1356,7 @@ function resetDb() {
 		osUpdateTimes.put({ table: 'trim_trims', time: 0 });
 		osUpdateTimes.put({ table: 'news', time: 0 });
 		osUpdateTimes.put({ table: 'users', time: 0 });
+		osUpdateTimes.put({ table: 'expenditures', time: 0 });
 		log('[db] DB update times reset');
 		hideLoader();
 	}
