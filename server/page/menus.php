@@ -57,7 +57,7 @@
 	</div>
 </div>
 
-<div id="menu-more" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="360" >
+<div id="menu-more" class="menu menu-box-bottom menu-box-detached rounded-m" data-menu-height="410" >
 	<div class="menu-title"><h1>Mehr</h1><p class="color-highlight">&nbsp;</p><a href="#" class="close-menu"><i class="fa fa-times"></i></a></div>
 	<div class="divider divider-margins mb-n2"></div>
 	<div class="content">
