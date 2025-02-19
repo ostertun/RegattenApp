@@ -2,7 +2,7 @@
 
 	$sp['title'] = 'Saison-Planung - Regatten.net ' . $_CLASS['name'];
 	$sp['backbutton'] = 'index';
-	$sp['activenav'] = 5;
+	$sp['activenav'] = 4;
 
 	// Title
 	$content = '<h1>Saison-Planung</h1>';

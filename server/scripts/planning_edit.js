@@ -367,7 +367,7 @@ async function planningEdit(id) {
 			if (sailor !== null) {
 				var item = '<a class="item-crew" onclick="planningChangeCrew(' + sailor.id + ')">';
 				item += '<span>' + sailor.name + '</span>';
-				item += '<i class="fa fa-angle-right"></i>';
+				item += '<i class="fa fa-times"></i>';
 				item += '</a>';
 				$('#menu-edit').find('.content').find('.list-group').append(item);
 			}

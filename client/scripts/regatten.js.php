@@ -62,7 +62,11 @@ var badges = {
 			news: {
 				id: 'badge-more-news',
 				cnt: 0
-			}
+			},
+            expenditures: {
+                id: 'badge-more-expenditures',
+                cnt: 0
+            }
 		}
 	}
 };
@@ -512,6 +516,24 @@ async function updateNewsBadge() {
 	updateBadge('more/news', sum);
 }
 
+async function updateExpendituresBadge() {
+    let allExps = await dbGetData('expenditures');
+    let sum = 0;
+    for (let i in allExps) {
+        let exp = allExps[i];
+        if (exp.approved == 0) {
+            if (exp.direction < 0 && exp.canceled == 0) sum++;
+            if (exp.direction > 0 && exp.canceled == 1) sum++;
+        }
+    }
+    updateBadge('more/expenditures', sum);
+}
+
+function updateBadges() {
+    updateNewsBadge();
+    updateExpendituresBadge();
+}
+
 var initRegatten = function() {
 	showLoader();
 
@@ -568,11 +590,11 @@ var onDatabaseLoaded = function() {
 	onServiceWorkerLoaded();
 	initPushSettings();
 
-	updateNewsBadge();
+	updateBadges();
 }
 
 var onAfterSync = function() {
-	updateNewsBadge();
+	updateBadges();
 }
 
 function sendErrorReport() {
