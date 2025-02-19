@@ -320,7 +320,7 @@ function pushesSubscribe() {
 		applicationServerKey: applicationServerKey
 	})
 	.then(async function(subscription) {
-		log('[app] Subscription:', subscription);
+		log('[app] Subscription:', JSON.stringify(subscription));
 		if (await pushesUpdateServerSubscription(subscription, true)) {
 			log('[app] Subscription: Sent to server, updating UI');
 			dbSettingsSet('notify_endpoint_' + BOATCLASS, subscription.endpoint);
@@ -346,7 +346,7 @@ function pushesUnSubscribe(silent = false) {
 	log('[app] Unsubscribing');
 	swRegistration.pushManager.getSubscription()
 	.then(async function(subscription) {
-		log('[app] Subscription:', subscription);
+		log('[app] Subscription:', JSON.stringify(subscription));
 		if (subscription) {
 			if (await pushesUpdateServerSubscription(subscription, false)) {
 				log('[app] Subscription: Removed from server');
@@ -374,7 +374,7 @@ function pushesUnSubscribe(silent = false) {
 
 function pushesUpdateServerSubscription(subscription, enabled) {
 	return new Promise(function(resolve){
-		log('[app] updateServer', enabled, subscription);
+		log('[app] updateServer', enabled, JSON.stringify(subscription));
 		$.ajax({
 			url: QUERY_URL + (enabled ? 'add' : 'remove') + '_subscription',
 			type: 'POST',
@@ -477,7 +477,7 @@ function updatePushBadge() {
 		var dbSub = await dbSettingsGet('notify_endpoint_' + BOATCLASS);
 		var isSub = (subscription !== null);
 		log('[app] DB Subscription:', dbSub);
-		log('[app] Real Subscription:', subscription);
+		log('[app] Real Subscription:', JSON.stringify(subscription));
 		if (isSub) {
 			$('#badge-pushes').removeClass('bg-red2-dark').addClass('bg-green2-dark').text('AN');
 			if (dbSub === null) dbSettingsSet('notify_endpoint_' + BOATCLASS, subscription.endpoint);
