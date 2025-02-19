@@ -44,15 +44,17 @@ function search(string, fields) {
 	var keywords = string.split(' ');
 	for (kid in keywords) {
 		var keyword = keywords[kid].toLowerCase();
-		var found = false;
-		for (fid in fields) {
-			var field = fields[fid].toLowerCase();
-			if (field.indexOf(keyword) >= 0) {
-				found = true;
-				break;
+		if (keyword != '') {
+			var found = false;
+			for (fid in fields) {
+				var field = fields[fid].toLowerCase();
+				if (field.indexOf(keyword) >= 0) {
+					found = true;
+					break;
+				}
 			}
+			if (!found) return false;
 		}
-		if (!found) return false;
 	}
 	return true;
 }
@@ -1304,8 +1306,7 @@ function initDatabase() {
 			if ((oldVersion < 10) && (newVersion >= 10)) {
 				log('[db] to version 10');
 				var osExpenditures = db.createObjectStore('expenditures', { keyPath: 'id' });
-				osExpenditures.createIndex('user_from', 'user_from', { unique: false });
-				osExpenditures.createIndex('user_to', 'user_to', { unique: false });
+				osExpenditures.createIndex('user', 'user', { unique: false });
 				var osUpdateTimes = upgradeTransaction.objectStore('update_times');
 				osUpdateTimes.add({ table: 'expenditures', time: 0 });
 			}

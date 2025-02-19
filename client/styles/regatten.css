@@ -144,6 +144,69 @@
 	text-align: right;
 }
 
+/*** EXPENDITURES LIST ***/
+.expenditures-list.display-border > div {
+	border-bottom: 1px solid #dee2e6;
+}
+.expenditures-list > div {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	cursor: pointer;
+}
+
+.expenditures-list > div:last-child {
+	border: 0;
+	padding-bottom: 0;
+}
+
+.expenditures-list div {
+	white-space: nowrap;
+}
+
+.expenditures-list > div > div > div {
+	display: inline-block;
+}
+
+.expenditures-list > div > div:nth-child(1) > div:nth-child(1) {
+	width: calc(75% - 1.5em);
+}
+.expenditures-list > div > div:nth-child(1) > div:nth-child(2) {
+	width: 25%;
+	text-align: right;
+}
+.expenditures-list > div > div:nth-child(1) > div:nth-child(3) {
+	width: 1.5em;
+	text-align: right;
+}
+
+.expenditures-list > div > div:nth-child(2) > div:nth-child(1) {
+	width: 6em;
+}
+.expenditures-list > div > div:nth-child(2) > div:nth-child(2) {
+	width: calc(70% - 6em);
+	overflow-x: visible;
+}
+.expenditures-list > div > div:nth-child(2) > div:nth-child(3) {
+	width: 30%;
+	text-align: right;
+}
+
+.expenditures-list > div.sum {
+	padding: 0;
+}
+.expenditures-list > div.sum > div:nth-child(1) {
+	background: #dee2e6;
+	height: 1px;
+	display: flex;
+	justify-content: center;
+}
+.expenditures-list > div.sum > div:nth-child(1) > div:nth-child(1) {
+	background: white;
+	width: initial;
+	margin-top: -1em;
+	padding: 0 .5em;
+}
+
 /*** NORMAL LIST ***/
 .normal-list > div {
 	padding-top: 1rem;
