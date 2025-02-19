@@ -1357,6 +1357,7 @@ function resetDb() {
 		osUpdateTimes.put({ table: 'news', time: 0 });
 		osUpdateTimes.put({ table: 'users', time: 0 });
 		osUpdateTimes.put({ table: 'expenditures', time: 0 });
+		osUpdateTimes.put({ table: 'loggedin', status: isLoggedIn() });
 		log('[db] DB update times reset');
 		hideLoader();
 	}
