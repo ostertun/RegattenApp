@@ -282,6 +282,23 @@ async function expendituresInitModals() {
         });
         if (dbUsers[i].id in knownIds) known.push({id: dbUsers[i].id, content: item});
     }
+
+    $('#input-add-regatta-name').attr('list', 'list-regattas');
+    let listRegattas = $('<datalist id="list-regattas">').appendTo('body');
+    let plannings = await dbGetDataIndex('plannings', 'user', USER_ID);
+    let regattas = [];
+    for (let i in plannings) {
+        let regatta = await dbGetData('regattas', plannings[i].regatta);
+        regatta.year = formatDate('Y', parseDate(regatta.date));
+        regattas.push(regatta);
+    }
+    regattas.sort(function (a, b) {
+        if (a.year != b.year) return b.year - a.year;
+        return a.name.localeCompare(b.name);
+    });
+    for (let i in regattas) {
+        $('<option>').attr('value', regattas[i].name).appendTo(listRegattas);
+    }
 }
 
 async function expendituresShowAdd(defaultUser = 0) {
@@ -289,7 +306,7 @@ async function expendituresShowAdd(defaultUser = 0) {
     $('#input-add-date').val(formatDate('Y-m-d')).trigger('focusin');
     $('#input-add-amount').val('');
     $('#select-add-purpose').val('entryfee');
-    $('#input-add-regatta-name').val(''); // TODO: datalist?
+    $('#input-add-regatta-name').val('');
     $('#input-add-purpose-text').val('');
     $('.item-user-to').remove();
     let item = '<a class="item-user-to" data-userid="' + USER_ID + '" onclick="addRemoveToUser(' + USER_ID + ')">';
