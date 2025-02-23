@@ -260,7 +260,7 @@
 		<div class="input-style input-style-2 has-icon input-required">
 			<i class="input-icon fa fa-user color-theme"></i>
 			<span class="color-highlight">Benutzername</span>
-			<input id="input-login-username" class="form-control" type="name" placeholder="Benutzername" />
+			<input id="input-login-username" class="form-control" type="text" placeholder="Benutzername" />
 		</div>
 		<div class="input-style input-style-2 has-icon input-required">
 			<i class="input-icon fa fa-lock color-theme"></i>

@@ -54,5 +54,5 @@ const strings = {
 		'Donnerstag',
 		'Freitag',
 		'Samstag'
-	],
+	]
 }
