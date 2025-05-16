@@ -31,10 +31,10 @@ async function onListClicked(id) {
 	if (exp.approved == 0 && (exp.direction < 0) == (exp.canceled == 0)) {
 		$('#menu-item-approve').show();
 		$('#menu-item-approve').attr('onclick', 'expenditureAction("approve", ' + exp['id'] + ', "' + (exp.canceled == 1 ? 'Stornierung' : 'Ausgabe') + ' genehmigt")');
-		$('#menu-item-approve').text(exp.canceled == 1 ? 'Storno akzeptieren' : 'Akzeptieren');
+		$('#menu-item-approve').find('span').text(exp.canceled == 1 ? 'Storno akzeptieren' : 'Akzeptieren');
 		$('#menu-item-decline').show();
 		$('#menu-item-decline').attr('onclick', 'expenditureAction("decline", ' + exp['id'] + ', "Ausgabe ' + (exp.canceled == 1 ? 'erneut angefragt' : 'abgelehnt') + '")');
-		$('#menu-item-decline').text(exp.canceled == 1 ? 'Erneut anfragen' : 'Ablehnen');
+		$('#menu-item-decline').find('span').text(exp.canceled == 1 ? 'Erneut anfragen' : 'Ablehnen');
 	} else {
 		$('#menu-item-approve').hide();
 		$('#menu-item-decline').hide();
