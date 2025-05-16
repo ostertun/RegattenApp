@@ -1343,7 +1343,14 @@ function resetDb() {
 		db.transaction('rankings', 'readwrite').objectStore('rankings').clear();
 		db.transaction('follows', 'readwrite').objectStore('follows').clear();
 		db.transaction('expenditures', 'readwrite').objectStore('expenditures').clear();
-		var osUpdateTimes = db.transaction('update_times', 'readwrite').objectStore('update_times');
+		var ta = db.transaction('update_times', 'readwrite');
+		ta.oncomplete = (event) => {
+			log('[db] resetDb: Transaction complete');
+		};
+		ta.onerror = (event) => {
+			log('[db] resetDb: Transaction failed');
+		};
+		var osUpdateTimes = ta.objectStore('update_times');
 		osUpdateTimes.put({ table: 'last_sync', time: 1 });
 		osUpdateTimes.put({ table: 'clubs', time: 0 });
 		osUpdateTimes.put({ table: 'boats', time: 0 });
@@ -1358,6 +1365,7 @@ function resetDb() {
 		osUpdateTimes.put({ table: 'users', time: 0 });
 		osUpdateTimes.put({ table: 'expenditures', time: 0 });
 		osUpdateTimes.put({ table: 'loggedin', status: isLoggedIn() });
+		ta.commit();
 		log('[db] DB update times reset');
 		hideLoader();
 	}
