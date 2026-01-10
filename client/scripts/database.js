@@ -1192,7 +1192,7 @@ function initDatabase() {
 			}
 
 			db.onerror = function (event) {
-				log("[db] DB Error: " + event.target);
+				log("[db] DB Error: ", event.target);
 			};
 
 			canUseLocalDB = true;
